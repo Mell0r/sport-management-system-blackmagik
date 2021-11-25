@@ -9,7 +9,7 @@ data class RouteCompletionByParticipantEntry(
     val time: Time
 )
 
-class RouteCompletionByParticipantProtocol(
+data class RouteCompletionByParticipantProtocol(
     val id: Int,
     val checkpointTimes: List<RouteCompletionByParticipantEntry>
 )
