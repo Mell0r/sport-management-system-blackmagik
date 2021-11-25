@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.Route
+import ru.emkn.kotlin.sms.time.Time
 
 // null if disqualified
 data class ResultEntry(val id: Int, val timeForDistance: Int?)

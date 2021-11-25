@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
-typealias Time = Int
+import ru.emkn.kotlin.sms.time.Time
+
 typealias CheckpointLabelT = String
 
 data class RouteCompletionByParticipantEntry(

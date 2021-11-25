@@ -1,8 +1,12 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.Route
+import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
+
+private fun Int.s() = Time(this)
+
 
 internal class GetParticipantsTimesFromByParticipantProtocolsTest {
     private fun quickProtocolEntryList(
@@ -11,15 +15,15 @@ internal class GetParticipantsTimesFromByParticipantProtocolsTest {
         thirdTime: Int
     ) =
         listOf(
-            RouteCompletionByParticipantEntry("1", firstTime),
-            RouteCompletionByParticipantEntry("2", secondTime),
-            RouteCompletionByParticipantEntry("3", thirdTime),
+            RouteCompletionByParticipantEntry("1", firstTime.s()),
+            RouteCompletionByParticipantEntry("2", secondTime.s()),
+            RouteCompletionByParticipantEntry("3", thirdTime.s()),
         )
 
     @Test
     fun testParticipantsTimesFromByParticipantProtocols() {
         val mainRoute = Route("name", listOf("1", "2", "3"))
-        val startTimeGetter: (Int) -> Int = { 0 }
+        val startTimeGetter: (Int) -> Time = { 0.s() }
         val mainRouteGetter: (Int) -> Route = { mainRoute }
         val protocols = listOf(
             RouteCompletionByParticipantProtocol(
