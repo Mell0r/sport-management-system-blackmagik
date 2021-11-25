@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
+import ru.emkn.kotlin.sms.logErrorAndThrow
 import ru.emkn.kotlin.sms.time.Time
 
 fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCompletionByCheckpointProtocol {
@@ -8,8 +9,8 @@ fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCom
         fileContent.zip(1..fileContent.size).drop(1).map { (line, lineNumber) ->
             val parts = line.split(",")
             if (parts.size != 2)
-                throw IllegalArgumentException("Строка $lineNumber: не состоит из двух частей, разделенных запятой.")
-            val id = parts[0].toIntOrNull() ?: throw IllegalArgumentException(
+                logErrorAndThrow("Строка $lineNumber: не состоит из двух частей, разделенных запятой.")
+            val id = parts[0].toIntOrNull() ?: logErrorAndThrow(
                 "Строка $lineNumber: id участника не является числом"
             )
             val time = Time.fromString(parts[1])
@@ -20,14 +21,15 @@ fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCom
 
 fun readRouteCompletionByParticipantProtocol(fileContent: List<String>): RouteCompletionByParticipantProtocol {
     val id =
-        fileContent.first().toIntOrNull() ?: throw IllegalArgumentException(
+        fileContent.first().toIntOrNull() ?: logErrorAndThrow(
             "Строка $1: id участника не является числом"
         )
     val entries =
         fileContent.zip(1..fileContent.size).drop(1).map { (line, lineNumber) ->
             val parts = line.split(",")
             if (parts.size != 2)
-                throw IllegalArgumentException("Строка $lineNumber: не состоит из двух частей, разделенных запятой.")
+                logErrorAndThrow("Строка $lineNumber: не состоит из двух частей, разделенных запятой.")
+
             val checkpointLabel = parts[0]
             val time = Time.fromString(parts[1])
             RouteCompletionByParticipantEntry(checkpointLabel, time)
