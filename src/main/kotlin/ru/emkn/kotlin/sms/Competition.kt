@@ -42,10 +42,7 @@ class Competition(configFolderPath : String) {
             throw IllegalArgumentException("Numbers of commas in different lines don't match in file 'Route_description'!")
         routes = routeDescription.mapIndexed { ind, row ->
             val splittedRow = row.split(',')
-            splittedRow.subList(1, splittedRow.size).forEach {
-                    require(it.toIntOrNull() != null) { "One of the route marks are not a number in $row row" }
-                }
-            Route(splittedRow[0], splittedRow.subList(1, splittedRow.size).map { it.toInt() })
+            Route(splittedRow[0], splittedRow.subList(1, splittedRow.size))
         }
 
         groupToRouteMapping = routeOfGroups.associate {

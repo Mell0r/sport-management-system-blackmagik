@@ -11,5 +11,3 @@ class Participant(
     val team: String,
     val sportsCategory: String // from fixed options from config
 )
-
-fun readFromApplication(rawCSV: List<List<String>>): List<Participant> = TODO();

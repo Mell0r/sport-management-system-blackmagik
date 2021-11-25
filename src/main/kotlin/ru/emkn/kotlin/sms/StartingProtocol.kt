@@ -1,13 +1,13 @@
 package ru.emkn.kotlin.sms
 
-typealias StartingTimeT = String
+import ru.emkn.kotlin.sms.time.Time
 
-data class StartingProtocolEntry(
-    val id: Int,
-    val startTime: StartingTimeT
+data class ParticipantStart(
+    val participant: Participant,
+    val startTime: Time
 )
 
 data class StartingProtocol(
-    val entries: List<StartingProtocolEntry>,
-    val group: GroupLabelT
+    val group: GroupLabelT,
+    val timetable: List<ParticipantStart>
 )
