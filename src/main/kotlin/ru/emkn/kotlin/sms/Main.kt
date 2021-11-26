@@ -10,23 +10,18 @@ private fun ensureAncestorDirectories(file: File) {
     createDirectories(parentPath)
 }
 
-private fun ensureFile(file: File) {
-    ensureAncestorDirectories(file)
-    file.createNewFile()
-}
-
 /**
- * Creates a directory by given filepath and all it's ancestors.
+ * Creates a directory by given filepath and all it's ancestors (if it doesn't exist already).
  * Returns a created directory as a java.io.File.
  * If the specified file is not a directory, returns null.
  */
 private fun ensureDirectory(directoryPath: String) : File? {
     val file = File(directoryPath)
-    if (!file.isDirectory) {
+    if (file.exists() && !file.isDirectory) {
         Logger.error {"$directoryPath is not a directory!"}
         return null
     }
-    ensureFile(file)
+    createDirectories(file.toPath())
     return file
 }
 
