@@ -22,8 +22,10 @@ private fun ensureFile(file: File) {
  */
 private fun ensureDirectory(directoryPath: String) : File? {
     val file = File(directoryPath)
-    if (!file.isDirectory)
+    if (!file.isDirectory) {
+        Logger.error {"$directoryPath is not a directory!"}
         return null
+    }
     ensureFile(file)
     return file
 }
@@ -34,7 +36,12 @@ private fun ensureDirectory(directoryPath: String) : File? {
  */
 private fun getExistingReadableFile(fileName: String) : File? {
     val file = File(fileName)
-    if (!file.exists() || !file.canRead()) {
+    if (!file.exists()) {
+        Logger.error {"File \"$fileName\" doesn't exist!"}
+        return null
+    }
+    if (!file.canRead()) {
+        Logger.error {"File \"$fileName\" cannot be read!"}
         return null
     }
     return file
