@@ -1,14 +1,12 @@
 package ru.emkn.kotlin.sms.cli
 
 import kotlinx.cli.*
-import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
-import ru.emkn.kotlin.sms.ProgramSubcommands
-import ru.emkn.kotlin.sms.RouteProtocolType
+import ru.emkn.kotlin.sms.*
 import java.io.File
 import org.tinylog.Logger
 import kotlin.system.*
 
-class Parsing {
+class ArgParsingSystem {
     val argParser = ArgParser("java -jar sms.jar")
     var invokedSubcommand: ProgramSubcommands? = null
 
@@ -100,6 +98,8 @@ class Parsing {
     }
 
     fun parse(args: Array<String>) {
+        Logger.debug {"Beginning to parse arguments."}
+
         argParser.parse(args)
 
         // Currently, kotlinx-cli doesn't handle the case, where no subcommand is given
@@ -110,5 +110,7 @@ class Parsing {
                     "Or use -h (--help) to see help message."}
             exitProcess(255)
         }
+
+        Logger.debug {"Successfully finished parsing arguments."}
     }
 }

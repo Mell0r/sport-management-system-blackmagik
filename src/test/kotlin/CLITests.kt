@@ -39,36 +39,36 @@ internal class CLITests {
     @Test
     fun `Empty args`() {
         assertFails {
-            val parsing = Parsing()
-            parsing.parse(arrayOf())
+            val argParsingSystem = ArgParsingSystem()
+            argParsingSystem.parse(arrayOf())
         }
     }
 
     @Test
     fun `Invalid subcommands`() {
         assertFails {
-            val parsing = Parsing()
-            parsing.parse(arrayOf("destroy", "cfg.json"))
+            val argParsingSystem = ArgParsingSystem()
+            argParsingSystem.parse(arrayOf("destroy", "cfg.json"))
         }
         assertFails {
-            val parsing = Parsing()
-            parsing.parse(arrayOf("cfg.json", "make"))
+            val argParsingSystem = ArgParsingSystem()
+            argParsingSystem.parse(arrayOf("cfg.json", "make"))
         }
         assertFails {
-            val parsing = Parsing()
-            parsing.parse(arrayOf("something"))
+            val argParsingSystem = ArgParsingSystem()
+            argParsingSystem.parse(arrayOf("something"))
         }
         assertFails {
-            val parsing = Parsing()
-            parsing.parse(arrayOf("configFile.json"))
+            val argParsingSystem = ArgParsingSystem()
+            argParsingSystem.parse(arrayOf("configFile.json"))
         }
     }
 
     private fun testConfigFileAndOutputDirectory(args: Array<String>, expectedConfigFileName: String, expectedOutputDirectoryPath: String) {
-        val parsing = Parsing()
-        parsing.parse(args)
-        assertEquals(File(expectedConfigFileName), parsing.competitionConfigFile)
-        assertEquals(File(expectedOutputDirectoryPath), parsing.outputDirectory)
+        val argParsingSystem = ArgParsingSystem()
+        argParsingSystem.parse(args)
+        assertEquals(File(expectedConfigFileName), argParsingSystem.competitionConfigFile)
+        assertEquals(File(expectedOutputDirectoryPath), argParsingSystem.outputDirectory)
     }
 
     @Test
@@ -107,10 +107,10 @@ internal class CLITests {
     private fun testStartSubcommand(args: Array<String>, expectedApplicationFileNames: List<String>) {
         val expectedApplicationFiles = expectedApplicationFileNames.map { File(it) }
 
-        val parsing = Parsing()
-        parsing.parse(args)
-        assertEquals(ProgramSubcommands.START, parsing.invokedSubcommand)
-        assertEquals(expectedApplicationFiles, parsing.startCommand.applicationFiles)
+        val argParsingSystem = ArgParsingSystem()
+        argParsingSystem.parse(args)
+        assertEquals(ProgramSubcommands.START, argParsingSystem.invokedSubcommand)
+        assertEquals(expectedApplicationFiles, argParsingSystem.startCommand.applicationFiles)
     }
 
     @Test
@@ -146,12 +146,12 @@ internal class CLITests {
         val expectedParticipantsListFile = File(expectedParticipantsListFileName)
         val expectedRouteProtocolFiles = expectedRouteProtocolFileNames.map { File(it) }
 
-        val parsing = Parsing()
-        parsing.parse(args)
-        assertEquals(ProgramSubcommands.RESULT, parsing.invokedSubcommand)
-        assertEquals(expectedParticipantsListFile, parsing.resultCommand.participantListFile)
-        assertEquals(expectedRouteProtocolType, parsing.resultCommand.routeProtocolType)
-        assertEquals(expectedRouteProtocolFiles, parsing.resultCommand.routeProtocolFiles)
+        val argParsingSystem = ArgParsingSystem()
+        argParsingSystem.parse(args)
+        assertEquals(ProgramSubcommands.RESULT, argParsingSystem.invokedSubcommand)
+        assertEquals(expectedParticipantsListFile, argParsingSystem.resultCommand.participantListFile)
+        assertEquals(expectedRouteProtocolType, argParsingSystem.resultCommand.routeProtocolType)
+        assertEquals(expectedRouteProtocolFiles, argParsingSystem.resultCommand.routeProtocolFiles)
     }
 
     @Test
@@ -238,11 +238,11 @@ internal class CLITests {
         val expectedParticipantsListFile = File(expectedParticipantsListFileName)
         val expectedResultProtocolFiles = expectedResultProtocolFileNames.map { File(it) }
 
-        val parsing = Parsing()
-        parsing.parse(args)
-        assertEquals(ProgramSubcommands.RESULT_TEAMS, parsing.invokedSubcommand)
-        assertEquals(expectedParticipantsListFile, parsing.resultTeamsCommand.participantListFile)
-        assertEquals(expectedResultProtocolFiles, parsing.resultTeamsCommand.resultProtocolFiles)
+        val argParsingSystem = ArgParsingSystem()
+        argParsingSystem.parse(args)
+        assertEquals(ProgramSubcommands.RESULT_TEAMS, argParsingSystem.invokedSubcommand)
+        assertEquals(expectedParticipantsListFile, argParsingSystem.resultTeamsCommand.participantListFile)
+        assertEquals(expectedResultProtocolFiles, argParsingSystem.resultTeamsCommand.resultProtocolFiles)
     }
 
     @Test
