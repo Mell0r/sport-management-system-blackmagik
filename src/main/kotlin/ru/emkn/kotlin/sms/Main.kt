@@ -5,34 +5,37 @@ import kotlinx.cli.*
 import java.io.File
 import java.nio.file.Files.createDirectories
 
-private fun createAncestorDirectories(file: File) {
+private fun ensureAncestorDirectories(file: File) {
     val parentPath = file.absoluteFile.parentFile.toPath()
     createDirectories(parentPath)
 }
 
 private fun ensureFile(file: File) {
-    createAncestorDirectories(file)
+    ensureAncestorDirectories(file)
     file.createNewFile()
 }
 
 /**
  * Creates a directory by given filepath and all it's ancestors.
- * If the specified file is not a directory, and IllegalArgumentException is thrown.
+ * Returns a created directory as a java.io.File.
+ * If the specified file is not a directory, returns null.
  */
-private fun ensureDirectory(directoryPath: String) : File {
+private fun ensureDirectory(directoryPath: String) : File? {
     val file = File(directoryPath)
-    require(file.isDirectory) { "\"$directoryPath\" is not a directory." }
+    if (!file.isDirectory)
+        return null
     ensureFile(file)
     return file
 }
 
 /**
- * Returns java.io.File by it's name and checks that it exists and can be read.
+ * Returns java.io.File by it's name,
+ * or null if the file doesn't exist or cannot be read.
  */
-private fun getExistingReadableFile(fileName: String) : File {
+private fun getExistingReadableFile(fileName: String) : File? {
     val file = File(fileName)
-    require(file.exists() && file.canRead()) {
-        "File \"${file.absolutePath}\" doesn't exist or cannot be read."
+    if (!file.exists() || !file.canRead()) {
+        return null
     }
     return file
 }
@@ -159,21 +162,12 @@ fun main(args: Array<String>) {
     Parsing.parse(args)
     Logger.debug {"Finished parsing arguments."}
 
-    val configFile = try {
-        getExistingReadableFile(Parsing.competitionConfigFileName)
-    } catch (e: Exception) {
-        Logger.error {"Couldn't find config file. A following exception occured."}
-        Logger.error(e)
-        return
-    }
+    val configFile = getExistingReadableFile(Parsing.competitionConfigFileName)
+        ?: return Logger.error {"Config file \"${Parsing.competitionConfigFileName}\" doesn't exist or cannot be read. Exiting."}
     Logger.debug {"Config file: $configFile"}
 
-    val outputDirectory = try {
-        ensureDirectory(Parsing.output)
-    } catch (e: Exception) {
-        Logger.error(e)
-        return
-    }
+    val outputDirectory = ensureDirectory(Parsing.output)
+        ?: return Logger.error {"Invalid output directory \"${Parsing.output}\". Exiting."}
     Logger.debug {"Output directory: $outputDirectory"}
 
     requireNotNull(Parsing.invokedSubcommand)
@@ -196,13 +190,8 @@ fun main(args: Array<String>) {
             // Режим 2: сгенерировать протоколы результатов по группам.
             Logger.debug {"Program command ${Parsing.invokedSubcommand}: generate start protocols and participants list."}
 
-            val participantsListFile = try {
-                getExistingReadableFile(Parsing.ResultCommand.participants)
-            } catch (e: Exception) {
-                Logger.error {"Couldn't find participants list file. A following exception."}
-                Logger.error(e)
-                return
-            }
+            val participantsListFile = getExistingReadableFile(Parsing.ResultCommand.participants)
+                ?: return Logger.error {"Participants list file \"${Parsing.ResultCommand.participants}\" doesn't exist or cannot be read. Exiting."}
             val routeProtocolType = Parsing.ResultCommand.routeProtocolType
             val routeProtocolFiles = filterCsvFilesFromFilesAndDirs(Parsing.ResultCommand.routeProtocols)
             if (routeProtocolFiles.isEmpty()) {
@@ -220,13 +209,8 @@ fun main(args: Array<String>) {
             // Режим 3: сгенерировать протокол командных результатов по имеющимся результата
             Logger.debug {"Program command ${Parsing.invokedSubcommand}: generate start protocols and participants list."}
 
-            val participantsListFile = try {
-                getExistingReadableFile(Parsing.ResultTeamsCommand.participants)
-            } catch (e: Exception) {
-                Logger.error {"Couldn't find participants list file. A following exception."}
-                Logger.error(e)
-                return
-            }
+            val participantsListFile = getExistingReadableFile(Parsing.ResultCommand.participants)
+                ?: return Logger.error {"Participants list file \"${Parsing.ResultCommand.participants}\" doesn't exist or cannot be read. Exiting."}
             val resultProtocolFiles = filterCsvFilesFromFilesAndDirs(Parsing.ResultTeamsCommand.resultProtocols)
             if (resultProtocolFiles.isEmpty()) {
                 Logger.error {"No result protocols were specified. Exiting."}
