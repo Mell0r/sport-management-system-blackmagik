@@ -6,14 +6,27 @@ import java.io.File
 import org.tinylog.Logger
 import kotlin.system.*
 
+
+/**
+ * A set of [kotlinx.cli] objects, such as [ArgParser], arguments, options
+ * and subcommands, suitable for parsing command-line arguments for this program.
+ */
 class ArgParsingSystem {
     val argParser = ArgParser("java -jar sms.jar")
+
+    /**
+     * After parsing contains a subcommand chosen by user.
+     *
+     * May equal to null only when no subcommand was specified
+     * (but all mandatory arguments like [competitionConfigFile] were specified).
+     */
     var invokedSubcommand: ProgramSubcommands? = null
 
     val competitionConfigFile by argParser.argument(
         FileArgType,
         description = "Competition config file (in .json)",
     )
+
     val outputDirectory by argParser.option(
         FileArgType,
         shortName = "o",
@@ -21,6 +34,10 @@ class ArgParsingSystem {
         description = "Output directory",
     ).default(File("."))
 
+
+    /**
+     * Mode 1 of the program (called "start")
+     */
     inner class StartCommand : Subcommand(
         "start",
         "Given team applications, generates start protocols and participants list."
@@ -38,6 +55,10 @@ class ArgParsingSystem {
     }
     val startCommand = StartCommand()
 
+
+    /**
+     * Mode 2 of the program (called "result")
+     */
     inner class ResultCommand : Subcommand(
         "result",
         "Given participants list and route completion protocols, generates result protocols (by groups)."
@@ -69,6 +90,10 @@ class ArgParsingSystem {
     }
     val resultCommand = ResultCommand()
 
+
+    /**
+     * Mode 3 of the program (called "result_teams")
+     */
     inner class ResultTeamsCommand : Subcommand(
         "result_teams",
         "Given result protocols (by groups) and participants list generates team result protocols."
