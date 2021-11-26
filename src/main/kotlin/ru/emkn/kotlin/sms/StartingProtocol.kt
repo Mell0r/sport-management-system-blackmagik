@@ -7,7 +7,11 @@ data class ParticipantStart(
     val startTime: Time
 )
 
-data class StartingProtocol(
+class StartingProtocol(
     val group: GroupLabelT,
     val timetable: List<ParticipantStart>
-)
+) {
+    fun print(filePath: String) {
+        TODO()
+    }
+}
