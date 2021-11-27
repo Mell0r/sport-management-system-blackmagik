@@ -15,9 +15,9 @@ internal class GetParticipantsTimesFromByParticipantProtocolsTest {
         thirdTime: Int
     ) =
         listOf(
-            RouteCompletionByParticipantEntry("1", firstTime.s()),
-            RouteCompletionByParticipantEntry("2", secondTime.s()),
-            RouteCompletionByParticipantEntry("3", thirdTime.s()),
+            CheckpointLabelAndTime("1", firstTime.s()),
+            CheckpointLabelAndTime("2", secondTime.s()),
+            CheckpointLabelAndTime("3", thirdTime.s()),
         )
 
     @Test

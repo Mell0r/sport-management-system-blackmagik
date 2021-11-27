@@ -19,7 +19,7 @@ internal class GetParticipantsTimesFromByCheckpointProtocolsTest {
         val startTimeGetter: (Int) -> Time = { 0.s() }
         val mainRouteGetter: (Int) -> Route = { mainRoute }
         fun idToTime(id: Int, time: Time) =
-            RouteCompletionByCheckpointEntry(id, time)
+            IdAndTime(id, time)
 
         val protocols = listOf(
             RouteCompletionByCheckpointProtocol(

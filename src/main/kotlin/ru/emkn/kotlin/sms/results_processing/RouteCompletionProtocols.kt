@@ -4,22 +4,22 @@ import ru.emkn.kotlin.sms.time.Time
 
 typealias CheckpointLabelT = String
 
-data class RouteCompletionByParticipantEntry(
+data class CheckpointLabelAndTime(
     val checkpointLabel: CheckpointLabelT,
     val time: Time
 )
 
 data class RouteCompletionByParticipantProtocol(
     val id: Int,
-    val checkpointTimes: List<RouteCompletionByParticipantEntry>
+    val checkpointTimes: List<CheckpointLabelAndTime>
 )
 
-data class RouteCompletionByCheckpointEntry(
+data class IdAndTime(
     val id: Int,
     val time: Time
 )
 
 data class RouteCompletionByCheckpointProtocol(
     val checkpointLabel: CheckpointLabelT,
-    val participantTimes: List<RouteCompletionByCheckpointEntry>
+    val participantTimes: List<IdAndTime>
 )

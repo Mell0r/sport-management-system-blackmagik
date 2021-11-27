@@ -14,7 +14,7 @@ fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCom
                 "Строка $lineNumber: id участника не является числом"
             )
             val time = Time.fromString(parts[1])
-            RouteCompletionByCheckpointEntry(id, time)
+            IdAndTime(id, time)
         }
     return RouteCompletionByCheckpointProtocol(checkPointLabel, entries)
 }
@@ -32,7 +32,7 @@ fun readRouteCompletionByParticipantProtocol(fileContent: List<String>): RouteCo
 
             val checkpointLabel = parts[0]
             val time = Time.fromString(parts[1])
-            RouteCompletionByParticipantEntry(checkpointLabel, time)
+            CheckpointLabelAndTime(checkpointLabel, time)
         }
     return RouteCompletionByParticipantProtocol(id, entries)
 }

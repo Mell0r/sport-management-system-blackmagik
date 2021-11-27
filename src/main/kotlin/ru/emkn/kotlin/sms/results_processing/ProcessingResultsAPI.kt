@@ -12,17 +12,18 @@ and their signatures can be relied on.
  */
 class FromStartProtocols(startProtocols: List<FileContent>) {
 
-    val startProtocols = startProtocols.map { startProtocolFileContent ->
-        val groupLabelAndHeaderRowLineCount = 2
-        val tableString =
-            startProtocolFileContent.drop(groupLabelAndHeaderRowLineCount)
-                .joinToString("\n")
-        val protocolEntries = csvReader().readAll(tableString).map { row ->
-            StartingProtocolEntry(row[0].toInt(), Time.fromString(row[4]))
+    private val startProtocols =
+        startProtocols.map { startProtocolFileContent ->
+            val groupLabelAndHeaderRowLineCount = 2
+            val tableString =
+                startProtocolFileContent.drop(groupLabelAndHeaderRowLineCount)
+                    .joinToString("\n")
+            val protocolEntries = csvReader().readAll(tableString).map { row ->
+                StartingProtocolEntry(row[0].toInt(), Time.fromString(row[4]))
+            }
+            val groupLabel = startProtocolFileContent[0].split(",").first()
+            StartingProtocol(protocolEntries, groupLabel)
         }
-        val groupLabel = startProtocolFileContent[0].split(",").first()
-        StartingProtocol(protocolEntries, groupLabel)
-    }
 
     private fun getStartingTimeById(id: Int): Time =
         startProtocols.flatMap { it.entries }.single { it.id == id }.startTime
