@@ -5,7 +5,7 @@ import kotlin.test.*
 
 internal class CLITests {
 
-    private val testDataDir = "test-data/cli/"
+    private val testDataDir = "test-data/cli"
 
     @BeforeTest
     fun setUp() {
