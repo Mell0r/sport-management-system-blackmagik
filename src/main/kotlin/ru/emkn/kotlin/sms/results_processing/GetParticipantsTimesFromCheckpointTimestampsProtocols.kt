@@ -16,8 +16,8 @@ internal data class IdAndCheckpointAndTime(
  * only people mentioned in protocols.
  */
 
-fun getParticipantsTimesFromByCheckpointProtocols(
-    routeCompletionProtocols: List<RouteCompletionByCheckpointProtocol>,
+fun getParticipantsTimesFromCheckpointTimestampsProtocols(
+    routeCompletionProtocols: List<CheckpointTimestampsProtocol>,
     idToRoute: (Int) -> Route,
     idToTime: (Int) -> Time
 ): Map<Int, Int?> {

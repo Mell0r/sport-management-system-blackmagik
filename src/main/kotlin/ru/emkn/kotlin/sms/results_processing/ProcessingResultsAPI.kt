@@ -44,7 +44,7 @@ class FromStartProtocols(startProtocols: List<FileContent>) {
                 )
             }
         val results =
-            getParticipantsTimesFromByParticipantProtocols(
+            getParticipantsTimesFromParticipantTimestampsProtocols(
                 processedProtocols,
                 { id ->
                     getRouteById(idToParticipantMapping, id, competition)
@@ -69,7 +69,7 @@ class FromStartProtocols(startProtocols: List<FileContent>) {
                 )
             }
         val results =
-            getParticipantsTimesFromByCheckpointProtocols(
+            getParticipantsTimesFromCheckpointTimestampsProtocols(
                 processedProtocols,
                 { id ->
                     getRouteById(idToParticipantMapping, id, competition)

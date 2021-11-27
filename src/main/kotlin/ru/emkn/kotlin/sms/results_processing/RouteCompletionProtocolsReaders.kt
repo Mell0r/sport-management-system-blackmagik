@@ -3,7 +3,7 @@ package ru.emkn.kotlin.sms.results_processing
 import ru.emkn.kotlin.sms.logErrorAndThrow
 import ru.emkn.kotlin.sms.time.Time
 
-fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCompletionByCheckpointProtocol {
+fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): CheckpointTimestampsProtocol {
     val checkPointLabel = fileContent.first()
     val entries =
         fileContent.zip(1..fileContent.size).drop(1).map { (line, lineNumber) ->
@@ -16,10 +16,10 @@ fun readRouteCompletionByCheckpointProtocol(fileContent: List<String>): RouteCom
             val time = Time.fromString(parts[1])
             IdAndTime(id, time)
         }
-    return RouteCompletionByCheckpointProtocol(checkPointLabel, entries)
+    return CheckpointTimestampsProtocol(checkPointLabel, entries)
 }
 
-fun readRouteCompletionByParticipantProtocol(fileContent: List<String>): RouteCompletionByParticipantProtocol {
+fun readRouteCompletionByParticipantProtocol(fileContent: List<String>): ParticipantTimestampsProtocol {
     val id =
         fileContent.first().toIntOrNull() ?: logErrorAndThrow(
             "Строка $1: id участника не является числом"
@@ -34,5 +34,5 @@ fun readRouteCompletionByParticipantProtocol(fileContent: List<String>): RouteCo
             val time = Time.fromString(parts[1])
             CheckpointLabelAndTime(checkpointLabel, time)
         }
-    return RouteCompletionByParticipantProtocol(id, entries)
+    return ParticipantTimestampsProtocol(id, entries)
 }

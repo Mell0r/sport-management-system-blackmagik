@@ -11,8 +11,8 @@ import ru.emkn.kotlin.sms.time.Time
  * <code> m.at(participantId) </code> === null if the participant is disqualified. The map M contains
  * only people mentioned in protocols.
  */
-fun getParticipantsTimesFromByParticipantProtocols(
-    routeCompletionProtocols: List<RouteCompletionByParticipantProtocol>,
+fun getParticipantsTimesFromParticipantTimestampsProtocols(
+    routeCompletionProtocols: List<ParticipantTimestampsProtocol>,
     idToRoute: (Int) -> Route,
     idToTime: (Int) -> Time
 ): Map<Int, Int?> {

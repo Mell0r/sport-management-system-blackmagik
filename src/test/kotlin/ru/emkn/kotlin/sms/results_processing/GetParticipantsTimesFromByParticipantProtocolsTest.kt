@@ -26,20 +26,20 @@ internal class GetParticipantsTimesFromByParticipantProtocolsTest {
         val startTimeGetter: (Int) -> Time = { 0.s() }
         val mainRouteGetter: (Int) -> Route = { mainRoute }
         val protocols = listOf(
-            RouteCompletionByParticipantProtocol(
+            ParticipantTimestampsProtocol(
                 1,
                 quickProtocolEntryList(1, 2, 3)
             ),
-            RouteCompletionByParticipantProtocol(
+            ParticipantTimestampsProtocol(
                 2,
                 quickProtocolEntryList(2, 1, 6)
             ),
-            RouteCompletionByParticipantProtocol(
+            ParticipantTimestampsProtocol(
                 3,
                 quickProtocolEntryList(1, 4, 9)
             ),
         )
-        val results = getParticipantsTimesFromByParticipantProtocols(
+        val results = getParticipantsTimesFromParticipantTimestampsProtocols(
             protocols,
             mainRouteGetter,
             startTimeGetter

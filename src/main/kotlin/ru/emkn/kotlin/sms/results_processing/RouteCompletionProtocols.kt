@@ -9,7 +9,7 @@ data class CheckpointLabelAndTime(
     val time: Time
 )
 
-data class RouteCompletionByParticipantProtocol(
+data class ParticipantTimestampsProtocol(
     val id: Int,
     val checkpointTimes: List<CheckpointLabelAndTime>
 )
@@ -19,7 +19,7 @@ data class IdAndTime(
     val time: Time
 )
 
-data class RouteCompletionByCheckpointProtocol(
+data class CheckpointTimestampsProtocol(
     val checkpointLabel: CheckpointLabelT,
     val participantTimes: List<IdAndTime>
 )

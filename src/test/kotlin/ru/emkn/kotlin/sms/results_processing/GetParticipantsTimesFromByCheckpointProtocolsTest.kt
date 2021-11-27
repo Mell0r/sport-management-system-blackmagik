@@ -22,26 +22,30 @@ internal class GetParticipantsTimesFromByCheckpointProtocolsTest {
             IdAndTime(id, time)
 
         val protocols = listOf(
-            RouteCompletionByCheckpointProtocol(
+            CheckpointTimestampsProtocol(
                 "1",
                 listOf(
                     idToTime(1, 1.s()),
                     idToTime(2, 1.s()),
                     idToTime(3, 5.s())
                 )
-            ), RouteCompletionByCheckpointProtocol(
+            ), CheckpointTimestampsProtocol(
                 "2",
                 listOf(
                     idToTime(1, 4.s()),
                     idToTime(2, 2.s()),
                     idToTime(3, 2.s())
                 )
-            ), RouteCompletionByCheckpointProtocol(
+            ), CheckpointTimestampsProtocol(
                 "3",
-                listOf(idToTime(1, 6.s()), idToTime(2, 3.s()), idToTime(3, 4.s()))
+                listOf(
+                    idToTime(1, 6.s()),
+                    idToTime(2, 3.s()),
+                    idToTime(3, 4.s())
+                )
             )
         )
-        val results = getParticipantsTimesFromByCheckpointProtocols(
+        val results = getParticipantsTimesFromCheckpointTimestampsProtocols(
             protocols,
             mainRouteGetter,
             startTimeGetter
