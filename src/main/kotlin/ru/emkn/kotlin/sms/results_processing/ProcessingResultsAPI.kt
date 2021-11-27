@@ -52,7 +52,7 @@ class FromStartProtocols(startProtocols: List<FileContent>) {
             )
         return generateFullResultsFile(
             results
-        ) { id -> idToParticipantMapping(id).supposedGroup }
+        ) { id -> idToParticipantMapping(id) }
     }
 
 
@@ -77,7 +77,7 @@ class FromStartProtocols(startProtocols: List<FileContent>) {
             )
         return generateFullResultsFile(
             results
-        ) { id -> idToParticipantMapping(id).supposedGroup }
+        ) { id -> idToParticipantMapping(id) }
     }
 
     private fun getRouteById(
