@@ -67,7 +67,7 @@ internal class CLITests {
     private fun testConfigFileAndOutputDirectory(args: Array<String>, expectedConfigFileName: String, expectedOutputDirectoryPath: String) {
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(File(expectedConfigFileName), argParsingSystem.competitionConfigFile)
+        assertEquals(File(expectedConfigFileName), argParsingSystem.competitionConfigDirectory)
         assertEquals(File(expectedOutputDirectoryPath), argParsingSystem.outputDirectory)
     }
 

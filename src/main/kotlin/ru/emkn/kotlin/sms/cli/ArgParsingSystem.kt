@@ -18,13 +18,13 @@ class ArgParsingSystem {
      * After parsing contains a subcommand chosen by user.
      *
      * May equal to null only when no subcommand was specified
-     * (but all mandatory arguments like [competitionConfigFile] were specified).
+     * (but all mandatory arguments like [competitionConfigDirectory] were specified).
      */
     var invokedSubcommand: ProgramSubcommands? = null
 
-    val competitionConfigFile by argParser.argument(
+    val competitionConfigDirectory by argParser.argument(
         FileArgType,
-        description = "Competition config file (in .json)",
+        description = "Competition config directory",
     )
 
     val outputDirectory by argParser.option(
