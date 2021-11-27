@@ -37,12 +37,14 @@ internal class StartProtocolsByApplicationsTest {
         listOf(Route("R", listOf())),
         mapOf("A" to Route("R", listOf()), "B" to Route("R", listOf())),
         mapOf("A" to GroupRequirement(1, 2), "B" to GroupRequirement(0, 10)))
+
     @Test
     fun checkApplicationFormatTest() {
         assertEquals(checkApplicationFormat(testApplications[0], 0), false)
         assertEquals(checkApplicationFormat(testApplications[1], 1), false)
         assertEquals(checkApplicationFormat(testApplications[2], 2), false)
         assertEquals(checkApplicationFormat(testApplications[3], 3), true)
+        assertEquals(checkApplicationFormat(testApplications[4], 4), true)
     }
 
     @Test

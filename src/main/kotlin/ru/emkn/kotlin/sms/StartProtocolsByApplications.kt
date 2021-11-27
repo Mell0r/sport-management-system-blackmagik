@@ -38,13 +38,20 @@ fun checkApplicant(applicant: Participant, competition: Competition) : Boolean {
 fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, competition: Competition): ParticipantsList {
     val applications = applicationFiles.map { file -> file.map{ row -> row.split(",") } }
         .filterIndexed { ind, application -> checkApplicationFormat(application, ind) }
+    val countSet = mutableSetOf<String>()
+    applications.forEach {
+        if(countSet.contains(it[0][0]))
+            throw IllegalArgumentException("Two different applications have same team name.")
+        countSet.add(it[0][0])
+    }
     Logger.debug { "Filtered wrong applications" }
+
 
     var curId = 0
     val applicationsWithParticipants = applications.mapIndexed { applicationInd, application ->
         application.filterIndexed() { applicantInd, applicant ->
             if (applicant[2].toIntOrNull() == null)
-                Logger.warn { "Applicant number $applicantInd in  has incorrect birth year, so he/she " }
+                Logger.warn { "Applicant number $applicantInd in has incorrect birth year, so he/she is not allowed to competition." }
             applicant[2].toIntOrNull() != null
         }.map { Participant(curId++, competition.year - it[2].toInt(), it[1], it[0], it[3], applications[applicationInd][0][0], it[4]) }
     }
@@ -52,8 +59,8 @@ fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, c
     applicationsWithParticipants.forEachIndexed { applicationInd, application ->
         application.forEachIndexed { applicantInd, applicant ->
             if (!checkApplicant(applicant, competition)) {
-                Logger.warn { "Applicant number $applicantInd in $applicationInd application has wrong format, " +
-                        "so he/she is not allowed to competition" }
+                Logger.warn { "Applicant number $applicantInd in $applicationInd application don't pass group requirement, " +
+                        "so he/she is not allowed to competition." }
             }
         }
     }
@@ -64,14 +71,13 @@ fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, c
 /**
  * Generates ParticipantList and StartProtocols for all groups by applications and Competition.
  */
-fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, competition: Competition) {
+fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, competition: Competition): Pair<ParticipantsList, List<StartingProtocol>> {
     val participantsList = getParticipantsListFromApplications(applicationFiles, competition)
-   participantsList.print(TODO())
 
     var curMinutes = 0
     val startingProtocols = competition.groups.map { group ->
         StartingProtocol(group,  participantsList.list.filter { it.group == group }
             .map { StartingProtocolEntry(it.id, Time(12 * 3600 + (curMinutes++) * 60)) })
     }
-    startingProtocols.forEach { it.print(TODO()) }
+    return Pair(participantsList, startingProtocols)
 }
