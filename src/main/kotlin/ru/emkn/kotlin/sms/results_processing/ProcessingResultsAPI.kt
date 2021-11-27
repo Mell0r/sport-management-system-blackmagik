@@ -22,7 +22,7 @@ class FromStartProtocols(startProtocols: List<FileContent>) {
                 StartingProtocolEntry(row[0].toInt(), Time.fromString(row[4]))
             }
             val groupLabel = startProtocolFileContent[0].split(",").first()
-            StartingProtocol(protocolEntries, groupLabel)
+            StartingProtocol(groupLabel, protocolEntries)
         }
 
     private fun getStartingTimeById(id: Int): Time =
