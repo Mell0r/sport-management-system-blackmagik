@@ -26,8 +26,8 @@ internal class CLITests {
         val stupidTestOutput = CsvFileListArgType
             .convert("test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa", "")
             .map { it.absolutePath }
-        println("Stupid test output")
-        println(stupidTestOutput.joinToString("\n"))
+        System.err.println("Stupid test output")
+        System.err.println(stupidTestOutput.joinToString("\n"))
         assertEquals(
             listOf(
                 "app1.csv",
