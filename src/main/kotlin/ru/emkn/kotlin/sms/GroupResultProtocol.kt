@@ -1,5 +1,7 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.results_processing.FileContent
+
 typealias Score = Int
 
 data class GroupResultProtocolEntry(
@@ -12,4 +14,14 @@ class GroupResultProtocol(
     val groupName: GroupLabelT,
     val entries: List<GroupResultProtocolEntry>
     // sorted by placeInGroup
-)
+) : CsvDumpable {
+    companion object : CreatableFromFileContent<GroupResultProtocol> {
+        override fun readFromFileContent(fileContent: FileContent): GroupResultProtocol {
+            TODO("Not yet implemented")
+        }
+    }
+
+    override fun dumpToCsv(): FileContent {
+        TODO("Not yet implemented")
+    }
+}

@@ -1,6 +1,14 @@
 package ru.emkn.kotlin.sms
 
-class ParticipantsList(val list : List<Participant>) {
+import ru.emkn.kotlin.sms.results_processing.FileContent
+
+class ParticipantsList(val list : List<Participant>) : CsvDumpable {
+    companion object : CreatableFromFileContent<ParticipantsList>{
+        override fun readFromFileContent(fileContent: FileContent): ParticipantsList {
+            TODO("Not yet implemented")
+        }
+
+    }
     fun read(filePath: String) {
         TODO()
     }
@@ -9,6 +17,10 @@ class ParticipantsList(val list : List<Participant>) {
 
     fun print(filePath : String) {
         TODO()
+    }
+
+    override fun dumpToCsv(): FileContent {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?) : Boolean {
