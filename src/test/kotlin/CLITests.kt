@@ -16,18 +16,13 @@ internal class CLITests {
     @Test
     fun `CsvFileArgType properly extracts csv files`() {
         assertEquals(
-            listOf("foo.csv").map { File(it) },
-            CsvFileListArgType.convert("foo.csv", ""),
+            listOf("foo.csv").map { File(it) }.toSet(),
+            CsvFileListArgType.convert("foo.csv", "").toSet(),
         )
         assertEquals(
-            listOf("file1.csv", "xls.csv.csv").map { File(it) },
-            CsvFileListArgType.convert("file1.csv,file2.rar,file3,file4.dbf,xls.csv.csv", ""),
+            listOf("file1.csv", "xls.csv.csv").map { File(it) }.toSet(),
+            CsvFileListArgType.convert("file1.csv,file2.rar,file3,file4.dbf,xls.csv.csv", "").toSet(),
         )
-        val stupidTestOutput = CsvFileListArgType
-            .convert("test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa", "")
-            .map { it.absolutePath }
-        System.err.println("Stupid test output")
-        System.err.println(stupidTestOutput.joinToString("\n"))
         assertEquals(
             listOf(
                 "app1.csv",
@@ -35,8 +30,8 @@ internal class CLITests {
                 "$testDataDir/manyCsvs/file02.csv",
                 "$testDataDir/manyCsvs/file03.csv",
                 "$testDataDir/manyCsvs/subfolder/app.csv",
-            ).map { File(it) },
-            CsvFileListArgType.convert("test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa", ""),
+            ).map { File(it) }.toSet(),
+            CsvFileListArgType.convert("test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa", "").toSet(),
         )
     }
 
