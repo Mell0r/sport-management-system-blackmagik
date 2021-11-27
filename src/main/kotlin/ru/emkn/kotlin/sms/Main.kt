@@ -3,6 +3,7 @@ package ru.emkn.kotlin.sms
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.cli.*
 import ru.emkn.kotlin.sms.io.*
+import ru.emkn.kotlin.sms.results_processing.*
 import kotlin.system.exitProcess
 
 /**
@@ -34,7 +35,21 @@ fun main(args: Array<String>) {
             }
             TODO()
         }
-        ProgramSubcommands.RESULT -> TODO()
+        ProgramSubcommands.RESULT -> {
+            val startProtocols = readAllReadableFiles(argParsingSystem.resultCommand.startingProtocolFiles) {
+                Logger.warn {"Couldn't reach or read starting protocol \"$it\"."}
+            }
+            val completionProtocols = readAllReadableFiles(argParsingSystem.resultCommand.routeProtocolFiles) {
+                Logger.warn {"Couldn't reach or read route completion protocol \"$it\"."}
+            }
+            val fromStartProtocols = FromStartProtocols(startProtocols)
+            val resultFiles = if (argParsingSystem.resultCommand.routeProtocolType == RouteProtocolType.OF_PARTICIPANT) {
+                TODO()
+            } else { // OF_CHECKPOINT
+                TODO()
+            }
+
+        }
         ProgramSubcommands.RESULT_TEAMS -> TODO()
         null -> {
             Logger.error {"No command was invoked. Terminating."}
