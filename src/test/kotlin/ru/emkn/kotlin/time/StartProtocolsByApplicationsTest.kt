@@ -69,10 +69,6 @@ internal class StartProtocolsByApplicationsTest {
     @Test
     fun getParticipantsListFromApplicationsTest() {
         val applications = testApplications.map { it.map { line -> line.joinToString(",") } }
-        val pt = getParticipantsListFromApplications(applications, testCompetition)
-        pt.list.forEach {
-            println("$it")
-        }
         assertTrue { getParticipantsListFromApplications(applications, testCompetition) == testParticipantsList }
     }
 }
