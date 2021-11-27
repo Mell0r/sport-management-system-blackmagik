@@ -27,6 +27,10 @@ dependencies {
 
 test {
     useJUnit()
+    testLogging {
+        outputs.upToDateWhen {false}
+        showStandardStreams = true
+    }
 }
 
 compileKotlin {
