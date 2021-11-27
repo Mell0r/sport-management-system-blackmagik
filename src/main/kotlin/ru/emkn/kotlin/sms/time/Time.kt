@@ -1,10 +1,10 @@
 package ru.emkn.kotlin.sms.time
 
-data class Time(
+class Time(
     val hours: Int,
     val minutes: Int,
     val seconds: Int
-) {
+) : Comparable<Time> {
     init {
         require(hours in 0..23) { "Hours must be in [0, 23]." }
         require(minutes in 0..59) { "Minutes must be in [0, 59]." }
@@ -34,7 +34,7 @@ data class Time(
         }
     }
 
-    operator fun compareTo(other: Time): Int =
+    override operator fun compareTo(other: Time): Int =
         this.asSeconds() - other.asSeconds()
 
     fun asSeconds(): Int = hours * 3600 + minutes * 60 + seconds
@@ -47,6 +47,26 @@ data class Time(
             toTwoDigits(minutes),
             toTwoDigits(seconds)
         ).joinToString(":")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Time
+
+        if (hours != other.hours) return false
+        if (minutes != other.minutes) return false
+        if (seconds != other.seconds) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = hours
+        result = 31 * result + minutes
+        result = 31 * result + seconds
+        return result
     }
 
 }
