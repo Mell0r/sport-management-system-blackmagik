@@ -14,7 +14,7 @@ internal class CLITests {
     }
 
     @Test
-    fun `CsvFileListArgType test`() {
+    fun `CsvFileArgType properly extracts csv files`() {
         assertEquals(
             listOf("foo.csv").map { File(it) },
             CsvFileListArgType.convert("foo.csv", ""),
