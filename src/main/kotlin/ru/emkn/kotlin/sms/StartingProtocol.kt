@@ -10,4 +10,8 @@ data class StartingProtocolEntry(
 data class StartingProtocol(
     val entries: List<StartingProtocolEntry>,
     val group: GroupLabelT
-)
+) {
+    fun getFileName() = "Starting_protocol_of_'$group'_group"
+
+    fun getFileContent() = entries.map{ "${it.id},${it.startTime}" }
+}
