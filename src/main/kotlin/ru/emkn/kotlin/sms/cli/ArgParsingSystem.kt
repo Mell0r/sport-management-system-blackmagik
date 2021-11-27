@@ -40,7 +40,7 @@ class ArgParsingSystem {
      */
     inner class StartCommand : Subcommand(
         "start",
-        "Given team applications, generates start protocols and participants list."
+        "Given team applications, generates starting protocols and participants list."
     ) {
         val applicationFiles by option(
             CsvFileListArgType,
@@ -61,13 +61,20 @@ class ArgParsingSystem {
      */
     inner class ResultCommand : Subcommand(
         "result",
-        "Given participants list and route completion protocols, generates result protocols (by groups)."
+        "Given participants list, starting protocols and route completion protocols, generates result protocols (by groups)."
     ) {
         val participantListFile by option(
             FileArgType,
             shortName = "p",
             fullName = "participants",
             description = "Participants list file",
+        ).required()
+
+        val startingProtocolFiles by option(
+            CsvFileListArgType,
+            shortName = "s",
+            fullName = "startingProtocols",
+            description = "A list of starting protocol files (in .csv) or directories, separated by commas."
         ).required()
 
         val routeProtocolType by option(

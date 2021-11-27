@@ -79,7 +79,7 @@ internal class CLITests {
             expectedOutputDirectoryPath = "out",
         )
         testConfigFileAndOutputDirectory(
-            arrayOf("cfg1.json", "result", "-o", "out", "-p", "", "-r", ""),
+            arrayOf("cfg1.json", "result", "-o", "out", "-p", "", "-r", "", "-s", ""),
             expectedConfigFileName = "cfg1.json",
             expectedOutputDirectoryPath = "out",
         )
@@ -140,9 +140,11 @@ internal class CLITests {
     private fun testResultSubcommand(
         args: Array<String>,
         expectedParticipantsListFileName: String,
+        expectedStartingProtocolFileNames: List<String>,
         expectedRouteProtocolType: RouteProtocolType,
         expectedRouteProtocolFileNames: List<String>,
     ) {
+        val expectedStartingProtocolFiles = expectedStartingProtocolFileNames.map { File(it) }
         val expectedParticipantsListFile = File(expectedParticipantsListFileName)
         val expectedRouteProtocolFiles = expectedRouteProtocolFileNames.map { File(it) }
 
@@ -150,6 +152,7 @@ internal class CLITests {
         argParsingSystem.parse(args)
         assertEquals(ProgramSubcommands.RESULT, argParsingSystem.invokedSubcommand)
         assertEquals(expectedParticipantsListFile, argParsingSystem.resultCommand.participantListFile)
+        assertEquals(expectedStartingProtocolFiles, argParsingSystem.resultCommand.startingProtocolFiles)
         assertEquals(expectedRouteProtocolType, argParsingSystem.resultCommand.routeProtocolType)
         assertEquals(expectedRouteProtocolFiles, argParsingSystem.resultCommand.routeProtocolFiles)
     }
@@ -157,24 +160,33 @@ internal class CLITests {
     @Test
     fun `Result subcommand`() {
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-r", "routeProtocol.csv"),
+            arrayOf("result", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-s", "startingProtocol.csv", "-r", "routeProtocol.csv"),
             expectedParticipantsListFileName = "participantsList.csv",
+            expectedStartingProtocolFileNames = listOf(
+                "startingProtocol.csv",
+            ),
             expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "-r", "routeProtocol.csv", "-p", "participantsList.csv"),
+            arrayOf("result", "cfg.json", "-o", "out", "-r", "routeProtocol.csv", "-p", "participantsList.csv", "-s", "startingProtocol.csv"),
             expectedParticipantsListFileName = "participantsList.csv",
+            expectedStartingProtocolFileNames = listOf(
+                "startingProtocol.csv",
+            ),
             expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "--participants", "participantsList.csv", "--routeProtocols", "protocol1.csv,protocol2.csv", "-tp", "OF_PARTICIPANT"),
+            arrayOf("result", "cfg.json", "-o", "out", "--startingProtocols", "startingProtocol.csv", "--participants", "participantsList.csv", "--routeProtocols", "protocol1.csv,protocol2.csv", "-tp", "OF_PARTICIPANT"),
             expectedParticipantsListFileName = "participantsList.csv",
+            expectedStartingProtocolFileNames = listOf(
+                "startingProtocol.csv",
+            ),
             expectedRouteProtocolType = RouteProtocolType.OF_PARTICIPANT,
             expectedRouteProtocolFileNames = listOf(
                 "protocol1.csv",
@@ -182,8 +194,11 @@ internal class CLITests {
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "--routeProtocolType", "of_checkpoint", "-p", "plist.csv", "-r", "rprotocol.csv"),
+            arrayOf("result", "cfg.json", "-s", "sprotocol.csv", "-o", "out", "--routeProtocolType", "of_checkpoint", "-p", "plist.csv", "-r", "rprotocol.csv"),
             expectedParticipantsListFileName = "plist.csv",
+            expectedStartingProtocolFileNames = listOf(
+                "sprotocol.csv",
+            ),
             expectedRouteProtocolType = RouteProtocolType.OF_CHECKPOINT,
             expectedRouteProtocolFileNames = listOf(
                 "rprotocol.csv",
@@ -191,16 +206,22 @@ internal class CLITests {
         )
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv"),
+                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv", "-s", "sprotocol.csv"),
                 expectedParticipantsListFileName = "plist.csv",
+                expectedStartingProtocolFileNames = listOf(
+                    "sprotocol.csv",
+                ),
                 expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
                 expectedRouteProtocolFileNames = listOf()
             )
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-r", "protocol.csv"),
+                arrayOf("result", "cfg.json", "-o", "out", "-r", "protocol.csv", "-s", "sprotocol.csv"),
                 expectedParticipantsListFileName = "",
+                expectedStartingProtocolFileNames = listOf(
+                    "sprotocol.csv",
+                ),
                 expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
@@ -209,8 +230,11 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv", "-r", "protocol.csv", "-tp", "invalid_type"),
+                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv", "-r", "protocol.csv", "-s", "sprotocol.csv", "-tp", "invalid_type"),
                 expectedParticipantsListFileName = "plist.csv",
+                expectedStartingProtocolFileNames = listOf(
+                    "sprotocol.csv",
+                ),
                 expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
@@ -219,11 +243,25 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-w", "plist.csv", "-r", "protocol.csv", "-tp", "invalid_type"),
+                arrayOf("result", "cfg.json", "-o", "out", "-w", "plist.csv", "-r", "protocol.csv", "-s", "sprotocol.csv", "-tp", "invalid_type"),
                 expectedParticipantsListFileName = "plist.csv",
+                expectedStartingProtocolFileNames = listOf(
+                    "sprotocol.csv",
+                ),
                 expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
+                )
+            )
+        }
+        assertFails {
+            testResultSubcommand(
+                arrayOf("result", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-r", "routeProtocol.csv"),
+                expectedParticipantsListFileName = "participantsList.csv",
+                expectedStartingProtocolFileNames = listOf(),
+                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolFileNames = listOf(
+                    "routeProtocol.csv",
                 )
             )
         }
