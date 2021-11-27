@@ -29,7 +29,7 @@ fun checkApplicationFormat(application: List<List<String>>, number: Int) : Boole
  * Checks whether the given applicant can to participate in the chosen group.
  */
 fun checkApplicant(applicant: Participant, competition: Competition) : Boolean {
-    return competition.requirementByGroup[applicant.group]?.checkApplicant(applicant.age) ?: false
+    return competition.requirementByGroup[applicant.supposedGroup]?.checkApplicant(applicant.age) ?: false
 }
 
 /**
@@ -49,7 +49,7 @@ fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, c
 
     var curId = 0
     val applicationsWithParticipants = applications.mapIndexed { applicationInd, application ->
-        application.filterIndexed() { applicantInd, applicant ->
+        application.filterIndexed { applicantInd, applicant ->
             if (applicant[2].toIntOrNull() == null)
                 Logger.warn { "Applicant number $applicantInd in has incorrect birth year, so he/she is not allowed to competition." }
             applicant[2].toIntOrNull() != null
@@ -76,7 +76,7 @@ fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, co
 
     var curMinutes = 0
     val startingProtocols = competition.groups.map { group ->
-        StartingProtocol(group,  participantsList.list.filter { it.group == group }
+        StartingProtocol(group,  participantsList.list.filter { it.supposedGroup == group }
             .map { StartingProtocolEntry(it.id, Time(12 * 3600 + (curMinutes++) * 60)) })
     }
     return Pair(participantsList, startingProtocols)

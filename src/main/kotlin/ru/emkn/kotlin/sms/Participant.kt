@@ -7,7 +7,7 @@ data class Participant(
     val age: Int,
     val name: String,
     val lastName: String,
-    val group: GroupLabelT,
+    val supposedGroup: GroupLabelT,
     val team: String,
     val sportsCategory: String // from fixed options from config
 )
