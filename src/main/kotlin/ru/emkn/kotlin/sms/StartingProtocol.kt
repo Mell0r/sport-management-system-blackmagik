@@ -8,6 +8,10 @@ data class StartingProtocolEntry(
 )
 
 data class StartingProtocol(
-    val entries: List<StartingProtocolEntry>,
-    val group: GroupLabelT
-)
+    val group: GroupLabelT,
+    val entries: List<StartingProtocolEntry>
+) {
+    fun print(filePath : String) {
+        TODO()
+    }
+}
