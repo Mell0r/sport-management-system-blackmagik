@@ -2,16 +2,18 @@ package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.time.Time
 
-data class ParticipantStart(
-    val participant: Participant,
+typealias StartingTimeT = String
+
+data class StartingProtocolEntry(
+    val id: Int,
     val startTime: Time
 )
 
-class StartingProtocol(
+data class StartingProtocol(
     val group: GroupLabelT,
-    val timetable: List<ParticipantStart>
+    val entries: List<StartingProtocolEntry>
 ) {
-    fun print(filePath: String) {
+    fun print(filePath : String) {
         TODO()
     }
 }

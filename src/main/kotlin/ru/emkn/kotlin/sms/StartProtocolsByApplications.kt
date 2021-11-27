@@ -5,6 +5,10 @@ import ru.emkn.kotlin.sms.time.Time
 
 const val SIZE_OF_APPLICATION_ROW = 5
 
+/**
+ * Checks whether the given application has incorrect team name, or it is empty,
+ * or has different number of commas in different lines.
+ */
 fun checkApplicationFormat(application: List<List<String>>, number: Int) : Boolean {
     if (application.size < 2) {
         Logger.info {"Application number $number is empty or wrong, so it was skipped"}
@@ -21,10 +25,16 @@ fun checkApplicationFormat(application: List<List<String>>, number: Int) : Boole
     return true
 }
 
+/**
+ * Checks whether the given applicant can to participate in the chosen group.
+ */
 fun checkApplicant(applicant: Participant, competition: Competition) : Boolean {
     return competition.requirementByGroup[applicant.group]?.checkApplicant(applicant.age) ?: false
 }
 
+/**
+ * Returns ParticipantsList by applicationFiles and competition, filtering them of wrong applications and applicants.
+ */
 fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, competition: Competition): ParticipantsList {
     val applications = applicationFiles.map { file -> file.map{ row -> row.split(",") } }
         .filterIndexed { ind, application -> checkApplicationFormat(application, ind) }
@@ -32,7 +42,12 @@ fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, c
 
     var curId = 0
     val applicationsWithParticipants = applications.mapIndexed { applicationInd, application ->
-        application.map { Participant(curId++, it[2].toInt(), it[1], it[0], it[3], applications[applicationInd][0][0], it[4])} }
+        application.filterIndexed() { applicantInd, applicant ->
+            if (applicant[2].toIntOrNull() == null)
+                Logger.warn { "Applicant number $applicantInd in  has incorrect birth year, so he/she " }
+            applicant[2].toIntOrNull() != null
+        }.map { Participant(curId++, competition.year - it[2].toInt(), it[1], it[0], it[3], applications[applicationInd][0][0], it[4]) }
+    }
 
     applicationsWithParticipants.forEachIndexed { applicationInd, application ->
         application.forEachIndexed { applicantInd, applicant ->
@@ -46,6 +61,9 @@ fun getParticipantsListFromApplications(applicationFiles : List<List<String>>, c
         application.filter { checkApplicant(it, competition) } }.flatten())
 }
 
+/**
+ * Generates ParticipantList and StartProtocols for all groups by applications and Competition.
+ */
 fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, competition: Competition) {
     val participantsList = getParticipantsListFromApplications(applicationFiles, competition)
    participantsList.print(TODO())
@@ -53,7 +71,7 @@ fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, co
     var curMinutes = 0
     val startingProtocols = competition.groups.map { group ->
         StartingProtocol(group,  participantsList.list.filter { it.group == group }
-            .map { ParticipantStart(it, Time(12 * 3600 + (curMinutes++) * 60)) })
+            .map { StartingProtocolEntry(it.id, Time(12 * 3600 + (curMinutes++) * 60)) })
     }
     startingProtocols.forEach { it.print(TODO()) }
 }

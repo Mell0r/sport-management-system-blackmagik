@@ -11,29 +11,47 @@ fun checkAndReadFileInFolder(folderPath : String, fileName : String) : List<Stri
 }
 
 class GroupRequirement(private val ageFrom: Int, private val ageTo: Int) {
-    fun checkApplicant(age : Int) = (age >= ageFrom) && (ageTo <= ageTo)
+    fun checkApplicant(age : Int) = (age >= ageFrom) && (age <= ageTo)
 }
 
-class Competition(configFolderPath : String) {
+class Competition {
     val discipline: String
     val name: String
-    val date: Time
+    val year: Int
+    val date: String
     val groups: List<String>
     val routes: List<Route>
     val groupToRouteMapping: Map<String, Route>
     val requirementByGroup: Map<String, GroupRequirement>
-    init {
+    constructor(
+        discipline: String, name: String, year: Int, date: String,
+        groups: List<String>, routes : List<Route>,
+        groupToRouteMapping: Map<String, Route>,
+        requirementByGroup : Map<String, GroupRequirement>) {
+        this.discipline = discipline
+        this.name = name
+        this.year = year
+        this.date = date
+        this.groups = groups
+        this.routes = routes
+        this.groupToRouteMapping = groupToRouteMapping
+        this.requirementByGroup = requirementByGroup
+    }
+
+    constructor(configFolderPath : String) {
         Logger.info { "Start initializing competition" }
         if (!File(configFolderPath).exists() || !File(configFolderPath).isDirectory)
             throw IllegalArgumentException("Config path is not correct!")
 
         val nameAndDate = checkAndReadFileInFolder(configFolderPath, "Name_and_date")
-        if (nameAndDate.size < 3)
+        if (nameAndDate.size < 4)
             throw IllegalArgumentException("'Name_and_date' is not correct! Please, check Readme and fix.")
         discipline = nameAndDate[0]
         name = nameAndDate[1]
-        date = Time.fromString(nameAndDate[2])
-        Logger.info { "Initialized dame and date" }
+        requireNotNull(nameAndDate[2].toIntOrNull()) { "In third line of 'Name_and_date' must be a number." }
+        year = nameAndDate[2].toInt()
+        date = nameAndDate[3]
+        Logger.info { "Initialized name and date" }
 
         val routeOfGroups = checkAndReadFileInFolder(configFolderPath, "Route_of_groups")
         groups = routeOfGroups.mapIndexed { ind, row ->
