@@ -1,10 +1,10 @@
 package ru.emkn.kotlin.sms
 
-typealias StartingTimeT = String
+import ru.emkn.kotlin.sms.time.Time
 
 data class StartingProtocolEntry(
     val id: Int,
-    val startTime: StartingTimeT
+    val startTime: Time
 )
 
 data class StartingProtocol(
