@@ -9,3 +9,4 @@
         steps:
           - uses: actions/checkout@v2
           - uses: education/autograding@v1
+          - run: cat /home/runner/work/oop-2021-sport-management-system-blackmagik/oop-2021-sport-management-system-blackmagik/build/reports/tests/test/index.html
