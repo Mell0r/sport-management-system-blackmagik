@@ -1,12 +1,13 @@
 package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.time.Time
 
 typealias Score = Int
 
 data class GroupResultProtocolEntry(
     val participant: Participant,
-    val totalTime: Int, // seconds
+    val totalTime: Time?, // seconds
     val placeInGroup: Int
 )
 

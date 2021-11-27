@@ -6,6 +6,8 @@ import ru.emkn.kotlin.sms.cli.ArgParsingSystem
 import ru.emkn.kotlin.sms.io.initializeCompetition
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
+import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromCheckpointTimestamps
+import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromParticipantTimestamps
 
 /**
  * All possible program modes.
@@ -117,24 +119,6 @@ fun generateTeamResultProtocols(
     participantsList: ParticipantsList,
     competitionConfig: Competition
 ): List<TeamResultsProtocol> {
-    TODO("Not yet implemented")
-}
-
-fun generateResultsProtocolsFromParticipantTimestamps(
-    participantsList: ParticipantsList,
-    startingProtocols: List<StartingProtocol>,
-    checkpointTimestampsProtocols: List<ParticipantTimestampsProtocol>,
-    competitionConfig: Competition
-): List<GroupResultProtocol> {
-    TODO("Not yet implemented")
-}
-
-fun generateResultsProtocolsFromCheckpointTimestamps(
-    participantsList: ParticipantsList,
-    startingProtocols: List<StartingProtocol>,
-    checkpointTimestampsProtocols: List<CheckpointTimestampsProtocol>,
-    competitionConfig: Competition
-): List<GroupResultProtocol> {
     TODO("Not yet implemented")
 }
 
