@@ -3,11 +3,11 @@ package ru.emkn.kotlin.sms
 import kotlinx.cli.ExperimentalCli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.cli.ArgParsingSystem
-import ru.emkn.kotlin.sms.io.*
-import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
-import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromCheckpointTimestamps
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromParticipantTimestamps
+import ru.emkn.kotlin.sms.io.ensureDirectory
+import ru.emkn.kotlin.sms.io.initializeCompetition
+import ru.emkn.kotlin.sms.io.readAndParseAllFiles
+import ru.emkn.kotlin.sms.io.readAndParseFile
+import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -295,17 +295,4 @@ fun main(args: Array<String>) {
     }
 
     Logger.debug { "Program successfully finished." }
-}
-
-// all the functions below should be NOT in this file, but in respective module.
-// competition parameter is everywhere just in case; worst case scenario:
-// it will be deleted as unused parameter later.
-
-
-fun generateTeamResultProtocol(
-    groupResultProtocols: List<GroupResultProtocol>,
-    participantsList: ParticipantsList,
-    competitionConfig: Competition
-): TeamResultsProtocol {
-    TODO("Not yet implemented")
 }
