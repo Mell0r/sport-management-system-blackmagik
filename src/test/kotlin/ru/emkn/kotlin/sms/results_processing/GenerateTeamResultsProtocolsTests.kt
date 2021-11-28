@@ -86,4 +86,39 @@ internal class GenerateTeamResultsProtocolsTests {
         )
         assertEquals(expectedTeamResultsProtocol.scores, teamResultsProtocol.scores)
     }
+
+    @Test
+    fun `Empty test`() {
+        val teamResultsProtocol = generateTeamResultsProtocol(
+            groupResultProtocols = listOf(),
+            participantsList = ParticipantsList(listOf()),
+            competitionConfig = testCompetition,
+        )
+        assertEquals(listOf(), teamResultsProtocol.scores)
+    }
+
+    @Test
+    fun `Test division by zero`() {
+        val participantsList = ParticipantsList(listOf(
+            Participant(0, 18, "Name1", "Surname1", "group1", "Team1", ""),
+            Participant(1, 19, "Name2", "Surname2", "group1", "Team2", ""),
+        ))
+        val groupResultsProtocols = listOf(
+            GroupResultProtocol(
+                groupName = "group1",
+                entries = listOf(
+                    ParticipantAndTime(participantsList.list[0], Time(0)),
+                    ParticipantAndTime(participantsList.list[1], Time(0)),
+                ),
+            )
+        )
+        assertFails {
+            val teamResultsProtocol = generateTeamResultsProtocol(
+                groupResultProtocols = groupResultsProtocols,
+                participantsList = participantsList,
+                competitionConfig = testCompetition,
+            )
+            println(teamResultsProtocol)
+        }
+    }
 }
