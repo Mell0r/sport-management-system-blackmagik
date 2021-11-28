@@ -30,6 +30,5 @@ data class StartingProtocol(
 
     }
 
-
     override fun dumpToCsv() = entries.map{ "${it.id},${it.startTime}" }
 }
