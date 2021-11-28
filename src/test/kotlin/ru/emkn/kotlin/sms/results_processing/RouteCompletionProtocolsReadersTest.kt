@@ -8,7 +8,7 @@ internal class RouteCompletionProtocolsReadersTest {
 
     @Test
     fun testCheckpointTimestampsReading() {
-        val protocol = "1km\n1,12:00:00\n2,12:00:02".split("\n")
+        val protocol = "1km,\n1,12:00:00\n2,12:00:02".split("\n")
         assertEquals(
             CheckpointTimestampsProtocol(
                 "1km", listOf(
@@ -21,7 +21,7 @@ internal class RouteCompletionProtocolsReadersTest {
 
     @Test
     fun testParticipantTimestampsReading() {
-        val protocol = "243\n1km,12:00:00\n2km,12:00:02".split("\n")
+        val protocol = "243,\n1km,12:00:00\n2km,12:00:02".split("\n")
         assertEquals(
             ParticipantTimestampsProtocol(
                 243, listOf(
