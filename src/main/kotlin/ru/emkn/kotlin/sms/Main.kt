@@ -3,10 +3,7 @@ package ru.emkn.kotlin.sms
 import kotlinx.cli.ExperimentalCli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.cli.ArgParsingSystem
-import ru.emkn.kotlin.sms.io.ensureDirectory
-import ru.emkn.kotlin.sms.io.initializeCompetition
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.readAndParseFile
+import ru.emkn.kotlin.sms.io.*
 import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File
 import kotlin.system.exitProcess
@@ -255,7 +252,7 @@ private fun resultTeams(
     )
 
     val teamResultProtocol = try {
-        generateTeamResultProtocol(
+        generateTeamResultsProtocol(
             groupResultProtocols,
             participantsList,
             competition
