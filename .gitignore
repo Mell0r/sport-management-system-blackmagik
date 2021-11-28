@@ -15,6 +15,7 @@ out/
 kotlin-ide/
 workspace.xml
 *.versionsBackup
+*MANIFEST.MF
 /idea/testData/debugger/tinyApp/classes*
 /jps-plugin/testData/kannotator
 /js/js.translator/testData/out/

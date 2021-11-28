@@ -3,10 +3,7 @@ package ru.emkn.kotlin.sms
 import kotlinx.cli.ExperimentalCli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.cli.ArgParsingSystem
-import ru.emkn.kotlin.sms.io.ensureDirectory
-import ru.emkn.kotlin.sms.io.initializeCompetition
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.readAndParseFile
+import ru.emkn.kotlin.sms.io.*
 import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File
 import kotlin.system.exitProcess
@@ -79,17 +76,27 @@ private fun start(
         },
     )
 
-    val participantListAsCsv = createParticipantListFromApplications(
-        applications,
-        competition
-    ).dumpToCsv() // although you might do something before dumping it to csv - up to you
-    val startingProtocolsAsCsv =
-        createStartingProtocolsFromApplications(
-            applications,
-            competition
-        )
-            .map { it.dumpToCsv() }
-    // save them in output directory
+    val (participantsList, startingProtocols) = try {
+        getStartConfigurationByApplications(applications, competition)
+    } catch (e: IllegalArgumentException) {
+        Logger.error {
+            "Some data needed to generate start configuration is invalid:\n" +
+                    "${e.message}"
+        }
+        exitWithInfoLog()
+    }
+
+    // save participants list
+    val participantsListContent = participantsList.dumpToCsv()
+    val participantsListFileName = getFileNameOfParticipantsList(participantsList)
+    safeWriteContentToFile(participantsListContent, outputDirectory, participantsListFileName)
+
+    // save startingProtocols
+    startingProtocols.forEach { startingProtocol ->
+        val content = startingProtocol.dumpToCsv()
+        val fileName = getFileNameOfStartingProtocol(startingProtocol)
+        safeWriteContentToFile(content, outputDirectory, fileName)
+    }
 }
 
 
@@ -115,6 +122,8 @@ private fun loadParticipantsList(participantListFile: File) : ParticipantsList =
     )
 
 
+
+
 private fun result(
     resultCommand: ArgParsingSystem.ResultCommand,
     competition: Competition,
@@ -138,6 +147,7 @@ private fun result(
                 "Starting protocol at \"${file.absolutePath}\" has invalid format:\n" +
                         "${exception.message}"
             }
+            exitWithInfoLog()
         },
     )
 
@@ -153,7 +163,16 @@ private fun result(
         exitWithInfoLog()
     }
 
+    fun saveGroupResultProtocols(protocols: List<GroupResultProtocol>) {
+        protocols.forEach { protocol ->
+            val content = protocol.dumpToCsv()
+            val fileName = getFileNameOfGroupResultProtocol(protocol)
+            safeWriteContentToFile(content, outputDirectory, fileName)
+        }
+    }
+
     val type = resultCommand.routeProtocolType
+
     if (type == RouteProtocolType.OF_CHECKPOINT) {
         val checkpointTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
@@ -162,15 +181,22 @@ private fun result(
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
 
-        val resultProtocolsFileContents =
+        val resultProtocols = try {
             generateResultsProtocolsFromCheckpointTimestamps(
                 participantsList,
                 startingProtocols,
                 checkpointTimestampsProtocols,
                 competition
             )
-                .map { it.dumpToCsv() }
-        // save in output folder
+        } catch (e: IllegalArgumentException) {
+            Logger.error {
+                "Some data needed to generate group result protocols is invalid:\n" +
+                        "${e.message}"
+            }
+            exitWithInfoLog()
+        }
+
+        saveGroupResultProtocols(resultProtocols)
     } else {
         val participantTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
@@ -179,15 +205,23 @@ private fun result(
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
 
-        val resultProtocolsFileContents =
+        val resultProtocols = try {
             generateResultsProtocolsFromParticipantTimestamps(
                 participantsList,
                 startingProtocols,
                 participantTimestampsProtocols,
                 competition
             )
-                .map { it.dumpToCsv() }
+        } catch (e: IllegalArgumentException) {
+            Logger.error {
+                "Some data needed to generate result protocols is invalid:\n" +
+                        "${e.message}"
+            }
+            exitWithInfoLog()
+        }
+
         // save in output folder
+        saveGroupResultProtocols(resultProtocols)
     }
 
 }
@@ -200,6 +234,7 @@ private fun resultTeams(
 {
     val participantsList = loadParticipantsList(resultsTeamsCommand.participantListFile)
 
+    // All group result protocols must be valid and readable
     val groupResultProtocols = readAndParseAllFiles(
         files = resultsTeamsCommand.resultProtocolFiles,
         parser = GroupResultProtocol::readFromFileContent,
@@ -216,12 +251,24 @@ private fun resultTeams(
         },
     )
 
-    val teamResultsProtocol = generateTeamResultsProtocol(
-        groupResultProtocols,
-        participantsList,
-        competition
-    )
+    val teamResultProtocol = try {
+        generateTeamResultsProtocol(
+            groupResultProtocols,
+            participantsList,
+            competition
+        )
+    } catch (e: IllegalArgumentException) {
+        Logger.error {
+            "Some data needed to generate team result protocol is invalid:\n" +
+                    "${e.message}"
+        }
+        exitWithInfoLog()
+    }
+
     // TeamResultProtocol is CsvDumpable - thus, can trivially be saved as file
+    val content = teamResultProtocol.dumpToCsv()
+    val fileName = getFileNameOfTeamResultsProtocol(teamResultProtocol)
+    safeWriteContentToFile(content, outputDirectory, fileName)
 }
 
 @ExperimentalCli
@@ -246,21 +293,3 @@ fun main(args: Array<String>) {
 
     Logger.debug { "Program successfully finished." }
 }
-
-// should be in a respective package (definitely not this file)
-fun createStartingProtocolsFromApplications(
-    applicationFileContents: List<Application>,
-    competitionConfig: Competition
-): List<StartingProtocol> {
-    TODO("Not yet implemented")
-}
-
-// should be in a respective package (definitely not this file)
-fun createParticipantListFromApplications(
-    applicationFileContents: List<Application>,
-    competitionConfig: Competition
-): ParticipantsList {
-    TODO("Not yet implemented")
-}
-
-
