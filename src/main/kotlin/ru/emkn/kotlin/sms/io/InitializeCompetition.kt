@@ -37,12 +37,14 @@ fun initializeCompetition(configFolderPath : String) : Competition {
     Logger.info { "Initialized group routes" }
 
     val routeDescription = checkAndReadFileInFolder(configFolderPath, "Route_description.csv")
-    routeDescription.forEach { row ->
+    routeDescription.forEachIndexed { ind, row ->
         if (row.count { c -> c == ',' } == 0)
-            throw IllegalArgumentException("Line $row of 'Route_description' has no commas!")
+            throw IllegalArgumentException("Line $ind of 'Route_description' has no commas!")
     }
     val routes = routeDescription.mapIndexed { ind, row ->
-        val splittedRow = row.split(',').filter { it.isEmpty() }
+        val splittedRow = row.split(',').filter { it.isNotEmpty() }
+        if (splittedRow.isEmpty())
+            throw IllegalArgumentException("Line $ind in 'Route_description is empty!")
         Route(splittedRow[0], splittedRow.subList(1, splittedRow.size))
     }
     Logger.info { "Initialized routes checkpoints" }
