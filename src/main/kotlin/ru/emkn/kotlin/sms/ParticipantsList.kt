@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.results_processing.FileContent
 
-const val SIZE_OF_PARTICIPANT_LIST_ROW = 7
+const val SIZE_OF_PARTICIPANT_LIST_ROW = 6
 
 class ParticipantsList(val list : List<Participant>) : CsvDumpable {
     companion object : CreatableFromFileContent<ParticipantsList> {
