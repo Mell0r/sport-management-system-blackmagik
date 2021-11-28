@@ -42,7 +42,7 @@ fun initializeCompetition(configFolderPath : String) : Competition {
             throw IllegalArgumentException("Line $row of 'Route_description' has no commas!")
     }
     val routes = routeDescription.mapIndexed { ind, row ->
-        val splittedRow = row.split(',')
+        val splittedRow = row.split(',').filter { it.isEmpty() }
         Route(splittedRow[0], splittedRow.subList(1, splittedRow.size))
     }
     Logger.info { "Initialized routes checkpoints" }
