@@ -52,8 +52,7 @@ fun initializeCompetition(configFolderPath : String) : Competition {
     val groupToRouteMapping = routeOfGroups.associate { row ->
         val splittedRow = row.split(',')
         val route = routes.find { it.name == splittedRow[1] }
-        if (route == null)
-            throw IllegalArgumentException("Routes in 'Route_description' and in 'Route_of_groups' don't match!")
+            ?: throw IllegalArgumentException("Routes in 'Route_description' and in 'Route_of_groups' don't match!")
         Pair(splittedRow[0], route)
     }
     Logger.info { "Mapped group to route" }

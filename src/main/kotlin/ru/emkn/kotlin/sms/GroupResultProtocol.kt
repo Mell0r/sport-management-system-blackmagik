@@ -79,7 +79,7 @@ class GroupResultProtocol(
         val places = generatePlaces()
         var index = -1
         return listOf(groupName) + PlayersPrinter(listOf(
-            FieldInfo<Int>("Место") { ++index; places[index].toString() },
+            FieldInfo("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->
                 entries.first { it.participant.id == id }.totalTime?.toString()

@@ -253,9 +253,7 @@ private fun resultTeams(
 
     val teamResultProtocol = try {
         generateTeamResultsProtocol(
-            groupResultProtocols,
-            participantsList,
-            competition
+            groupResultProtocols
         )
     } catch (e: IllegalArgumentException) {
         Logger.error {

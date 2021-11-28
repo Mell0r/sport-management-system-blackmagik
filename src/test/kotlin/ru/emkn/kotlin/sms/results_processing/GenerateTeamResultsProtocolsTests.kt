@@ -1,32 +1,12 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import kotlin.test.*
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.time.Time
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 internal class GenerateTeamResultsProtocolsTests {
-
-    val testCompetition = Competition(
-        discipline = "Marathon",
-        name = "SPb Autumn Marathon 2030",
-        year = 2030,
-        date = "10.10",
-        groups = listOf("M12-15", "M16-18", "M19-35"),
-        routes = listOf(
-            Route("adults", listOf("Checkpoint1", "Checkpoint2", "Checkpoint3", "Checkpoint4", "Checkpoint5")),
-            Route("kids", listOf("Checkpoint1", "Checkpoint2")),
-        ),
-        groupToRouteMapping = mapOf(
-            "M12-15" to Route("kids", listOf("Checkpoint1", "Checkpoint2")),
-            "M16-18" to Route("adults", listOf("Checkpoint1", "Checkpoint2", "Checkpoint3", "Checkpoint4", "Checkpoint5")),
-            "M19-35" to Route("adults", listOf("Checkpoint1", "Checkpoint2", "Checkpoint3", "Checkpoint4", "Checkpoint5")),
-        ),
-        requirementByGroup = mapOf(
-            "M12-15" to GroupRequirement(12, 15),
-            "M16-18" to GroupRequirement(16, 18),
-            "M19-35" to GroupRequirement(19, 35),
-        ),
-    )
 
     val testParticipantsList = ParticipantsList(listOf(
         Participant(0, 14, "Name2", "Surname2", "M12-15", "Team1", ""),
@@ -81,8 +61,6 @@ internal class GenerateTeamResultsProtocolsTests {
     fun `Generate team results protocols test`() {
         val teamResultsProtocol = generateTeamResultsProtocol(
             groupResultProtocols = testGroupResultProtocols,
-            participantsList = testParticipantsList,
-            competitionConfig = testCompetition,
         )
         assertEquals(expectedTeamResultsProtocol.scores, teamResultsProtocol.scores)
     }
@@ -91,8 +69,6 @@ internal class GenerateTeamResultsProtocolsTests {
     fun `Empty test`() {
         val teamResultsProtocol = generateTeamResultsProtocol(
             groupResultProtocols = listOf(),
-            participantsList = ParticipantsList(listOf()),
-            competitionConfig = testCompetition,
         )
         assertEquals(listOf(), teamResultsProtocol.scores)
     }
@@ -115,8 +91,6 @@ internal class GenerateTeamResultsProtocolsTests {
         assertFails {
             val teamResultsProtocol = generateTeamResultsProtocol(
                 groupResultProtocols = groupResultsProtocols,
-                participantsList = participantsList,
-                competitionConfig = testCompetition,
             )
             println(teamResultsProtocol)
         }

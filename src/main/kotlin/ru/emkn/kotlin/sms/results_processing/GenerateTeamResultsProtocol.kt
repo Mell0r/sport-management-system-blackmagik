@@ -1,12 +1,12 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.TeamResultsProtocol
+import ru.emkn.kotlin.sms.TeamToScore
 import kotlin.math.roundToInt
 
 fun generateTeamResultsProtocol(
-    groupResultProtocols: List<GroupResultProtocol>,
-    participantsList: ParticipantsList,
-    competitionConfig: Competition
+    groupResultProtocols: List<GroupResultProtocol>
 ): TeamResultsProtocol {
     val idToScore = HashMap<Int, Int>()
     groupResultProtocols.forEach { groupResultProtocol ->
