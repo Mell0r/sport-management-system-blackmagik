@@ -60,6 +60,21 @@ internal class ApiTests {
 
     @Test
     fun properResultGenerationForParticipantTimestampsProtocols() {
+        val resultProtocols = sampleResultProtocols()
+        assertEquals(2, resultProtocols.size)
+        val maleResults = resultProtocols.single { it.groupName == "М10" }
+        assertEquals(
+            listOf(1, 3, 2),
+            maleResults.entries.map { it.participant.id })
+        assertEquals(
+            listOf(30.s(), 90.s(), null),
+            maleResults.entries.map { it.totalTime })
+        val femaleResults = resultProtocols.single { it.groupName == "Ж10" }
+        assertEquals(4, femaleResults.entries.single().participant.id)
+        assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
+    }
+
+    private fun sampleResultProtocols(): List<GroupResultProtocol> {
         val protocols = listOf(
             ParticipantTimestampsProtocol(
                 1,
@@ -77,23 +92,12 @@ internal class ApiTests {
                 quickProtocolEntryList(5, 15, 20)
             )
         )
-        val resultProtocols = generateResultsProtocolsFromParticipantTimestamps(
+        return generateResultsProtocolsFromParticipantTimestamps(
             participants,
             startingProtocols,
             protocols,
             competition
         )
-        assertEquals(2, resultProtocols.size)
-        val maleResults = resultProtocols.single { it.groupName == "М10" }
-        assertEquals(
-            listOf(1, 3, 2),
-            maleResults.entries.map { it.participant.id })
-        assertEquals(
-            listOf(30.s(), 90.s(), null),
-            maleResults.entries.map { it.totalTime })
-        val femaleResults = resultProtocols.single { it.groupName == "Ж10" }
-        assertEquals(4, femaleResults.entries.single().participant.id)
-        assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
     }
 
     //       id
@@ -143,4 +147,24 @@ internal class ApiTests {
             listOf(3.s(), 6.s(), null),
             maleResults.entries.map { it.totalTime })
     }
+
+    @Test
+    fun testOutput() {
+        val sampleResultProtocols = sampleResultProtocols()
+        val maleProtocol =
+            sampleResultProtocols.single { it.groupName == "М10" }
+        assertEquals(
+            listOf(
+                "М10",
+                "Место,Индивидуальный номер,Результат",
+                "1,1,00:00:30",
+                "2,3,00:01:30",
+                "3,2,снят"
+            ).asLines(), maleProtocol.dumpToCsv().asLines()
+        )
+    }
+}
+
+private fun List<String>.asLines(): String {
+    return joinToString("\n")
 }

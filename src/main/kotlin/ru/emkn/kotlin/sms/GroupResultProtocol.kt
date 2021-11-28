@@ -22,6 +22,35 @@ class GroupResultProtocol(
     }
 
     override fun dumpToCsv(): FileContent {
-        TODO("Not yet implemented")
+        data class FieldInfo<T>(
+            val fieldName: String,
+            val generateFieldValue: (T) -> String
+        )
+
+        class PlayersPrinter<T>(
+            private val fieldsInfo: List<FieldInfo<T>>
+        ) {
+            fun toTable(values: List<T>): List<String> {
+                val headers =
+                    listOf(fieldsInfo.joinToString(",") { it.fieldName })
+                val fieldValuesTable = values.map { value ->
+                    fieldsInfo.joinToString(",") {
+                        it.generateFieldValue(value)
+                    }
+                }
+                return headers + fieldValuesTable
+            }
+        }
+
+        var placeCounter = 1
+        return listOf(groupName) + PlayersPrinter(listOf(
+            FieldInfo<Int>("Место") { placeCounter++.toString() },
+            FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
+            FieldInfo("Результат") { id ->
+                entries.first { it.participant.id == id }.totalTime?.toString()
+                    ?: "снят"
+            }
+        )).toTable(entries.map { it.participant.id })
+
     }
 }
