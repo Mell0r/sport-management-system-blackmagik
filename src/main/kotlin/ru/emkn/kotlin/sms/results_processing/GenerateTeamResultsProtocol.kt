@@ -3,9 +3,6 @@ package ru.emkn.kotlin.sms.results_processing
 import ru.emkn.kotlin.sms.*
 import kotlin.math.max
 
-// all the functions below should be NOT in this file, but in respective module.
-// competition parameter is everywhere just in case; worst case scenario:
-// it will be deleted as unused parameter later.
 fun generateTeamResultsProtocol(
     groupResultProtocols: List<GroupResultProtocol>,
     participantsList: ParticipantsList,
