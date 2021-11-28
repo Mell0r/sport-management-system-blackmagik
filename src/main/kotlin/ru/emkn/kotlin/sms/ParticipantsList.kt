@@ -3,6 +3,11 @@ package ru.emkn.kotlin.sms
 import ru.emkn.kotlin.sms.results_processing.FileContent
 
 class ParticipantsList(val list : List<Participant>) : CsvDumpable {
+    companion object : CreatableFromFileContent<ParticipantsList> {
+        override fun readFromFileContent(fileContent: FileContent): ParticipantsList {
+            TODO("Not yet implemented")
+        }
+    }
 
     fun getParticipantById(id: Int) = list.find { it.id == id }
 
