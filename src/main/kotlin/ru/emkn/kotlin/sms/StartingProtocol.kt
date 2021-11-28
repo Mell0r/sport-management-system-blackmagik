@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
 data class StartingProtocolEntry(
@@ -8,10 +9,20 @@ data class StartingProtocolEntry(
 )
 
 data class StartingProtocol(
-    val entries: List<StartingProtocolEntry>,
-    val group: GroupLabelT
-) {
-    fun getFileName() = "Starting_protocol_of_'$group'_group"
+    val group: GroupLabelT,
+    val entries: List<StartingProtocolEntry>
+) : CsvDumpable{
+    companion object: CreatableFromFileContent<StartingProtocol> {
+        override fun readFromFileContent(fileContent: FileContent): StartingProtocol {
+            TODO("Not yet implemented")
+        }
+    }
 
-    fun getFileContent() = entries.map{ "${it.id},${it.startTime}" }
+    fun print(filePath : String) {
+        TODO()
+    }
+
+    override fun dumpToCsv(): FileContent {
+        TODO("Not yet implemented")
+    }
 }
