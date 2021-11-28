@@ -115,6 +115,8 @@ private fun loadParticipantsList(participantListFile: File) : ParticipantsList =
     )
 
 
+
+
 private fun result(
     resultCommand: ArgParsingSystem.ResultCommand,
     competition: Competition,
@@ -138,6 +140,7 @@ private fun result(
                 "Starting protocol at \"${file.absolutePath}\" has invalid format:\n" +
                         "${exception.message}"
             }
+            exitWithInfoLog()
         },
     )
 
@@ -153,7 +156,16 @@ private fun result(
         exitWithInfoLog()
     }
 
+    fun saveGroupResultProtocols(protocols: List<GroupResultProtocol>) {
+        protocols.forEach { protocol ->
+            val content = protocol.dumpToCsv()
+            val fileName = getFileNameOfGroupResultProtocol(protocol)
+            safeWriteContentToFile(content, outputDirectory, fileName)
+        }
+    }
+
     val type = resultCommand.routeProtocolType
+
     if (type == RouteProtocolType.OF_CHECKPOINT) {
         val checkpointTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
@@ -162,15 +174,22 @@ private fun result(
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
 
-        val resultProtocolsFileContents =
+        val resultProtocols = try {
             generateResultsProtocolsFromCheckpointTimestamps(
                 participantsList,
                 startingProtocols,
                 checkpointTimestampsProtocols,
                 competition
             )
-                .map { it.dumpToCsv() }
-        // save in output folder
+        } catch (e: IllegalArgumentException) {
+            Logger.error {
+                "Some data needed to generate group result protocols is invalid:\n" +
+                        "${e.message}"
+            }
+            exitWithInfoLog()
+        }
+
+        saveGroupResultProtocols(resultProtocols)
     } else {
         val participantTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
@@ -179,15 +198,23 @@ private fun result(
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
 
-        val resultProtocolsFileContents =
+        val resultProtocols = try {
             generateResultsProtocolsFromParticipantTimestamps(
                 participantsList,
                 startingProtocols,
                 participantTimestampsProtocols,
                 competition
             )
-                .map { it.dumpToCsv() }
+        } catch (e: IllegalArgumentException) {
+            Logger.error {
+                "Some data needed to generate result protocols is invalid:\n" +
+                        "${e.message}"
+            }
+            exitWithInfoLog()
+        }
+
         // save in output folder
+        saveGroupResultProtocols(resultProtocols)
     }
 
 }
@@ -200,6 +227,7 @@ private fun resultTeams(
 {
     val participantsList = loadParticipantsList(resultsTeamsCommand.participantListFile)
 
+    // All group result protocols must be valid and readable
     val groupResultProtocols = readAndParseAllFiles(
         files = resultsTeamsCommand.resultProtocolFiles,
         parser = GroupResultProtocol::readFromFileContent,
@@ -216,12 +244,24 @@ private fun resultTeams(
         },
     )
 
-    val teamResultProtocols = generateTeamResultProtocols(
-        groupResultProtocols,
-        participantsList,
-        competition
-    )
+    val teamResultProtocol = try {
+        generateTeamResultProtocol(
+            groupResultProtocols,
+            participantsList,
+            competition
+        )
+    } catch (e: IllegalArgumentException) {
+        Logger.error {
+            "Some data needed to generate team result protocol is invalid:\n" +
+                    "${e.message}"
+        }
+        exitWithInfoLog()
+    }
+
     // TeamResultProtocol is CsvDumpable - thus, can trivially be saved as file
+    val content = teamResultProtocol.dumpToCsv()
+    val fileName = getFileNameOfTeamResultsProtocol(teamResultProtocol)
+    safeWriteContentToFile(content, outputDirectory, fileName)
 }
 
 @ExperimentalCli
@@ -250,11 +290,13 @@ fun main(args: Array<String>) {
 // all the functions below should be NOT in this file, but in respective module.
 // competition parameter is everywhere just in case; worst case scenario:
 // it will be deleted as unused parameter later.
-fun generateTeamResultProtocols(
+
+
+fun generateTeamResultProtocol(
     groupResultProtocols: List<GroupResultProtocol>,
     participantsList: ParticipantsList,
     competitionConfig: Competition
-): List<TeamResultsProtocol> {
+): TeamResultsProtocol {
     TODO("Not yet implemented")
 }
 
