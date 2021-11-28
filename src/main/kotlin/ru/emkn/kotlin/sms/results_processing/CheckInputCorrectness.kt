@@ -20,7 +20,24 @@ fun checkInputCorrectnessParticipantTimestamps(
         .toSet()) { "Participant timestamps protocols should cover all ids." }
 }
 
-fun checkInputCorrectness(
+fun checkInputCorrectnessCheckpointTimestamps(
+    participantsList: ParticipantsList,
+    startingProtocols: List<StartingProtocol>,
+    checkpointTimestampsProtocol: List<CheckpointTimestampsProtocol>,
+    competitionConfig: Competition
+) {
+    checkInputCorrectness(
+        participantsList,
+        startingProtocols,
+        competitionConfig
+    )
+    val allCheckpoints = competitionConfig.routes.flatMap { it.route }.toSet()
+    require(allCheckpoints == checkpointTimestampsProtocol.map { it.checkpointLabel }
+        .toSet()) { "Participant timestamps protocols should cover all ids." }
+}
+
+
+private fun checkInputCorrectness(
     participantsList: ParticipantsList,
     startingProtocols: List<StartingProtocol>,
     competitionConfig: Competition

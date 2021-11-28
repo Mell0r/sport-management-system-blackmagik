@@ -58,9 +58,10 @@ fun generateResultsProtocolsFromCheckpointTimestamps(
     checkpointTimestampsProtocols: List<CheckpointTimestampsProtocol>,
     competitionConfig: Competition
 ): List<GroupResultProtocol> {
-    checkInputCorrectness(
+    checkInputCorrectnessCheckpointTimestamps(
         participantsList,
         startingProtocols,
+        checkpointTimestampsProtocols,
         competitionConfig
     )
     val helper = Helper(participantsList, competitionConfig, startingProtocols)
