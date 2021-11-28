@@ -16,7 +16,7 @@ class Application(val teamName : String, val applicantsList: List<List<String>>)
             if (application.any { it.size != SIZE_OF_APPLICATION_ROW })
                 throw IllegalArgumentException("Some line contains the wrong number of commas! Must be exactly $SIZE_OF_APPLICATION_ROW.")
             if (application[0][0] == "")
-                throw IllegalArgumentException("Application can not has empty team name!")
+                throw IllegalArgumentException("Application can not have empty team name!")
 
             val teamName = application[0][0]
             val applicantsList = application.drop(1).filterIndexed { applicantInd, applicant ->

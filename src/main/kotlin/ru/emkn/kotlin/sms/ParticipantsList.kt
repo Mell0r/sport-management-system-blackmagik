@@ -12,8 +12,8 @@ class ParticipantsList(val list : List<Participant>) : CsvDumpable {
                     throw IllegalArgumentException("The line number $ind in fileContent has incorrect number of commas! " +
                             "Should be $SIZE_OF_PARTICIPANT_LIST_ROW.")
                 val splittedRow = row.split(',')
-                requireNotNull(splittedRow[0].toIntOrNull()) { "First argument(ID) of participant in line $row is not a number!" }
-                requireNotNull(splittedRow[1].toIntOrNull()) { "Second argument(age) of participant in line $row is not a number!" }
+                requireNotNull(splittedRow[0].toIntOrNull()) { "First argument(ID) of participant in line $ind is not a number!" }
+                requireNotNull(splittedRow[1].toIntOrNull()) { "Second argument(age) of participant in line $ind is not a number!" }
             }
             return ParticipantsList(fileContent.map { row ->
                 val splittedRow = row.split(',')
@@ -23,8 +23,6 @@ class ParticipantsList(val list : List<Participant>) : CsvDumpable {
     }
 
     fun getParticipantById(id: Int) = list.find { it.id == id }
-
-    fun getFileName() = "Participant_list.csv"
 
     override fun dumpToCsv() = list.map { it.toString() }
 
