@@ -22,7 +22,7 @@ internal class StartingProtocolOutputTest {
 
     @Test
     fun getFileContentTest() {
-        assertTrue { startingProtocolTest1.dumpToCsv() == listOf("1,00:00:00", "2,00:00:01", "3,00:10:20") }
-        assertTrue { startingProtocolTest2.dumpToCsv() == listOf("15,05:59:00", "10,21:53:05", "80,23:59:59") }
+        assertTrue { startingProtocolTest1.dumpToCsv() == listOf("M10,", "1,00:00:00", "2,00:00:01", "3,00:10:20") }
+        assertTrue { startingProtocolTest2.dumpToCsv() == listOf("TestGroup,", "15,05:59:00", "10,21:53:05", "80,23:59:59") }
     }
 }
