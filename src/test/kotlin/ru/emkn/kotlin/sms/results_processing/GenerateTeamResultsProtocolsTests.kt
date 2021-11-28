@@ -8,7 +8,7 @@ import kotlin.test.assertFails
 
 internal class GenerateTeamResultsProtocolsTests {
 
-    val testParticipantsList = ParticipantsList(listOf(
+    private val testParticipantsList = ParticipantsList(listOf(
         Participant(0, 14, "Name2", "Surname2", "M12-15", "Team1", ""),
         Participant(1, 13, "Name1", "Surname1", "M12-15", "Team1", ""),
         Participant(2, 30, "Name2", "Surname2", "M19-35", "Team1", ""),
@@ -23,7 +23,7 @@ internal class GenerateTeamResultsProtocolsTests {
         Participant(9, 16, "Name9", "Surname9", "M16-18", "Team3", ""),
     ))
 
-    val testGroupResultProtocols = listOf(
+    private val testGroupResultProtocols = listOf(
         GroupResultProtocol(
             groupName = "M12-15",
             entries = listOf(
@@ -51,7 +51,7 @@ internal class GenerateTeamResultsProtocolsTests {
         ),
     )
 
-    val expectedTeamResultsProtocol = TeamResultsProtocol(listOf(
+    private val expectedTeamResultsProtocol = TeamResultsProtocol(listOf(
         TeamToScore("Team1", 260),
         TeamToScore("Team2", 100),
         TeamToScore("Team3", 67),

@@ -13,7 +13,7 @@ internal class StartProtocolsByApplicationsTest {
         listOf("CorrectOrg,,,,", "A,Man,First,1,SomeSportCategory", "B,Man,Second,5,"),
         listOf("AnotherCorrectOrg,,,,", "A,Last1,Name1,4,", "B,Last2,Name2,5,F", "C,Last3,Name3,3,")
         )
-    val testParticipantsList = ParticipantsList(listOf(
+    private val testParticipantsList = ParticipantsList(listOf(
             Participant(1, 1, "Second", "Man", "B", "CorrectOrg", ""),
             Participant(2, 2, "Name1", "Last1", "A", "AnotherCorrectOrg", ""),
             Participant(3, 1, "Name2", "Last2", "B", "AnotherCorrectOrg", "F")
