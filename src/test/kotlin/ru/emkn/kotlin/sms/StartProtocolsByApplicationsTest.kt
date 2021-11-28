@@ -1,7 +1,6 @@
-package ru.emkn.kotlin
+package ru.emkn.kotlin.sms
 
 import org.junit.Test
-import ru.emkn.kotlin.sms.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue

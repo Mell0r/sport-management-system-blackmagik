@@ -1,10 +1,7 @@
-package ru.emkn.kotlin
+package ru.emkn.kotlin.sms
 
 import org.junit.Test
-import ru.emkn.kotlin.sms.StartingProtocol
-import ru.emkn.kotlin.sms.StartingProtocolEntry
 import ru.emkn.kotlin.sms.time.Time
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class StartingProtocolOutputTest {

@@ -1,6 +1,5 @@
-package ru.emkn.kotlin.time
+package ru.emkn.kotlin.sms.time
 
-import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

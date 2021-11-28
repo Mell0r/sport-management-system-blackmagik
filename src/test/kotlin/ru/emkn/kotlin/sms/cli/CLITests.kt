@@ -1,7 +1,13 @@
-import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.cli.*
+package ru.emkn.kotlin.sms.cli
+
+import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
+import ru.emkn.kotlin.sms.ProgramSubcommands
+import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 internal class CLITests {
 
