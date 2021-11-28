@@ -230,14 +230,15 @@ private fun resultTeams(
     resultsTeamsCommand: ArgParsingSystem.ResultTeamsCommand,
     competition: Competition,
     outputDirectory: File,
-)
-{
+) {
     val participantsList = loadParticipantsList(resultsTeamsCommand.participantListFile)
 
     // All group result protocols must be valid and readable
     val groupResultProtocols = readAndParseAllFiles(
         files = resultsTeamsCommand.resultProtocolFiles,
-        parser = GroupResultProtocol::readFromFileContent,
+        parser = { fileContent ->
+            GroupResultProtocol.readFromFileContentAndParticipantsList(fileContent, participantsList)
+        },
         strategyIfCouldntRead = { file ->
             Logger.error {"Group result protocol at \"${file.absolutePath}\" couldn't be reached or read."}
             exitWithInfoLog()
