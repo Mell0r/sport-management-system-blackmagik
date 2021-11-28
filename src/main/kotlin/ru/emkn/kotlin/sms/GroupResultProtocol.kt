@@ -17,7 +17,41 @@ class GroupResultProtocol(
 ) : CsvDumpable {
     companion object : CreatableFromFileContent<GroupResultProtocol> {
         override fun readFromFileContent(fileContent: FileContent): GroupResultProtocol {
-            TODO("Not yet implemented")
+            val groupName = fileContent[0].split(",").first()
+            val rest = fileContent.drop(2) // group row and header row
+            rest.mapIndexed { index, line ->
+                val tokens = line.split(",")
+                if (tokens.size != 3)
+                    logErrorAndThrow("Line $index: not three comma separated values.")
+                val (_, id, time) = tokens
+                TODO("Change ParticipantAndTime class to only store id")
+            }
+            TODO()
+        }
+
+        fun readFromFileContentAndParticipantsList(
+            fileContent: FileContent,
+            participantsList: ParticipantsList
+        ): GroupResultProtocol {
+            val groupName = fileContent[0].split(",").first()
+            val rest = fileContent.drop(2) // group row and header row
+            val participantAndTimeList = rest.mapIndexed { index, line ->
+                val tokens = line.split(",")
+                if (tokens.size != 3)
+                    logErrorAndThrow("Line $line: not three comma separated values.")
+                val (_, id, time) = tokens
+                val idNum =
+                    id.toIntOrNull() ?: logErrorAndThrow("Line $index: bad id.")
+                val timeParsed = when (time) {
+                    "снят" -> null
+                    else -> Time.fromString(time)
+                }
+                ParticipantAndTime(
+                    participantsList.getParticipantById(idNum)!!,
+                    timeParsed
+                )
+            }
+            return GroupResultProtocol(groupName, participantAndTimeList)
         }
     }
 
@@ -41,6 +75,7 @@ class GroupResultProtocol(
                 return headers + fieldValuesTable
             }
         }
+
         val places = generatePlaces()
         var index = -1
         return listOf(groupName) + PlayersPrinter(listOf(
