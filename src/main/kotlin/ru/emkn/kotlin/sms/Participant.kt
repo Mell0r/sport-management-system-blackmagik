@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms
 
 typealias GroupLabelT = String
 
-class Participant(
+data class Participant(
     val id: Int,
     val age: Int,
     val name: String,

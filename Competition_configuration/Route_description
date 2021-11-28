@@ -1,0 +1,9 @@
+SprintKids,1,2,3,4,,,,,
+ClassicKids,1,2,3,4,5,6,,,
+LongLids,1,2,3,4,5,6,7,8,
+SprintJuniors,1,8,4,10,2,,,,
+ClassicJuniors,15,20,3,4,6,8,7,,
+LongJuniors,8,2,14,16,7,20,1,17,11
+SprintAdults,13,2,8,1,10,,,,
+ClassicAdults,11,4,7,17,9,10,15,,
+LongAdults,1,4,13,9,2,19,18,5,20
