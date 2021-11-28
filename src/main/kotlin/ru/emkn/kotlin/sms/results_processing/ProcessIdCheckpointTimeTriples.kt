@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
+import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.ParticipantAndTime
 import ru.emkn.kotlin.sms.time.Time
 
@@ -27,12 +28,17 @@ private fun generateIdToResultsPair(
         checkpointsToTimes.sortedBy { it.time }
     val chronologicalCheckpoints =
         checkpointsToTimesChronological.map { it.checkpointLabel }
-    return if (chronologicalCheckpoints != helper.getRouteOf(id).route)
-        ParticipantAndTime(helper.getParticipantBy(id), null)
-    else {
+    if (chronologicalCheckpoints != helper.getRouteOf(id).route) {
+        Logger.warn {"Participant $id passed checkpoints in wrong order (expected: ${helper.getRouteOf(id).route}, actual: $chronologicalCheckpoints). Disqualifying."}
+        return ParticipantAndTime(helper.getParticipantBy(id), null)
+    } else {
+        if (checkpointsToTimes.minOf { it.time } < helper.getStartingTimeOf(id)) {
+            Logger.warn {"Participant $id passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${helper.getStartingTimeOf(id)}). Disqualifying."}
+            return ParticipantAndTime(helper.getParticipantBy(id), null)
+        }
         val finishTime = checkpointsToTimesChronological.last().time
         val timeForDistance = finishTime - helper.getStartingTimeOf(id)
-        ParticipantAndTime(helper.getParticipantBy(id), Time(timeForDistance))
+        return ParticipantAndTime(helper.getParticipantBy(id), Time(timeForDistance))
     }
 }
 
