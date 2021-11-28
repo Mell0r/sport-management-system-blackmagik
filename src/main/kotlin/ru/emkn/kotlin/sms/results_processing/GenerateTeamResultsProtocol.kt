@@ -1,8 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.*
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 fun generateTeamResultsProtocol(
@@ -38,20 +36,15 @@ private fun moveCalculatedScoresIntoMap(
             .minOfOrNull { it.asSeconds() }
     if (bestResult == null) {
         groupResultProtocol.entries.map { it.participant.id }
-            .forEach { id ->
-                idToScore[id] = 0
-            }
+            .forEach { id -> idToScore[id] = 0 }
     } else {
         groupResultProtocol.entries.map { it.participant.id to it.totalTime?.asSeconds() }
             .forEach { (id, totalTime) ->
-                if (totalTime != null) {
-                    idToScore[id] = max(
-                        0,
-                        (100 * (2 - totalTime.toFloat() / bestResult.toFloat())).roundToInt()
-                    )
-                } else {
-                    idToScore[id] = 0
+                val score = when (totalTime) {
+                    null -> 0
+                    else -> (100 * (2 - totalTime.toFloat() / bestResult.toFloat())).roundToInt()
                 }
+                idToScore[id] = score
             }
     }
 }
