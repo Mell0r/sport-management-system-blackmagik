@@ -14,7 +14,6 @@ fun generateTeamResultsProtocol(
     groupResultProtocols.forEach { groupResultProtocol ->
         moveCalculatedScoresIntoMap(groupResultProtocol, idToScore)
     }
-    Logger.debug {"idToScore: $idToScore"}
     val teamsToScore = groupResultProtocols
         .flatMap { it.entries }
         .groupBy { it.participant.team }
