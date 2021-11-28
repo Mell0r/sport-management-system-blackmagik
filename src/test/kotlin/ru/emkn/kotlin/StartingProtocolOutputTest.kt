@@ -3,6 +3,7 @@ package ru.emkn.kotlin
 import org.junit.Test
 import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.StartingProtocolEntry
+import ru.emkn.kotlin.sms.io.getFileName
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -22,8 +23,8 @@ internal class StartingProtocolOutputTest {
 
     @Test
     fun getFileNameTest() {
-        assertEquals(startingProtocolTest1.getFileName(), "Starting_protocol_of_'M10'_group")
-        assertEquals(startingProtocolTest2.getFileName(), "Starting_protocol_of_'TestGroup'_group")
+        assertEquals(getFileName(startingProtocolTest1), "Starting_protocol_of_'M10'_group")
+        assertEquals(getFileName(startingProtocolTest2), "Starting_protocol_of_'TestGroup'_group")
     }
 
     @Test
