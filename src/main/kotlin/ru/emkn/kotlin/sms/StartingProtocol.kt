@@ -18,11 +18,7 @@ data class StartingProtocol(
         }
     }
 
-    fun print(filePath : String) {
-        TODO()
-    }
+    fun getFileName() = "Starting_protocol_of_'$group'_group"
 
-    override fun dumpToCsv(): FileContent {
-        TODO("Not yet implemented")
-    }
+    override fun dumpToCsv() = entries.map{ "${it.id},${it.startTime}" }
 }

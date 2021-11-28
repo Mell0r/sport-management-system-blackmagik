@@ -1,12 +1,14 @@
 package ru.emkn.kotlin.sms
 
-class ParticipantsList(val list : List<Participant>) {
+import ru.emkn.kotlin.sms.results_processing.FileContent
+
+class ParticipantsList(val list : List<Participant>) : CsvDumpable {
 
     fun getParticipantById(id: Int) = list.find { it.id == id }
 
     fun getFileName() = "Participant_list.csv"
 
-    fun getFileContent() = list.map { it.toString() }
+    override fun dumpToCsv() = list.map { it.toString() }
 
     override fun equals(other: Any?) : Boolean {
         if (this === other) return true

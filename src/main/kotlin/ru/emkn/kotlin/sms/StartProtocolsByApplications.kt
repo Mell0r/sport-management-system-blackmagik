@@ -76,8 +76,8 @@ fun getStartConfigurationByApplications(applicationFiles: List<List<String>>, co
 
     var curMinutes = 0
     val startingProtocols = competition.groups.map { group ->
-        StartingProtocol(participantsList.list.filter { it.supposedGroup == group }
-            .map { StartingProtocolEntry(it.id, Time(12 * 3600 + (curMinutes++) * 60)) }, group)
+        StartingProtocol(group, participantsList.list.filter { it.supposedGroup == group }
+            .map { StartingProtocolEntry(it.id, Time(12 * 3600 + (curMinutes++) * 60)) })
     }
     return Pair(participantsList, startingProtocols)
 }
