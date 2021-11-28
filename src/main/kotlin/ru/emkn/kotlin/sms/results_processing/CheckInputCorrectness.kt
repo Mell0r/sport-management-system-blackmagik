@@ -16,7 +16,8 @@ fun checkInputCorrectnessParticipantTimestamps(
         competitionConfig
     )
     require(participantTimestampsProtocols.map { it.id }
-        .toSet() == participantsList.list.toSet()) { "Route completion protocols should cover all ids." }
+        .toSet() == participantsList.list.map { it.id }
+        .toSet()) { "Participant timestamps protocols should cover all ids." }
 }
 
 fun checkInputCorrectness(
@@ -29,7 +30,6 @@ fun checkInputCorrectness(
             .map { it.id }
     require(participantsFromStartingProtocols.size == participantsFromStartingProtocols.distinct().size) { "Starting lists should not have repeated ids." }
     require(participantsList.list.size == participantsList.list.distinct().size) { "Participant lists should not have repeated ids." }
-    require(participantsList.list.toSet() == participantsFromStartingProtocols.toSet())
     require(startingProtocols.map { it.group }
         .toSet() == competitionConfig.groups.toSet()) { "Starting protocols should cover all groups from competition." }
 }

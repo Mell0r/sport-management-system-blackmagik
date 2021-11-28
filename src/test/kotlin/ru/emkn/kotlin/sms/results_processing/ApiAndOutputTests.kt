@@ -28,8 +28,6 @@ internal class ApiTests {
             "Ж10",
             listOf(
                 StartingProtocolEntry(4, 0.s()),
-                StartingProtocolEntry(5, 0.s()),
-                StartingProtocolEntry(6, 0.s())
             )
         )
     )
