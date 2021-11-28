@@ -33,7 +33,7 @@ fun checkInputCorrectnessCheckpointTimestamps(
     )
     val allCheckpoints = competitionConfig.routes.flatMap { it.route }.toSet()
     require(allCheckpoints == checkpointTimestampsProtocol.map { it.checkpointLabel }
-        .toSet()) { "Participant timestamps protocols should cover all ids." }
+        .toSet()) { "Participant timestamps protocols should cover all checkpoints." }
 }
 
 

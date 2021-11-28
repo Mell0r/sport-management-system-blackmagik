@@ -41,7 +41,6 @@ class GroupResultProtocol(
                 return headers + fieldValuesTable
             }
         }
-        entries.mapNotNull { it.totalTime }
         val places = generatePlaces()
         var index = -1
         return listOf(groupName) + PlayersPrinter(listOf(
