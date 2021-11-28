@@ -8,11 +8,11 @@ import kotlin.test.assertTrue
 
 internal class StartProtocolsByApplicationsTest {
     private val testApplications = listOf(
-        listOf(",,,,", "First,Man,1,SomeGroup,"),
+        listOf(",,,,", "SomeGroup,First,Man,1,"),
         listOf("EmptyOrg,,,,"),
-        listOf("ShortLineOrg,,,,", "Short,Line,2,Group"),
-        listOf("CorrectOrg,,,,", "Man,First,1,A,SomeSportCategory", "Man,Second,5,B,"),
-        listOf("AnotherCorrectOrg,,,,", "Last1,Name1,4,A,", "Last2,Name2,5,B,F", "Last3,Name3,3,C,")
+        listOf("ShortLineOrg,,,,", "Group,Short,Line,2"),
+        listOf("CorrectOrg,,,,", "A,Man,First,1,SomeSportCategory", "B,Man,Second,5,"),
+        listOf("AnotherCorrectOrg,,,,", "A,Last1,Name1,4,", "B,Last2,Name2,5,F", "C,Last3,Name3,3,")
         )
     val testParticipantsList = ParticipantsList(listOf(
             Participant(1, 1, "Second", "Man", "B", "CorrectOrg", ""),
@@ -36,19 +36,19 @@ internal class StartProtocolsByApplicationsTest {
         var aplt = testApplications[3][1].split(',')
         var commandName = "CorrectOrg"
         assertEquals(checkApplicant(
-            Participant(0, testCompetition.year - aplt[2].toInt(), aplt[1], aplt[0], aplt[3], commandName, aplt[4]),
+            Participant(0, testCompetition.year - aplt[3].toInt(), aplt[2], aplt[1], aplt[0], commandName, aplt[4]),
             testCompetition), false)
 
         aplt = testApplications[4][3].split(',')
         commandName = "AnotherCorrectOrg"
         assertEquals(checkApplicant(
-            Participant(0, testCompetition.year - aplt[2].toInt(), aplt[1], aplt[0], aplt[3], commandName, aplt[4]),
+            Participant(0, testCompetition.year - aplt[3].toInt(), aplt[2], aplt[1], aplt[0], commandName, aplt[4]),
             testCompetition), false)
 
         aplt = testApplications[3][2].split(',')
         commandName = "CorrectOrg"
         assertEquals(checkApplicant(
-            Participant(0, testCompetition.year - aplt[2].toInt(), aplt[1], aplt[0], aplt[3], commandName, aplt[4]),
+            Participant(0, testCompetition.year - aplt[3].toInt(), aplt[2], aplt[1], aplt[0], commandName, aplt[4]),
             testCompetition), true)
     }
 
@@ -56,13 +56,6 @@ internal class StartProtocolsByApplicationsTest {
     fun getParticipantsListFromApplicationsTest() {
         val applications = listOf(Application.readFromFileContent(testApplications[3]),
             Application.readFromFileContent(testApplications[4]))
-        applications[0].applicantsList.forEach {
-            println(it)
-        }
-        println()
-        getParticipantsListFromApplications(applications, testCompetition).list.forEach {
-            println(it)
-        }
         assertTrue { getParticipantsListFromApplications(applications, testCompetition) == testParticipantsList }
     }
 }
