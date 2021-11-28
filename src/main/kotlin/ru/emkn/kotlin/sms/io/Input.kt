@@ -56,6 +56,12 @@ fun readAllReadableFiles(
     }
 }
 
+/**
+ * Tries to read content of all specified [java.io.File]'s.
+ * If it cannot read a file, it reacts based on a function [reactionOnFailure].
+ *
+ * Returns pairs of type File -> FileContent
+ */
 private fun readAllReadableFilesPairFile(
     files: List<File>,
     reactionOnFailure: (File) -> Unit = {},
@@ -71,6 +77,16 @@ private fun readAllReadableFilesPairFile(
         }
 }
 
+
+/**
+ * Tries to read content of specified [java.io.File] and parse the content with [parser].
+ *
+ * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
+ * when the file format is incorrect.
+ *
+ * If the file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If the file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
+ */
 fun <T> readAndParseFile(
     file: File,
     parser: (FileContent) -> T,
@@ -85,6 +101,16 @@ fun <T> readAndParseFile(
     }
 }
 
+
+/**
+ * Tries to read content of all specified [java.io.File]'s and parse the content of each file with [parser].
+ *
+ * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
+ * when the file format is incorrect.
+ *
+ * If a file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If a file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
+ */
 fun <T> readAndParseAllFiles(
     files: List<File>,
     parser: (FileContent) -> T,
