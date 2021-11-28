@@ -14,8 +14,20 @@ data class StartingProtocol(
 ) : CsvDumpable{
     companion object: CreatableFromFileContent<StartingProtocol> {
         override fun readFromFileContent(fileContent: FileContent): StartingProtocol {
-            TODO("Not yet implemented")
+            require(fileContent.isNotEmpty()) { "Starting protocol can't be empty!" }
+            fileContent.drop(1).forEachIndexed { i, row ->
+                require(row.count { it == ',' } == 1) { "Line number $i contains not one comma, " +
+                        "but must be exactly one!" }
+                val splittedRow = row.split(',')
+                requireNotNull(splittedRow[0].toIntOrNull()) { "First parameter must be a number(it is ID of participant)!" }
+            }
+            return StartingProtocol(fileContent[0].split(',')[0], fileContent.drop(1)
+                .map { row ->
+                    val splittedRow = row.split(',')
+                    StartingProtocolEntry(splittedRow[0].toInt(), Time.fromString(splittedRow[1]))
+                })
         }
+
     }
 
 

@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.time
+package ru.emkn.kotlin
 
 import org.junit.Test
 import ru.emkn.kotlin.sms.*
