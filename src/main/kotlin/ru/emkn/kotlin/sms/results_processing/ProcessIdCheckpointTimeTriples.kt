@@ -30,15 +30,15 @@ private fun generateIdToResultsPair(
         checkpointsToTimesChronological.map { it.checkpointLabel }
     if (chronologicalCheckpoints != helper.getRouteOf(id).route) {
         Logger.warn {"Participant $id passed checkpoints in wrong order (expected: ${helper.getRouteOf(id).route}, actual: $chronologicalCheckpoints). Disqualifying."}
-        return ParticipantAndTime(helper.getParticipantBy(id), null)
+        return ParticipantAndTime(id, null)
     } else {
         if (checkpointsToTimes.minOf { it.time } < helper.getStartingTimeOf(id)) {
             Logger.warn {"Participant $id passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${helper.getStartingTimeOf(id)}). Disqualifying."}
-            return ParticipantAndTime(helper.getParticipantBy(id), null)
+            return ParticipantAndTime(id, null)
         }
         val finishTime = checkpointsToTimesChronological.last().time
         val timeForDistance = finishTime - helper.getStartingTimeOf(id)
-        return ParticipantAndTime(helper.getParticipantBy(id), Time(timeForDistance))
+        return ParticipantAndTime(id, Time(timeForDistance))
     }
 }
 

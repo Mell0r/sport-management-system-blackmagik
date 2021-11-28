@@ -64,12 +64,12 @@ internal class ApiTests {
         val maleResults = resultProtocols.single { it.groupName == "М10" }
         assertEquals(
             listOf(1, 3, 2),
-            maleResults.entries.map { it.participant.id })
+            maleResults.entries.map { it.id })
         assertEquals(
             listOf(30.s(), 90.s(), null),
             maleResults.entries.map { it.totalTime })
         val femaleResults = resultProtocols.single { it.groupName == "Ж10" }
-        assertEquals(4, femaleResults.entries.single().participant.id)
+        assertEquals(4, femaleResults.entries.single().id)
         assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
     }
 
@@ -141,7 +141,7 @@ internal class ApiTests {
         val maleResults = resultProtocols.single { it.groupName == "М10" }
         assertEquals(
             listOf(2, 1, 3),
-            maleResults.entries.map { it.participant.id })
+            maleResults.entries.map { it.id })
         assertEquals(
             listOf(3.s(), 6.s(), null),
             maleResults.entries.map { it.totalTime })

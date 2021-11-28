@@ -27,26 +27,27 @@ internal class GenerateTeamResultsProtocolsTests {
         GroupResultProtocol(
             groupName = "M12-15",
             entries = listOf(
-                ParticipantAndTime(testParticipantsList.list[7], Time(500)),
-                ParticipantAndTime(testParticipantsList.list[1], Time(600)),
-                ParticipantAndTime(testParticipantsList.list[0], Time(600)),
-                ParticipantAndTime(testParticipantsList.list[8], null),
+                ParticipantAndTime(7, Time(500)),
+                ParticipantAndTime(1, Time(600)),
+                ParticipantAndTime(0, Time(600)),
+                ParticipantAndTime(8, null),
             )
         ),
         GroupResultProtocol(
             groupName = "M16-18",
             entries = listOf(
-                ParticipantAndTime(testParticipantsList.list[4], Time(1500)),
-                ParticipantAndTime(testParticipantsList.list[9], Time(2000)),
-                ParticipantAndTime(testParticipantsList.list[3], Time(3000)),
+                ParticipantAndTime(4, Time(1500)),
+                ParticipantAndTime(9, Time(2000)),
+                ParticipantAndTime(3, Time(3000)),
             )
         ),
         GroupResultProtocol(
             groupName = "M19-35",
-            entries = listOf( // whole group was disqualified --- definitely a real situation
-                ParticipantAndTime(testParticipantsList.list[2], null),
-                ParticipantAndTime(testParticipantsList.list[5], null),
-                ParticipantAndTime(testParticipantsList.list[6], null),
+            entries = listOf(
+                // whole group was disqualified --- definitely a real situation
+                ParticipantAndTime(2, null),
+                ParticipantAndTime(5, null),
+                ParticipantAndTime(6, null),
             )
         ),
     )
@@ -61,6 +62,7 @@ internal class GenerateTeamResultsProtocolsTests {
     fun `Generate team results protocols test`() {
         val teamResultsProtocol = generateTeamResultsProtocol(
             groupResultProtocols = testGroupResultProtocols,
+            participantsList = testParticipantsList
         )
         assertEquals(expectedTeamResultsProtocol.scores, teamResultsProtocol.scores)
     }
@@ -69,6 +71,7 @@ internal class GenerateTeamResultsProtocolsTests {
     fun `Empty test`() {
         val teamResultsProtocol = generateTeamResultsProtocol(
             groupResultProtocols = listOf(),
+            testParticipantsList
         )
         assertEquals(listOf(), teamResultsProtocol.scores)
     }
@@ -83,14 +86,15 @@ internal class GenerateTeamResultsProtocolsTests {
             GroupResultProtocol(
                 groupName = "group1",
                 entries = listOf(
-                    ParticipantAndTime(participantsList.list[0], Time(0)),
-                    ParticipantAndTime(participantsList.list[1], Time(0)),
+                    ParticipantAndTime(0, Time(0)),
+                    ParticipantAndTime(1, Time(0)),
                 ),
             )
         )
         assertFails {
             val teamResultsProtocol = generateTeamResultsProtocol(
                 groupResultProtocols = groupResultsProtocols,
+                testParticipantsList
             )
             println(teamResultsProtocol)
         }
