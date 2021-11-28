@@ -231,6 +231,38 @@ internal class ApiTests {
         """.trimIndent()
         )
     }
+
+    @Test
+    fun testDisqualificationOnFalseStart() {
+        val participants = ParticipantsList(
+            listOf(Participant(1, 10, "Иван", "Иванов", "М10", "T1", ""))
+        )
+        val startingProtocols = listOf(
+            StartingProtocol("М10", listOf(StartingProtocolEntry(1, 100.s())))
+        )
+        val route = Route("main", listOf("1", "2"))
+        val competition = Competition(
+            "",
+            "",
+            0,
+            "",
+            listOf("М10"),
+            listOf(route),
+            mapOf("М10" to route),
+            mapOf()
+        )
+        val checkpointProtocols = listOf(
+            CheckpointTimestampsProtocol("1", listOf(IdAndTime(1, 10.s()))),
+            CheckpointTimestampsProtocol("2", listOf(IdAndTime(1, 110.s()))),
+        )
+        val results = generateResultsProtocolsFromCheckpointTimestamps(
+            participants,
+            startingProtocols,
+            checkpointProtocols,
+            competition
+        )
+        assertEquals(null, results.single().entries.single().totalTime)
+    }
 }
 
 private fun List<String>.asLines(): String {
