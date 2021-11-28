@@ -27,7 +27,7 @@ fun initializeCompetition(configFolderPath : String) : Competition {
     val date = nameAndDate[3]
     Logger.info { "Initialized name and date" }
 
-    val routeOfGroups = checkAndReadFileInFolder(configFolderPath, "Route_of_groups")
+    val routeOfGroups = checkAndReadFileInFolder(configFolderPath, "Route_of_groups.csv")
     val groups = routeOfGroups.mapIndexed { ind, row ->
         if (row.count {it == ','} != 1)
             throw IllegalArgumentException("Wrong number of commas in file 'Route_of_groups' in line $ind! " +
@@ -36,7 +36,7 @@ fun initializeCompetition(configFolderPath : String) : Competition {
     }
     Logger.info { "Initialized group routes" }
 
-    val routeDescription = checkAndReadFileInFolder(configFolderPath, "Route_description")
+    val routeDescription = checkAndReadFileInFolder(configFolderPath, "Route_description.csv")
     routeDescription.forEach { row ->
         if (row.count { c -> c == ',' } == 0)
             throw IllegalArgumentException("Line $row of 'Route_description' has no commas!")
@@ -56,7 +56,7 @@ fun initializeCompetition(configFolderPath : String) : Competition {
     }
     Logger.info { "Mapped group to route" }
 
-    val groupRequirement = checkAndReadFileInFolder(configFolderPath, "Groups_requirement")
+    val groupRequirement = checkAndReadFileInFolder(configFolderPath, "Groups_requirement.csv")
     val requirementByGroup = groupRequirement.associate { row ->
         val splittedRow = row.split(',')
         if (splittedRow.size != 3)
