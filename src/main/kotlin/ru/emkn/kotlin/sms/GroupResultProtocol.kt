@@ -41,10 +41,11 @@ class GroupResultProtocol(
                 return headers + fieldValuesTable
             }
         }
-
-        var placeCounter = 1
+        entries.mapNotNull { it.totalTime }
+        val places = generatePlaces()
+        var index = -1
         return listOf(groupName) + PlayersPrinter(listOf(
-            FieldInfo<Int>("Место") { placeCounter++.toString() },
+            FieldInfo<Int>("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->
                 entries.first { it.participant.id == id }.totalTime?.toString()
@@ -52,5 +53,14 @@ class GroupResultProtocol(
             }
         )).toTable(entries.map { it.participant.id })
 
+    }
+
+    private fun generatePlaces(): List<Int> {
+        val places = (1..entries.size).toMutableList()
+        for (i in 0 until entries.lastIndex) {
+            if (entries[i].totalTime == entries[i + 1].totalTime)
+                places[i + 1] = places[i]
+        }
+        return places
     }
 }

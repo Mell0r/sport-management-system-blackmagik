@@ -33,13 +33,14 @@ internal class ApiTests {
     )
 
     private val mainRoute = Route("main", listOf("1", "2", "3"))
+    private val shortRoute = Route("short", listOf("1"))
     private val competition = Competition(
         "",
         "",
         0,
         "",
         listOf("М10", "Ж10"),
-        listOf(mainRoute),
+        listOf(mainRoute, shortRoute),
         mapOf("М10" to mainRoute, "Ж10" to mainRoute),
         mapOf() // I won't be checking correctness of this either way
     )
@@ -159,6 +160,75 @@ internal class ApiTests {
                 "2,3,00:01:30",
                 "3,2,снят"
             ).asLines(), maleProtocol.dumpToCsv().asLines()
+        )
+    }
+
+    @Test
+    fun peopleWithSameResultHaveSamePlaces() {
+        val participantsShort = ParticipantsList(
+            listOf(
+                Participant(1, 10, "Иван", "А", "М10", "T1", ""),
+                Participant(2, 10, "Иван", "Б", "М10", "T2", ""),
+                Participant(3, 10, "Иван", "В", "М10", "T2", ""),
+                Participant(4, 10, "Иван", "Г", "М10", "T1", ""),
+                Participant(5, 10, "Иван", "Д", "М10", "T1", ""),
+                Participant(6, 10, "Иван", "Е", "М10", "T1", ""),
+            )
+        )
+        val protocolsWithSameTime = listOf(
+            CheckpointTimestampsProtocol(
+                "1",
+                listOf(
+                    IdAndTime(1, 10.s()),
+                    IdAndTime(2, 10.s()),
+                    IdAndTime(3, 20.s()),
+                    IdAndTime(4, 20.s()),
+                    IdAndTime(5, 20.s()),
+                    IdAndTime(6, 30.s())
+                )
+            )
+        )
+        val startingProtocolsShort = listOf(
+            StartingProtocol(
+                "М10",
+                listOf(
+                    StartingProtocolEntry(1, 0.s()),
+                    StartingProtocolEntry(2, 0.s()),
+                    StartingProtocolEntry(3, 0.s()),
+                    StartingProtocolEntry(4, 0.s()),
+                    StartingProtocolEntry(5, 0.s()),
+                    StartingProtocolEntry(6, 0.s())
+                )
+            )
+        )
+        val shortCompetition = Competition(
+            "",
+            "",
+            0,
+            "",
+            listOf("М10"),
+            listOf(shortRoute),
+            mapOf("М10" to shortRoute),
+            mapOf() // I won't be checking correctness of this either way
+        )
+        val groupResultProtocol =
+            generateResultsProtocolsFromCheckpointTimestamps(
+                participantsShort,
+                startingProtocolsShort,
+                protocolsWithSameTime,
+                shortCompetition
+            ).single { it.groupName == "М10" }
+        assertEquals(
+            groupResultProtocol.dumpToCsv().asLines(), """
+            М10
+            Место,Индивидуальный номер,Результат
+            1,1,00:00:10
+            1,2,00:00:10
+            3,3,00:00:20
+            3,4,00:00:20
+            3,5,00:00:20
+            6,6,00:00:30
+        """.trimIndent()
         )
     }
 }
