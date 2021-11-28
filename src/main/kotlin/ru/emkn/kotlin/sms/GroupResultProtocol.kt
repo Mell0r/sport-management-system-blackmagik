@@ -5,15 +5,14 @@ import ru.emkn.kotlin.sms.time.Time
 
 typealias Score = Int
 
-data class GroupResultProtocolEntry(
+data class ParticipantAndTime(
     val participant: Participant,
-    val totalTime: Time?, // seconds
-    val placeInGroup: Int
+    val totalTime: Time? // null if disqualified
 )
 
 class GroupResultProtocol(
     val groupName: GroupLabelT,
-    val entries: List<GroupResultProtocolEntry>
+    val entries: List<ParticipantAndTime>
     // sorted by placeInGroup
 ) : CsvDumpable {
     companion object : CreatableFromFileContent<GroupResultProtocol> {
