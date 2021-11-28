@@ -79,17 +79,27 @@ private fun start(
         },
     )
 
-    val participantListAsCsv = createParticipantListFromApplications(
-        applications,
-        competition
-    ).dumpToCsv() // although you might do something before dumping it to csv - up to you
-    val startingProtocolsAsCsv =
-        createStartingProtocolsFromApplications(
-            applications,
-            competition
-        )
-            .map { it.dumpToCsv() }
-    // save them in output directory
+    val (participantsList, startingProtocols) = try {
+        getStartConfigurationByApplications(applications, competition)
+    } catch (e: IllegalArgumentException) {
+        Logger.error {
+            "Some data needed to generate start configuration is invalid:\n" +
+                    "${e.message}"
+        }
+        exitWithInfoLog()
+    }
+
+    // save participants list
+    val participantsListContent = participantsList.dumpToCsv()
+    val participantsListFileName = getFileNameOfParticipantsList(participantsList)
+    safeWriteContentToFile(participantsListContent, outputDirectory, participantsListFileName)
+
+    // save startingProtocols
+    startingProtocols.forEach { startingProtocol ->
+        val content = startingProtocol.dumpToCsv()
+        val fileName = getFileNameOfStartingProtocol(startingProtocol)
+        safeWriteContentToFile(content, outputDirectory, fileName)
+    }
 }
 
 
@@ -299,21 +309,3 @@ fun generateTeamResultProtocol(
 ): TeamResultsProtocol {
     TODO("Not yet implemented")
 }
-
-// should be in a respective package (definitely not this file)
-fun createStartingProtocolsFromApplications(
-    applicationFileContents: List<Application>,
-    competitionConfig: Competition
-): List<StartingProtocol> {
-    TODO("Not yet implemented")
-}
-
-// should be in a respective package (definitely not this file)
-fun createParticipantListFromApplications(
-    applicationFileContents: List<Application>,
-    competitionConfig: Competition
-): ParticipantsList {
-    TODO("Not yet implemented")
-}
-
-
