@@ -18,7 +18,6 @@ data class StartingProtocol(
         }
     }
 
-    fun getFileName() = "Starting_protocol_of_'$group'_group"
 
     override fun dumpToCsv() = entries.map{ "${it.id},${it.startTime}" }
 }
