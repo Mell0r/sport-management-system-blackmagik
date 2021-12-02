@@ -6,7 +6,7 @@ import ru.emkn.kotlin.sms.time.Time
 typealias Score = Int
 
 data class ParticipantAndTime(
-    val participant: Participant,
+    val id: Int,
     val totalTime: Time? // null if disqualified
 )
 
@@ -17,22 +17,6 @@ class GroupResultProtocol(
 ) : CsvDumpable {
     companion object : CreatableFromFileContent<GroupResultProtocol> {
         override fun readFromFileContent(fileContent: FileContent): GroupResultProtocol {
-            val groupName = fileContent[0].split(",").first()
-            val rest = fileContent.drop(2) // group row and header row
-            rest.mapIndexed { index, line ->
-                val tokens = line.split(",")
-                if (tokens.size != 3)
-                    logErrorAndThrow("Line $index: not three comma separated values.")
-                val (_, id, time) = tokens
-                TODO("Change ParticipantAndTime class to only store id")
-            }
-            TODO()
-        }
-
-        fun readFromFileContentAndParticipantsList(
-            fileContent: FileContent,
-            participantsList: ParticipantsList
-        ): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
             val rest = fileContent.drop(2) // group row and header row
             val participantAndTimeList = rest.mapIndexed { index, line ->
@@ -47,12 +31,13 @@ class GroupResultProtocol(
                     else -> Time.fromString(time)
                 }
                 ParticipantAndTime(
-                    participantsList.getParticipantById(idNum)!!,
+                    idNum,
                     timeParsed
                 )
             }
             return GroupResultProtocol(groupName, participantAndTimeList)
         }
+
     }
 
     override fun dumpToCsv(): FileContent {
@@ -79,13 +64,13 @@ class GroupResultProtocol(
         val places = generatePlaces()
         var index = -1
         return listOf(groupName) + PlayersPrinter(listOf(
-            FieldInfo<Int>("Место") { ++index; places[index].toString() },
+            FieldInfo("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->
-                entries.first { it.participant.id == id }.totalTime?.toString()
+                entries.first { it.id == id }.totalTime?.toString()
                     ?: "снят"
             }
-        )).toTable(entries.map { it.participant.id })
+        )).toTable(entries.map { it.id })
 
     }
 

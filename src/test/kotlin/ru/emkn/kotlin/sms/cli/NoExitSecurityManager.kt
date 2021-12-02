@@ -1,3 +1,5 @@
+package ru.emkn.kotlin.sms.cli
+
 import java.security.Permission
 
 /**
@@ -10,9 +12,11 @@ class NoExitSecurityManager : SecurityManager() {
     override fun checkPermission(perm: Permission?) {
         // allow anything
     }
+
     override fun checkPermission(perm: Permission?, context: Any?) {
         // allow anything
     }
+
     override fun checkExit(status: Int) {
         super.checkExit(status)
         throw Exception("Exit block")

@@ -64,12 +64,12 @@ internal class ApiTests {
         val maleResults = resultProtocols.single { it.groupName == "М10" }
         assertEquals(
             listOf(1, 3, 2),
-            maleResults.entries.map { it.participant.id })
+            maleResults.entries.map { it.id })
         assertEquals(
             listOf(30.s(), 90.s(), null),
             maleResults.entries.map { it.totalTime })
         val femaleResults = resultProtocols.single { it.groupName == "Ж10" }
-        assertEquals(4, femaleResults.entries.single().participant.id)
+        assertEquals(4, femaleResults.entries.single().id)
         assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
     }
 
@@ -141,7 +141,7 @@ internal class ApiTests {
         val maleResults = resultProtocols.single { it.groupName == "М10" }
         assertEquals(
             listOf(2, 1, 3),
-            maleResults.entries.map { it.participant.id })
+            maleResults.entries.map { it.id })
         assertEquals(
             listOf(3.s(), 6.s(), null),
             maleResults.entries.map { it.totalTime })
@@ -230,6 +230,38 @@ internal class ApiTests {
             6,6,00:00:30
         """.trimIndent()
         )
+    }
+
+    @Test
+    fun testDisqualificationOnFalseStart() {
+        val participants = ParticipantsList(
+            listOf(Participant(1, 10, "Иван", "Иванов", "М10", "T1", ""))
+        )
+        val startingProtocols = listOf(
+            StartingProtocol("М10", listOf(StartingProtocolEntry(1, 100.s())))
+        )
+        val route = Route("main", listOf("1", "2"))
+        val competition = Competition(
+            "",
+            "",
+            0,
+            "",
+            listOf("М10"),
+            listOf(route),
+            mapOf("М10" to route),
+            mapOf()
+        )
+        val checkpointProtocols = listOf(
+            CheckpointTimestampsProtocol("1", listOf(IdAndTime(1, 10.s()))),
+            CheckpointTimestampsProtocol("2", listOf(IdAndTime(1, 110.s()))),
+        )
+        val results = generateResultsProtocolsFromCheckpointTimestamps(
+            participants,
+            startingProtocols,
+            checkpointProtocols,
+            competition
+        )
+        assertEquals(null, results.single().entries.single().totalTime)
     }
 }
 

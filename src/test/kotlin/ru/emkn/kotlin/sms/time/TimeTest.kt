@@ -1,6 +1,5 @@
-package ru.emkn.kotlin.time
+package ru.emkn.kotlin.sms.time
 
-import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -53,7 +52,7 @@ internal class TimeTest {
 
     @Test
     fun `good seconds constructor`() {
-        assertEquals(Time(15, 0,0), Time(15 * 3600))
+        assertEquals(Time(15, 0, 0), Time(15 * 3600))
         assertEquals(Time(15, 34, 12), Time(15 * 3600 + 34 * 60 + 12))
         assertEquals(Time(0, 0, 0), Time(0))
     }

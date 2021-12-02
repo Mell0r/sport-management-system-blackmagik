@@ -10,5 +10,6 @@ import java.io.File
 object FileArgType : ArgType<File>(true) {
     override val description = "{ File }"
 
-    override fun convert(value: kotlin.String, name: kotlin.String) = File(value)
+    override fun convert(value: kotlin.String, name: kotlin.String) =
+        File(value)
 }

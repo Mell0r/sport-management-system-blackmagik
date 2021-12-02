@@ -1,14 +1,14 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.*
-import kotlin.math.max
+import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.TeamResultsProtocol
+import ru.emkn.kotlin.sms.TeamToScore
 import kotlin.math.roundToInt
 
 fun generateTeamResultsProtocol(
     groupResultProtocols: List<GroupResultProtocol>,
-    participantsList: ParticipantsList,
-    competitionConfig: Competition
+    participantsList: ParticipantsList
 ): TeamResultsProtocol {
     val idToScore = HashMap<Int, Int>()
     groupResultProtocols.forEach { groupResultProtocol ->
@@ -16,9 +16,9 @@ fun generateTeamResultsProtocol(
     }
     val teamsToScore = groupResultProtocols
         .flatMap { it.entries }
-        .groupBy { it.participant.team }
+        .groupBy { participantsList.getParticipantById(it.id)!!.team }
         .mapValues { (_, listParticipantAndTime) ->
-            val idsOfTeam = listParticipantAndTime.map { it.participant.id }
+            val idsOfTeam = listParticipantAndTime.map { it.id }
             idsOfTeam.sumOf { idToScore[it]!! }
         }
     return TeamResultsProtocol(teamsToScore.entries.map { (team, score) ->
@@ -37,21 +37,16 @@ private fun moveCalculatedScoresIntoMap(
         groupResultProtocol.entries.mapNotNull { it.totalTime }
             .minOfOrNull { it.asSeconds() }
     if (bestResult == null) {
-        groupResultProtocol.entries.map { it.participant.id }
-            .forEach { id ->
-                idToScore[id] = 0
-            }
+        groupResultProtocol.entries.map { it.id }
+            .forEach { id -> idToScore[id] = 0 }
     } else {
-        groupResultProtocol.entries.map { it.participant.id to it.totalTime?.asSeconds() }
+        groupResultProtocol.entries.map { it.id to it.totalTime?.asSeconds() }
             .forEach { (id, totalTime) ->
-                if (totalTime != null) {
-                    idToScore[id] = max(
-                        0,
-                        (100 * (2 - totalTime.toFloat() / bestResult.toFloat())).roundToInt()
-                    )
-                } else {
-                    idToScore[id] = 0
+                val score = when (totalTime) {
+                    null -> 0
+                    else -> (100 * (2 - totalTime.toFloat() / bestResult.toFloat())).roundToInt()
                 }
+                idToScore[id] = score
             }
     }
 }

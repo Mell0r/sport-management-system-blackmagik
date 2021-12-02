@@ -11,5 +11,6 @@ data class Participant(
     val team: String,
     val sportsCategory: String // from fixed options from config
 ) {
-    override fun toString() = "$id,$age,$name,$lastName,$supposedGroup,$team,$sportsCategory"
+    override fun toString() =
+        "$id,$age,$name,$lastName,$supposedGroup,$team,$sportsCategory"
 }

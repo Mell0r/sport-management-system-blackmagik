@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms
 
 class GroupRequirement(private val ageFrom: Int, private val ageTo: Int) {
-    fun checkApplicant(age : Int) = (age >= ageFrom) && (age <= ageTo)
+    fun checkApplicant(age: Int) = (age >= ageFrom) && (age <= ageTo)
 }
 
 class Competition(

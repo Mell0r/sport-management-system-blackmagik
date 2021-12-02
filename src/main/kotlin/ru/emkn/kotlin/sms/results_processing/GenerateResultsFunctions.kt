@@ -77,8 +77,8 @@ private fun convertToGroupResults(
     participantTimes: List<ParticipantAndTime>,
     helper: Helper
 ): List<GroupResultProtocol> {
-    val groupedByGroups = participantTimes.groupBy({ (participant, _) ->
-        participant.supposedGroup
+    val groupedByGroups = participantTimes.groupBy({ (id, _) ->
+        helper.getGroupOf(id)
     }) { (participant, completionTime) ->
         ParticipantAndTime(participant, completionTime)
     }
@@ -95,15 +95,15 @@ private fun generateResultProtocolWithinAGroup(
     groupResults: List<ParticipantAndTime>,
     idToParticipantMapping: (Int) -> Participant
 ): GroupResultProtocol {
-    val participantsSorted =
+    val idsSorted =
         sortedGroupResultsForResultsTable(groupResults, idToParticipantMapping)
-            .map { it.participant }
+            .map { it.id }
     return GroupResultProtocol(
         groupLabel,
-        participantsSorted.map { participant ->
+        idsSorted.map { id ->
             ParticipantAndTime(
-                participant,
-                groupResults.single { it.participant.id == participant.id }.totalTime
+                id,
+                groupResults.single { it.id == id }.totalTime
             )
         })
 }
@@ -113,8 +113,8 @@ private fun sortedGroupResultsForResultsTable(
     idToParticipantMapping: (Int) -> Participant
 ) =
     groupResults.filter { it.totalTime != null }
-        .sortedBy { idToParticipantMapping(it.participant.id).lastName }
+        .sortedBy { idToParticipantMapping(it.id).lastName }
         .sortedBy { it.totalTime!! } +
             groupResults.filter { it.totalTime == null }
-                .sortedBy { it.participant.lastName }
+                .sortedBy { idToParticipantMapping(it.id).lastName }
 
