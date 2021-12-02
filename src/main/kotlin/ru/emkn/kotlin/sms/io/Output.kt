@@ -53,7 +53,7 @@ fun askYesNoQuestionInConsole(question: String) : Boolean {
  * If it couldn't write to a file, or some exception occurred, terminates the program.
  */
 fun safeWriteContentToFile(content: List<String>, outputDirectory: File, fileName: String) {
-    val fileToWrite = File("${outputDirectory.absolutePath}/$fileName")
+    val fileToWrite = File(outputDirectory, fileName)
     val path = fileToWrite.absolutePath
     if (fileToWrite.exists()) {
         if (!askYesNoQuestionInConsole(

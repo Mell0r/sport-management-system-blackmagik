@@ -66,12 +66,12 @@ private fun processInvokedSubcommand(
     }
 }
 
-fun exitWithInfoLog() : Nothing {
+fun exitWithInfoLog(): Nothing {
     Logger.info { "Terminating..." }
     exitProcess(255)
 }
 
-private fun loadCompetition(competitionConfigDirPath: String) : Competition {
+private fun loadCompetition(competitionConfigDirPath: String): Competition {
     // Competition config MUST be loaded, otherwise program has to terminate.
     return try {
         initializeCompetition(competitionConfigDirPath)
@@ -84,7 +84,7 @@ private fun loadCompetition(competitionConfigDirPath: String) : Competition {
     }
 }
 
-private fun ensureOutputDirectory(outputDirectoryPath: String) : File {
+private fun ensureOutputDirectory(outputDirectoryPath: String): File {
     // Output directory MUST be loaded, otherwise program has to terminate.
     return try {
         ensureDirectory(outputDirectoryPath)
@@ -133,20 +133,28 @@ private fun start(
     val participantsListContent = participantsList.dumpToCsv()
     val participantsListFileName =
         getFileNameOfParticipantsList(participantsList)
+    val participantsListOutputFolder = File(outputDirectory, "participant-list")
+    participantsListOutputFolder.mkdirs()
     safeWriteContentToFile(
         participantsListContent,
-        outputDirectory,
+        participantsListOutputFolder,
         participantsListFileName
     )
-
+    val startingProtocolsOutputFolder =
+        File(outputDirectory, "starting-protocols")
+    startingProtocolsOutputFolder.mkdirs()
     startingProtocols.forEach { startingProtocol ->
         val content = startingProtocol.dumpToCsv()
         val fileName = getFileNameOfStartingProtocol(startingProtocol)
-        safeWriteContentToFile(content, outputDirectory, fileName)
+        safeWriteContentToFile(
+            content,
+            startingProtocolsOutputFolder,
+            fileName
+        )
     }
 }
 
-private fun loadParticipantsList(participantListFile: File) : ParticipantsList =
+private fun loadParticipantsList(participantListFile: File): ParticipantsList =
     readAndParseFile(
         file = participantListFile,
         parser = ParticipantsList.Companion::readFromFileContent,
@@ -171,7 +179,7 @@ private fun result(
     resultCommand: ArgParsingSystem.ResultCommand,
     competition: Competition,
     outputDirectory: File,
-){
+) {
     val participantsList =
         loadParticipantsList(resultCommand.participantListFile)
 
@@ -199,7 +207,11 @@ private fun result(
         Logger.error { "Route completion protocol at \"${file.absolutePath}\" cannot be reached or read" }
         exitWithInfoLog()
     }
-    fun routeCompletionProtocolHasWrongFormatStrategy(file: File, exception: IllegalArgumentException) {
+
+    fun routeCompletionProtocolHasWrongFormatStrategy(
+        file: File,
+        exception: IllegalArgumentException
+    ) {
         Logger.error {
             "Route completion protocol at \"${file.absolutePath}\" has wrong format:\n" +
                     "${exception.message}"
@@ -274,8 +286,7 @@ private fun resultTeams(
     resultsTeamsCommand: ArgParsingSystem.ResultTeamsCommand,
     competition: Competition,
     outputDirectory: File,
-)
-{
+) {
     val participantsList =
         loadParticipantsList(resultsTeamsCommand.participantListFile)
 
