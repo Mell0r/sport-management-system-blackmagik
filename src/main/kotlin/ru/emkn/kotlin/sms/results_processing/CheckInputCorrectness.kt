@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
+import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.StartingProtocol
@@ -15,9 +16,15 @@ fun checkInputCorrectnessParticipantTimestamps(
         startingProtocols,
         competitionConfig
     )
-    require(participantTimestampsProtocols.map { it.id }
+    val allIdsCovered = participantTimestampsProtocols.map { it.id }
         .toSet() == participantsList.list.map { it.id }
-        .toSet()) { "Participant timestamps protocols should cover all ids." }
+        .toSet()
+    if (!allIdsCovered) {
+        Logger.warn {
+            "Participant timestamps protocols should cover all ids." +
+                    " People with their id missing in protocols will be disqualified."
+        }
+    }
 }
 
 fun checkInputCorrectnessCheckpointTimestamps(
@@ -47,6 +54,8 @@ private fun checkInputCorrectness(
             .map { it.id }
     require(participantsFromStartingProtocols.size == participantsFromStartingProtocols.distinct().size) { "Starting lists should not have repeated ids." }
     require(participantsList.list.size == participantsList.list.distinct().size) { "Participant lists should not have repeated ids." }
-    require(startingProtocols.map { it.group }
-        .toSet() == competitionConfig.groups.toSet()) { "Starting protocols should cover all groups from competition." }
+    val allGroupsCovered = startingProtocols.map { it.group }
+        .toSet() == competitionConfig.groups.toSet()
+    if (!allGroupsCovered)
+        Logger.warn { "Starting protocols should cover all groups from competition." }
 }
