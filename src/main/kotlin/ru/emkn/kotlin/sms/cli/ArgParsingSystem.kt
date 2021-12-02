@@ -1,10 +1,12 @@
 package ru.emkn.kotlin.sms.cli
 
 import kotlinx.cli.*
-import ru.emkn.kotlin.sms.*
-import java.io.File
 import org.tinylog.Logger
-import kotlin.system.*
+import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
+import ru.emkn.kotlin.sms.ProgramSubcommands
+import ru.emkn.kotlin.sms.RouteProtocolType
+import java.io.File
+import kotlin.system.exitProcess
 
 
 /**
@@ -53,6 +55,7 @@ class ArgParsingSystem {
             invokedSubcommand = ProgramSubcommands.START
         }
     }
+
     val startCommand = StartCommand()
 
 
@@ -95,6 +98,7 @@ class ArgParsingSystem {
             invokedSubcommand = ProgramSubcommands.RESULT
         }
     }
+
     val resultCommand = ResultCommand()
 
 
@@ -123,6 +127,7 @@ class ArgParsingSystem {
             invokedSubcommand = ProgramSubcommands.RESULT_TEAMS
         }
     }
+
     val resultTeamsCommand = ResultTeamsCommand()
 
     init {
@@ -130,19 +135,21 @@ class ArgParsingSystem {
     }
 
     fun parse(args: Array<String>) {
-        Logger.debug {"Beginning to parse arguments."}
+        Logger.debug { "Beginning to parse arguments." }
 
         argParser.parse(args)
 
         // Currently, kotlinx-cli doesn't handle the case, where no subcommand is given
         // So we need to check for it manually
         if (invokedSubcommand == null) {
-            Logger.error {"No subcommand is given.\n" +
-                    "Please specify one of the subcommands: \"start\", \"result\", \"result_teams\";\n" +
-                    "Or use -h (--help) to see help message."}
+            Logger.error {
+                "No subcommand is given.\n" +
+                        "Please specify one of the subcommands: \"start\", \"result\", \"result_teams\";\n" +
+                        "Or use -h (--help) to see help message."
+            }
             exitProcess(255)
         }
 
-        Logger.debug {"Successfully finished parsing arguments."}
+        Logger.debug { "Successfully finished parsing arguments." }
     }
 }

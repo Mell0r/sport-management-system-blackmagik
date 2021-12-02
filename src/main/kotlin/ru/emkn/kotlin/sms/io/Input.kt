@@ -4,14 +4,13 @@ import org.tinylog.Logger
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 import java.nio.file.Files
-import kotlin.IllegalArgumentException
 
 /**
  * Creates a directory by given filepath and all it's ancestors (if it doesn't exist already).
  * Returns a created directory as a [java.io.File].
  * If the specified file already exists and is not a directory, throws IllegalArgumentException
  */
-fun ensureDirectory(directoryPath: String) : File {
+fun ensureDirectory(directoryPath: String): File {
     val file = File(directoryPath)
     if (file.exists() && !file.isDirectory) {
         throw IllegalArgumentException("$directoryPath already exists and is not a directory!")
@@ -25,13 +24,13 @@ fun ensureDirectory(directoryPath: String) : File {
  * Reads an entire [java.io.File].
  * Returns a [List] of [String], or null if it couldn't reach or read the file.
  */
-fun readFileContentOrNull(file: File) : List<String>? {
+fun readFileContentOrNull(file: File): List<String>? {
     if (!file.exists()) {
-        Logger.info {"File \"$file\" doesn't exist."}
+        Logger.info { "File \"$file\" doesn't exist." }
         return null
     }
     if (!file.canRead()) {
-        Logger.info {"File \"$file\" cannot be read."}
+        Logger.info { "File \"$file\" cannot be read." }
         return null
     }
     return file.readLines()
@@ -45,7 +44,7 @@ fun readFileContentOrNull(file: File) : List<String>? {
 fun readAllReadableFiles(
     files: List<File>,
     reactionOnFailure: (File) -> Unit = {},
-) : List<List<String>> {
+): List<List<String>> {
     return files.map { file ->
         file to readFileContentOrNull(file)
     }.mapNotNull { (file, content) ->
@@ -65,7 +64,7 @@ fun readAllReadableFiles(
 private fun readAllReadableFilesPairFile(
     files: List<File>,
     reactionOnFailure: (File) -> Unit = {},
-) : List<Pair<File, List<String>>> {
+): List<Pair<File, List<String>>> {
     return files.map { file -> file to readFileContentOrNull(file) }
         .flatMap { (file, contentOrNull) ->
             if (contentOrNull == null) {
@@ -92,7 +91,7 @@ fun <T> readAndParseFile(
     parser: (FileContent) -> T,
     strategyIfCouldntRead: (File) -> Nothing,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing,
-) : T {
+): T {
     val content = readFileContentOrNull(file) ?: strategyIfCouldntRead(file)
     return try {
         parser(content)
@@ -116,8 +115,9 @@ fun <T> readAndParseAllFiles(
     parser: (FileContent) -> T,
     strategyIfCouldntRead: (File) -> Unit,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit,
-) : List<T> {
-    val filesWithContents = readAllReadableFilesPairFile(files, strategyIfCouldntRead)
+): List<T> {
+    val filesWithContents =
+        readAllReadableFilesPairFile(files, strategyIfCouldntRead)
     return filesWithContents.flatMap { (file, content) ->
         try {
             listOf(parser(content))

@@ -27,7 +27,10 @@ internal class CLITests {
         )
         assertEquals(
             listOf("file1.csv", "xls.csv.csv").map { File(it) }.toSet(),
-            CsvFileListArgType.convert("file1.csv,file2.rar,file3,file4.dbf,xls.csv.csv", "").toSet(),
+            CsvFileListArgType.convert(
+                "file1.csv,file2.rar,file3,file4.dbf,xls.csv.csv",
+                ""
+            ).toSet(),
         )
         assertEquals(
             listOf(
@@ -37,7 +40,10 @@ internal class CLITests {
                 "$testDataDir/manyCsvs/file03.csv",
                 "$testDataDir/manyCsvs/subfolder/app.csv",
             ).map { File(it) }.toSet(),
-            CsvFileListArgType.convert("test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa", "").toSet(),
+            CsvFileListArgType.convert(
+                "test.txt,app1.csv,$testDataDir/manyCsvs/,$testDataDir/emptyFolder,aaa",
+                ""
+            ).toSet(),
         )
     }
 
@@ -70,11 +76,21 @@ internal class CLITests {
         }
     }
 
-    private fun testConfigFileAndOutputDirectory(args: Array<String>, expectedConfigFileName: String, expectedOutputDirectoryPath: String) {
+    private fun testConfigFileAndOutputDirectory(
+        args: Array<String>,
+        expectedConfigFileName: String,
+        expectedOutputDirectoryPath: String
+    ) {
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(File(expectedConfigFileName), argParsingSystem.competitionConfigDirectory)
-        assertEquals(File(expectedOutputDirectoryPath), argParsingSystem.outputDirectory)
+        assertEquals(
+            File(expectedConfigFileName),
+            argParsingSystem.competitionConfigDirectory
+        )
+        assertEquals(
+            File(expectedOutputDirectoryPath),
+            argParsingSystem.outputDirectory
+        )
     }
 
     @Test
@@ -85,12 +101,32 @@ internal class CLITests {
             expectedOutputDirectoryPath = "out",
         )
         testConfigFileAndOutputDirectory(
-            arrayOf("cfg1.json", "result", "-o", "out", "-p", "", "-r", "", "-s", ""),
+            arrayOf(
+                "cfg1.json",
+                "result",
+                "-o",
+                "out",
+                "-p",
+                "",
+                "-r",
+                "",
+                "-s",
+                ""
+            ),
             expectedConfigFileName = "cfg1.json",
             expectedOutputDirectoryPath = "out",
         )
         testConfigFileAndOutputDirectory(
-            arrayOf("result_teams", "cfg.json", "--output", "out1", "-p", "", "-r", ""),
+            arrayOf(
+                "result_teams",
+                "cfg.json",
+                "--output",
+                "out1",
+                "-p",
+                "",
+                "-r",
+                ""
+            ),
             expectedConfigFileName = "cfg.json",
             expectedOutputDirectoryPath = "out1",
         )
@@ -110,13 +146,23 @@ internal class CLITests {
         }
     }
 
-    private fun testStartSubcommand(args: Array<String>, expectedApplicationFileNames: List<String>) {
-        val expectedApplicationFiles = expectedApplicationFileNames.map { File(it) }
+    private fun testStartSubcommand(
+        args: Array<String>,
+        expectedApplicationFileNames: List<String>
+    ) {
+        val expectedApplicationFiles =
+            expectedApplicationFileNames.map { File(it) }
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(ProgramSubcommands.START, argParsingSystem.invokedSubcommand)
-        assertEquals(expectedApplicationFiles, argParsingSystem.startCommand.applicationFiles)
+        assertEquals(
+            ProgramSubcommands.START,
+            argParsingSystem.invokedSubcommand
+        )
+        assertEquals(
+            expectedApplicationFiles,
+            argParsingSystem.startCommand.applicationFiles
+        )
     }
 
     @Test
@@ -126,7 +172,14 @@ internal class CLITests {
             expectedApplicationFileNames = listOf("app.csv"),
         )
         testStartSubcommand(
-            arrayOf("start", "cfg.json", "-o", "out", "--applications", "app1.csv,app2.csv"),
+            arrayOf(
+                "start",
+                "cfg.json",
+                "-o",
+                "out",
+                "--applications",
+                "app1.csv,app2.csv"
+            ),
             expectedApplicationFileNames = listOf("app1.csv", "app2.csv"),
         )
         assertFails {
@@ -150,23 +203,52 @@ internal class CLITests {
         expectedRouteProtocolType: RouteProtocolType,
         expectedRouteProtocolFileNames: List<String>,
     ) {
-        val expectedStartingProtocolFiles = expectedStartingProtocolFileNames.map { File(it) }
-        val expectedParticipantsListFile = File(expectedParticipantsListFileName)
-        val expectedRouteProtocolFiles = expectedRouteProtocolFileNames.map { File(it) }
+        val expectedStartingProtocolFiles =
+            expectedStartingProtocolFileNames.map { File(it) }
+        val expectedParticipantsListFile =
+            File(expectedParticipantsListFileName)
+        val expectedRouteProtocolFiles =
+            expectedRouteProtocolFileNames.map { File(it) }
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(ProgramSubcommands.RESULT, argParsingSystem.invokedSubcommand)
-        assertEquals(expectedParticipantsListFile, argParsingSystem.resultCommand.participantListFile)
-        assertEquals(expectedStartingProtocolFiles, argParsingSystem.resultCommand.startingProtocolFiles)
-        assertEquals(expectedRouteProtocolType, argParsingSystem.resultCommand.routeProtocolType)
-        assertEquals(expectedRouteProtocolFiles, argParsingSystem.resultCommand.routeProtocolFiles)
+        assertEquals(
+            ProgramSubcommands.RESULT,
+            argParsingSystem.invokedSubcommand
+        )
+        assertEquals(
+            expectedParticipantsListFile,
+            argParsingSystem.resultCommand.participantListFile
+        )
+        assertEquals(
+            expectedStartingProtocolFiles,
+            argParsingSystem.resultCommand.startingProtocolFiles
+        )
+        assertEquals(
+            expectedRouteProtocolType,
+            argParsingSystem.resultCommand.routeProtocolType
+        )
+        assertEquals(
+            expectedRouteProtocolFiles,
+            argParsingSystem.resultCommand.routeProtocolFiles
+        )
     }
 
     @Test
     fun `Result subcommand`() {
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-s", "startingProtocol.csv", "-r", "routeProtocol.csv"),
+            arrayOf(
+                "result",
+                "cfg.json",
+                "-o",
+                "out",
+                "-p",
+                "participantsList.csv",
+                "-s",
+                "startingProtocol.csv",
+                "-r",
+                "routeProtocol.csv"
+            ),
             expectedParticipantsListFileName = "participantsList.csv",
             expectedStartingProtocolFileNames = listOf(
                 "startingProtocol.csv",
@@ -177,7 +259,18 @@ internal class CLITests {
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "-r", "routeProtocol.csv", "-p", "participantsList.csv", "-s", "startingProtocol.csv"),
+            arrayOf(
+                "result",
+                "cfg.json",
+                "-o",
+                "out",
+                "-r",
+                "routeProtocol.csv",
+                "-p",
+                "participantsList.csv",
+                "-s",
+                "startingProtocol.csv"
+            ),
             expectedParticipantsListFileName = "participantsList.csv",
             expectedStartingProtocolFileNames = listOf(
                 "startingProtocol.csv",
@@ -188,7 +281,20 @@ internal class CLITests {
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-o", "out", "--startingProtocols", "startingProtocol.csv", "--participants", "participantsList.csv", "--routeProtocols", "protocol1.csv,protocol2.csv", "-tp", "OF_PARTICIPANT"),
+            arrayOf(
+                "result",
+                "cfg.json",
+                "-o",
+                "out",
+                "--startingProtocols",
+                "startingProtocol.csv",
+                "--participants",
+                "participantsList.csv",
+                "--routeProtocols",
+                "protocol1.csv,protocol2.csv",
+                "-tp",
+                "OF_PARTICIPANT"
+            ),
             expectedParticipantsListFileName = "participantsList.csv",
             expectedStartingProtocolFileNames = listOf(
                 "startingProtocol.csv",
@@ -200,7 +306,20 @@ internal class CLITests {
             )
         )
         testResultSubcommand(
-            arrayOf("result", "cfg.json", "-s", "sprotocol.csv", "-o", "out", "--routeProtocolType", "of_checkpoint", "-p", "plist.csv", "-r", "rprotocol.csv"),
+            arrayOf(
+                "result",
+                "cfg.json",
+                "-s",
+                "sprotocol.csv",
+                "-o",
+                "out",
+                "--routeProtocolType",
+                "of_checkpoint",
+                "-p",
+                "plist.csv",
+                "-r",
+                "rprotocol.csv"
+            ),
             expectedParticipantsListFileName = "plist.csv",
             expectedStartingProtocolFileNames = listOf(
                 "sprotocol.csv",
@@ -212,7 +331,16 @@ internal class CLITests {
         )
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv", "-s", "sprotocol.csv"),
+                arrayOf(
+                    "result",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-p",
+                    "plist.csv",
+                    "-s",
+                    "sprotocol.csv"
+                ),
                 expectedParticipantsListFileName = "plist.csv",
                 expectedStartingProtocolFileNames = listOf(
                     "sprotocol.csv",
@@ -223,7 +351,16 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-r", "protocol.csv", "-s", "sprotocol.csv"),
+                arrayOf(
+                    "result",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-r",
+                    "protocol.csv",
+                    "-s",
+                    "sprotocol.csv"
+                ),
                 expectedParticipantsListFileName = "",
                 expectedStartingProtocolFileNames = listOf(
                     "sprotocol.csv",
@@ -236,7 +373,20 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-p", "plist.csv", "-r", "protocol.csv", "-s", "sprotocol.csv", "-tp", "invalid_type"),
+                arrayOf(
+                    "result",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-p",
+                    "plist.csv",
+                    "-r",
+                    "protocol.csv",
+                    "-s",
+                    "sprotocol.csv",
+                    "-tp",
+                    "invalid_type"
+                ),
                 expectedParticipantsListFileName = "plist.csv",
                 expectedStartingProtocolFileNames = listOf(
                     "sprotocol.csv",
@@ -249,7 +399,20 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-w", "plist.csv", "-r", "protocol.csv", "-s", "sprotocol.csv", "-tp", "invalid_type"),
+                arrayOf(
+                    "result",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-w",
+                    "plist.csv",
+                    "-r",
+                    "protocol.csv",
+                    "-s",
+                    "sprotocol.csv",
+                    "-tp",
+                    "invalid_type"
+                ),
                 expectedParticipantsListFileName = "plist.csv",
                 expectedStartingProtocolFileNames = listOf(
                     "sprotocol.csv",
@@ -262,7 +425,16 @@ internal class CLITests {
         }
         assertFails {
             testResultSubcommand(
-                arrayOf("result", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-r", "routeProtocol.csv"),
+                arrayOf(
+                    "result",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-p",
+                    "participantsList.csv",
+                    "-r",
+                    "routeProtocol.csv"
+                ),
                 expectedParticipantsListFileName = "participantsList.csv",
                 expectedStartingProtocolFileNames = listOf(),
                 expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
@@ -279,20 +451,40 @@ internal class CLITests {
         expectedParticipantsListFileName: String,
         expectedResultProtocolFileNames: List<String>,
     ) {
-        val expectedParticipantsListFile = File(expectedParticipantsListFileName)
-        val expectedResultProtocolFiles = expectedResultProtocolFileNames.map { File(it) }
+        val expectedParticipantsListFile =
+            File(expectedParticipantsListFileName)
+        val expectedResultProtocolFiles =
+            expectedResultProtocolFileNames.map { File(it) }
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(ProgramSubcommands.RESULT_TEAMS, argParsingSystem.invokedSubcommand)
-        assertEquals(expectedParticipantsListFile, argParsingSystem.resultTeamsCommand.participantListFile)
-        assertEquals(expectedResultProtocolFiles, argParsingSystem.resultTeamsCommand.resultProtocolFiles)
+        assertEquals(
+            ProgramSubcommands.RESULT_TEAMS,
+            argParsingSystem.invokedSubcommand
+        )
+        assertEquals(
+            expectedParticipantsListFile,
+            argParsingSystem.resultTeamsCommand.participantListFile
+        )
+        assertEquals(
+            expectedResultProtocolFiles,
+            argParsingSystem.resultTeamsCommand.resultProtocolFiles
+        )
     }
 
     @Test
     fun `Result teams subcommand`() {
         testResultTeamsSubcommand(
-            arrayOf("result_teams", "cfg.json", "-o", "out", "-p", "participantsList.csv", "-r", "resultProtocol1.csv,resultProtocol2.csv"),
+            arrayOf(
+                "result_teams",
+                "cfg.json",
+                "-o",
+                "out",
+                "-p",
+                "participantsList.csv",
+                "-r",
+                "resultProtocol1.csv,resultProtocol2.csv"
+            ),
             expectedParticipantsListFileName = "participantsList.csv",
             expectedResultProtocolFileNames = listOf(
                 "resultProtocol1.csv",
@@ -300,7 +492,16 @@ internal class CLITests {
             )
         )
         testResultTeamsSubcommand(
-            arrayOf("result_teams", "cfg.json", "-o", "out", "--resultProtocols", "resProtocol.csv", "--participants", "participantsList.csv"),
+            arrayOf(
+                "result_teams",
+                "cfg.json",
+                "-o",
+                "out",
+                "--resultProtocols",
+                "resProtocol.csv",
+                "--participants",
+                "participantsList.csv"
+            ),
             expectedParticipantsListFileName = "participantsList.csv",
             expectedResultProtocolFileNames = listOf(
                 "resProtocol.csv",
@@ -308,14 +509,28 @@ internal class CLITests {
         )
         assertFails {
             testResultTeamsSubcommand(
-                arrayOf("result_teams", "cfg.json", "-o", "out", "-p", "participantsList.csv"),
+                arrayOf(
+                    "result_teams",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-p",
+                    "participantsList.csv"
+                ),
                 expectedParticipantsListFileName = "participantsList.csv",
                 expectedResultProtocolFileNames = listOf()
             )
         }
         assertFails {
             testResultTeamsSubcommand(
-                arrayOf("result_teams", "cfg.json", "-o", "out", "-r", "rprotocol.csv"),
+                arrayOf(
+                    "result_teams",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-r",
+                    "rprotocol.csv"
+                ),
                 expectedParticipantsListFileName = "",
                 expectedResultProtocolFileNames = listOf(
                     "rprotocol.csv",
@@ -324,7 +539,15 @@ internal class CLITests {
         }
         assertFails {
             testResultTeamsSubcommand(
-                arrayOf("result_teams", "cfg.json", "-o", "out", "-test", "something   temp", "baz"),
+                arrayOf(
+                    "result_teams",
+                    "cfg.json",
+                    "-o",
+                    "out",
+                    "-test",
+                    "something   temp",
+                    "baz"
+                ),
                 expectedParticipantsListFileName = "",
                 expectedResultProtocolFileNames = listOf()
             )

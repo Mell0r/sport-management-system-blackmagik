@@ -19,9 +19,10 @@ data class ParticipantTimestampsProtocol(
     companion object : CreatableFromFileContent<ParticipantTimestampsProtocol> {
         override fun readFromFileContent(fileContent: FileContent): ParticipantTimestampsProtocol {
             val id =
-                fileContent.first().split(",").first().toIntOrNull() ?: logErrorAndThrow(
-                    "Строка $1: id участника не является числом"
-                )
+                fileContent.first().split(",").first().toIntOrNull()
+                    ?: logErrorAndThrow(
+                        "Строка 1: id участника не является числом"
+                    )
             val entries =
                 fileContent.zip(1..fileContent.size).drop(1)
                     .map { (line, lineNumber) ->
@@ -46,7 +47,7 @@ data class IdAndTime(
 data class CheckpointTimestampsProtocol(
     val checkpointLabel: CheckpointLabelT,
     val participantTimes: List<IdAndTime>
-){
+) {
     companion object : CreatableFromFileContent<CheckpointTimestampsProtocol> {
         override fun readFromFileContent(fileContent: FileContent): CheckpointTimestampsProtocol {
             val checkPointLabel = fileContent.first().split(",").first()
