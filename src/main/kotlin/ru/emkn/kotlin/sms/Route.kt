@@ -13,7 +13,42 @@ sealed class Route(val name: String, val checkpoints: Set<CheckpointLabelT>) {
     ): Time?
 }
 
+/*
+The line must start with a route type id surrounded with dollar signs.
+The $0$ is optional for backwards compatibility.
+Example (ChP stands for checkpoint here):
+$0$orderedRouteName,firstChP, secondChP,thirdChP
+$1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
+ */
+
+@ExperimentalStdlibApi
 fun readRouteFromLine(line: String): Route {
+    if (!line.startsWith("$"))
+        return readOrderedRouteCheckpoint(line)
+    val match = """\$(\d+)\$""".toRegex().matchAt(line, 1)
+        ?: throw IllegalArgumentException("Bad format: there is no second dollar sign in line")
+    val prefixLength = match.range.last
+    val clearLine = line.drop(prefixLength)
+    val routeTypeId = match.groups[1].toString().toInt()
+    return when (routeTypeId) {
+        0 -> readOrderedRouteCheckpoint(clearLine)
+        1 -> readAtLeastKCheckpointsRoute(clearLine)
+        else -> throw IllegalArgumentException("Unsupported route id: $routeTypeId")
+    }
+}
+
+fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
+    val splittedRow = line.split(',').filter { it.isNotEmpty() }
+    if (splittedRow.isEmpty())
+        throw IllegalArgumentException("Empty line in 'Route_description.")
+    val name = splittedRow[0]
+    val k = splittedRow[1].toIntOrNull()
+        ?: throw IllegalArgumentException("Bad k: ${splittedRow[1]}")
+    val checkpoints = splittedRow.drop(2).toSet()
+    return AtLeastKCheckpointsRoute(name, checkpoints, k)
+}
+
+fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
     val splittedRow = line.split(',').filter { it.isNotEmpty() }
     if (splittedRow.isEmpty())
         throw IllegalArgumentException("Empty line in 'Route_description.")
@@ -56,4 +91,23 @@ class OrderedCheckpointsRoute(
             return Time(timeForDistance)
         }
     }
+}
+
+class AtLeastKCheckpointsRoute(
+    name: String,
+    checkpoints: Set<GroupLabelT>,
+    private val k: Int
+) : Route(name, checkpoints) {
+    override fun calculateResultingTime(
+        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        startingTime: Time
+    ): Time? {
+        val visitedCheckpointFromRoute = checkpointsToTimes
+            .filter { it.checkpointLabel in checkpoints }
+            .sortedBy { it.time }
+        val lastRelevantCheckpoint = visitedCheckpointFromRoute
+            .elementAtOrNull(k) ?: return null
+        return Time(lastRelevantCheckpoint.time - startingTime)
+    }
+
 }
