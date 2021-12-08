@@ -31,8 +31,11 @@ internal class StartProtocolsByApplicationsTest {
     )
     private val testCompetition = Competition(
         "", "", 6, "", listOf("A", "B"),
-        listOf(Route("R", listOf())),
-        mapOf("A" to Route("R", listOf()), "B" to Route("R", listOf())),
+        listOf(OrderedCheckpointsRoute("R", listOf())),
+        mapOf(
+            "A" to OrderedCheckpointsRoute("R", listOf()),
+            "B" to OrderedCheckpointsRoute("R", listOf())
+        ),
         mapOf("A" to GroupRequirement(1, 2), "B" to GroupRequirement(0, 10))
     )
 

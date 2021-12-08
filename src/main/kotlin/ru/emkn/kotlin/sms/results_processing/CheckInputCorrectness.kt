@@ -38,9 +38,19 @@ fun checkInputCorrectnessCheckpointTimestamps(
         startingProtocols,
         competitionConfig
     )
-    val allCheckpoints = competitionConfig.routes.flatMap { it.route }.toSet()
-    require(allCheckpoints == checkpointTimestampsProtocol.map { it.checkpointLabel }
-        .toSet()) { "Participant timestamps protocols should cover all checkpoints." }
+    val checkpointUsedInCompetition = competitionConfig.routes
+        .flatMap { it.checkpoints }.toSet()
+    val checkpointsCoveredByProtocols =
+        checkpointTimestampsProtocol.map { it.checkpointLabel }
+    val uncoveredCheckpoints =
+        checkpointUsedInCompetition subtract checkpointsCoveredByProtocols.toSet()
+    if (uncoveredCheckpoints.isNotEmpty()) {
+        Logger.warn {
+            "Some checkpoints were uncovered by the " +
+                    "checkpoint protocols: $uncoveredCheckpoints;\n" +
+                    "If this is not intended, consider rechecking your protocols."
+        }
+    }
 }
 
 
