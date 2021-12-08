@@ -5,7 +5,7 @@ import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.results_processing.CheckpointLabelT
 import ru.emkn.kotlin.sms.time.Time
 
-sealed class Route(val checkpoints: Set<CheckpointLabelT>) {
+sealed class Route(val name: String, val checkpoints: Set<CheckpointLabelT>) {
     // null if disqualified
     abstract fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
@@ -13,10 +13,20 @@ sealed class Route(val checkpoints: Set<CheckpointLabelT>) {
     ): Time?
 }
 
+fun readRouteFromLine(line: String): Route {
+    val splittedRow = line.split(',').filter { it.isNotEmpty() }
+    if (splittedRow.isEmpty())
+        throw IllegalArgumentException("Empty line in 'Route_description.")
+    return OrderedCheckpointsRoute(
+        splittedRow[0],
+        splittedRow.subList(1, splittedRow.size)
+    )
+}
+
 class OrderedCheckpointsRoute(
-    val name: String,
+    name: String,
     private val route: List<CheckpointLabelT>
-) : Route(route.toSet()) {
+) : Route(name, route.toSet()) {
     override fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
