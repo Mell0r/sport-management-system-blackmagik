@@ -20,17 +20,16 @@ Example (ChP stands for checkpoint here):
 $0$orderedRouteName,firstChP, secondChP,thirdChP
 $1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
  */
-
-@ExperimentalStdlibApi
 fun readRouteFromLine(line: String): Route {
     if (!line.startsWith("\$"))
         return readOrderedRouteCheckpoint(line)
     val match = """\$(\d+)\$""".toRegex().matchAt(line, 0)
-        ?: throw IllegalArgumentException("Bad format: there is no second dollar sign in line")
+        ?: throw IllegalArgumentException("Bad format: there is no second dollar sign in line.")
     val prefixLength =
         match.range.last - match.range.first + 1 // plus one as both ends should be included
     val clearLine = line.drop(prefixLength)
-    val routeTypeId = match.groups[1]!!.value.toInt()
+    val routeTypeId = match.groups[1]?.value?.toInt()
+        ?: throw InternalError("The regex in readRouteFromLine is broken.")
     return when (routeTypeId) {
         0 -> readOrderedRouteCheckpoint(clearLine)
         1 -> readAtLeastKCheckpointsRoute(clearLine)
@@ -39,24 +38,21 @@ fun readRouteFromLine(line: String): Route {
 }
 
 private fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
-    val splittedRow = line.split(',').filter { it.isNotEmpty() }
-    if (splittedRow.isEmpty())
+    val tokens = line.split(',').filter { it.isNotEmpty() }
+    if (tokens.isEmpty())
         throw IllegalArgumentException("Empty line in 'Route_description.")
-    val name = splittedRow[0]
-    val k = splittedRow[1].toIntOrNull()
-        ?: throw IllegalArgumentException("Bad k: ${splittedRow[1]}")
-    val checkpoints = splittedRow.drop(2).toSet()
+    val name = tokens[0]
+    val k = tokens[1].toIntOrNull()
+        ?: throw IllegalArgumentException("Bad k (not a number): ${tokens[1]}")
+    val droppedNameAndK = tokens.drop(2)
+    val checkpoints = droppedNameAndK.toSet()
     return AtLeastKCheckpointsRoute(name, checkpoints, k)
 }
 
 private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
-    val splittedRow = line.split(',').filter { it.isNotEmpty() }
-    if (splittedRow.isEmpty())
-        throw IllegalArgumentException("Empty line in 'Route_description.")
-    return OrderedCheckpointsRoute(
-        splittedRow[0],
-        splittedRow.subList(1, splittedRow.size)
-    )
+    val tokens = line.split(',').filter { it.isNotEmpty() }
+    require(tokens.isNotEmpty()) { "Empty line in 'Route_description." }
+    return OrderedCheckpointsRoute(tokens[0], tokens.drop(1))
 }
 
 class OrderedCheckpointsRoute(
@@ -72,24 +68,34 @@ class OrderedCheckpointsRoute(
         val chronologicalCheckpoints =
             checkpointsToTimesChronological.map { it.checkpointLabel }
         if (chronologicalCheckpoints != route) {
-            Logger.warn {
-                "Current participant passed checkpoints in wrong order (expected: ${
-                    route
-                }, actual: $chronologicalCheckpoints). Disqualifying."
-            }
+            logDisqualificationWarning(chronologicalCheckpoints)
             return null
         } else {
             if (checkpointsToTimes.minOf { it.time } < startingTime) {
-                Logger.warn {
-                    "current participant passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${
-                        startingTime
-                    }). Disqualifying."
-                }
+                logFalseStartWarning(checkpointsToTimes, startingTime)
                 return null
             }
             val finishTime = checkpointsToTimesChronological.last().time
-            val timeForDistance = finishTime - startingTime
-            return Time(timeForDistance)
+            return Time(finishTime - startingTime)
+        }
+    }
+
+    private fun logFalseStartWarning(
+        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        startingTime: Time
+    ) {
+        Logger.warn {
+            "current participant passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${
+                startingTime
+            }). Disqualifying."
+        }
+    }
+
+    private fun logDisqualificationWarning(chronologicalCheckpoints: List<CheckpointLabelT>) {
+        Logger.warn {
+            "Current participant passed checkpoints in wrong order (expected: ${
+                route
+            }, actual: $chronologicalCheckpoints). Disqualifying."
         }
     }
 }
