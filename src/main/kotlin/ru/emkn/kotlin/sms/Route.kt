@@ -23,13 +23,14 @@ $1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
 
 @ExperimentalStdlibApi
 fun readRouteFromLine(line: String): Route {
-    if (!line.startsWith("$"))
+    if (!line.startsWith("\$"))
         return readOrderedRouteCheckpoint(line)
-    val match = """\$(\d+)\$""".toRegex().matchAt(line, 1)
+    val match = """\$(\d+)\$""".toRegex().matchAt(line, 0)
         ?: throw IllegalArgumentException("Bad format: there is no second dollar sign in line")
-    val prefixLength = match.range.last
+    val prefixLength =
+        match.range.last - match.range.first + 1 // plus one as both ends should be included
     val clearLine = line.drop(prefixLength)
-    val routeTypeId = match.groups[1].toString().toInt()
+    val routeTypeId = match.groups[1]!!.value.toInt()
     return when (routeTypeId) {
         0 -> readOrderedRouteCheckpoint(clearLine)
         1 -> readAtLeastKCheckpointsRoute(clearLine)
@@ -37,7 +38,7 @@ fun readRouteFromLine(line: String): Route {
     }
 }
 
-fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
+private fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
     val splittedRow = line.split(',').filter { it.isNotEmpty() }
     if (splittedRow.isEmpty())
         throw IllegalArgumentException("Empty line in 'Route_description.")
@@ -48,7 +49,7 @@ fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
     return AtLeastKCheckpointsRoute(name, checkpoints, k)
 }
 
-fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
+private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
     val splittedRow = line.split(',').filter { it.isNotEmpty() }
     if (splittedRow.isEmpty())
         throw IllegalArgumentException("Empty line in 'Route_description.")
@@ -96,8 +97,12 @@ class OrderedCheckpointsRoute(
 class AtLeastKCheckpointsRoute(
     name: String,
     checkpoints: Set<GroupLabelT>,
-    private val k: Int
+    val k: Int
 ) : Route(name, checkpoints) {
+    init {
+        require(k <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
+    }
+
     override fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
