@@ -111,7 +111,7 @@ class AtLeastKCheckpointsRoute(
             .filter { it.checkpointLabel in checkpoints }
             .sortedBy { it.time }
         val lastRelevantCheckpoint = visitedCheckpointFromRoute
-            .elementAtOrNull(k) ?: return null
+            .elementAtOrNull(k - 1) ?: return null
         return Time(lastRelevantCheckpoint.time - startingTime)
     }
 
