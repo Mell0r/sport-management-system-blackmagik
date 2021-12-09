@@ -9,11 +9,14 @@ class Helper(
     private val startingProtocols: List<StartingProtocol>
 ) {
     fun getRouteOf(id: Int): Route {
-        return competitionConfig.groupToRouteMapping[getGroupOf(id)]!!
+        val group = getGroupOf(id)
+        return competitionConfig.groupToRouteMapping[group]
+            ?: throw InternalError("Bad input checker: group with label \"$group\" wasn't found!")
     }
 
     fun getParticipantBy(id: Int): Participant {
-        return participantsList.getParticipantById(id)!!
+        return participantsList.getParticipantById(id)
+            ?: throw InternalError("Bad input checker: participant with id \"$id\" wasn't found!")
     }
 
     fun getGroupOf(id: Int): GroupLabelT {
@@ -111,10 +114,9 @@ private fun generateResultProtocolWithinAGroup(
 private fun sortedGroupResultsForResultsTable(
     groupResults: List<ParticipantAndTime>,
     idToParticipantMapping: (Int) -> Participant
-) =
-    groupResults.filter { it.totalTime != null }
-        .sortedBy { idToParticipantMapping(it.id).lastName }
-        .sortedBy { it.totalTime!! } +
-            groupResults.filter { it.totalTime == null }
-                .sortedBy { idToParticipantMapping(it.id).lastName }
+) = groupResults
+    .sortedBy { idToParticipantMapping(it.id).lastName }
+    .sortedWith(
+        compareBy(nullsLast()) { it.totalTime }
+    )
 

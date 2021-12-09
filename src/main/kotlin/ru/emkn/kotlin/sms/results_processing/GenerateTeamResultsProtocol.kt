@@ -16,10 +16,16 @@ fun generateTeamResultsProtocol(
     }
     val teamsToScore = groupResultProtocols
         .flatMap { it.entries }
-        .groupBy { participantsList.getParticipantById(it.id)!!.team }
+        .groupBy {
+            participantsList.getParticipantById(it.id)?.team
+                ?: throw IllegalArgumentException("Invalid $it record in some group protocol: could not find participant with id \"it.id\"!")
+        }
         .mapValues { (_, listParticipantAndTime) ->
             val idsOfTeam = listParticipantAndTime.map { it.id }
-            idsOfTeam.sumOf { idToScore[it]!! }
+            idsOfTeam.sumOf {
+                idToScore[it]
+                    ?: throw InternalError("HashMap idToScore is not complete: it doesn't contain id \"$it\"!")
+            }
         }
     return TeamResultsProtocol(teamsToScore.entries.map { (team, score) ->
         TeamToScore(
