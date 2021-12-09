@@ -1,9 +1,7 @@
 package ru.emkn.kotlin.sms
 
-import kotlinx.cli.ExperimentalCli
+import ru.emkn.kotlin.sms.cli.*
 
-
-@ExperimentalCli
 fun main(args: Array<String>) {
     runCommandLineInterface(args)
 }

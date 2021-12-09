@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.cli
 import kotlinx.cli.*
 import org.tinylog.Logger
 import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
-import ru.emkn.kotlin.sms.ProgramSubcommands
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.system.exitProcess
@@ -14,7 +13,7 @@ import kotlin.system.exitProcess
  * and subcommands, suitable for parsing command-line arguments for this program.
  */
 class ArgParsingSystem {
-    val argParser = ArgParser("java -jar sms.jar")
+    private val argParser = ArgParser("java -jar sms.jar")
 
     /**
      * After parsing contains a subcommand chosen by user.

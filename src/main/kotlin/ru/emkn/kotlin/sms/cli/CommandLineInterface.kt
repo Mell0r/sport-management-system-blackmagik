@@ -1,7 +1,7 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.cli.ArgParsingSystem
+import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.io.*
 import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File

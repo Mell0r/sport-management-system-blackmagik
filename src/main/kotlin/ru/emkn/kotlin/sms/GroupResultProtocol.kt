@@ -3,8 +3,6 @@ package ru.emkn.kotlin.sms
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
-typealias Score = Int
-
 data class ParticipantAndTime(
     val id: Int,
     val totalTime: Time? // null if disqualified

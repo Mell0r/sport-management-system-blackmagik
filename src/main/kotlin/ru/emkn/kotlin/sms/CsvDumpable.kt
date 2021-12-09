@@ -23,12 +23,10 @@ i o GroupResultProtocol*
 * - these classes don't exist, although they should
 
  */
-@Suppress("unused")
 interface CsvDumpable {
     fun dumpToCsv(): FileContent
 }
 
-@Suppress("unused")
 interface CreatableFromFileContent<T> {
     fun readFromFileContent(fileContent: FileContent): T
 }

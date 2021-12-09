@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms.cli
 
 import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
-import ru.emkn.kotlin.sms.ProgramSubcommands
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.test.BeforeTest
