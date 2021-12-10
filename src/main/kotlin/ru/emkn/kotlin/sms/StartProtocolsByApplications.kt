@@ -26,11 +26,9 @@ fun getParticipantsListFromApplications(
         countSet.add(it.teamName)
     }
 
-    var curId = 0
     val applicationsWithParticipants = applications.map { application ->
         application.applicantsList.map {
             Participant(
-                curId++,
                 competition.year - it[0].toInt(),
                 it[1],
                 it[2],
