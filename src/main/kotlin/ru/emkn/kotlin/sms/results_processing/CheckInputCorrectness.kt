@@ -51,6 +51,14 @@ fun checkInputCorrectnessCheckpointTimestamps(
                     "If this is not intended, consider rechecking your protocols."
         }
     }
+    val coveredButNotExistingCheckpoints =
+        checkpointsCoveredByProtocols.toSet() subtract checkpointsUsedInCompetition
+    if (coveredButNotExistingCheckpoints.isNotEmpty()) {
+        Logger.warn {
+            "Some non-existing checkpoints were covered in " +
+                    "protocols (maybe typo(s)?): $coveredButNotExistingCheckpoints"
+        }
+    }
 }
 
 
