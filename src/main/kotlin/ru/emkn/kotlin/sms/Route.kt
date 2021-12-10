@@ -2,8 +2,9 @@ package ru.emkn.kotlin.sms
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
-import ru.emkn.kotlin.sms.results_processing.CheckpointLabelT
 import ru.emkn.kotlin.sms.time.Time
+
+typealias CheckpointLabelT = String
 
 sealed class Route(val name: String, val checkpoints: Set<CheckpointLabelT>) {
     // null if disqualified
