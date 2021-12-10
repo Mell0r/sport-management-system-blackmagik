@@ -3,7 +3,7 @@ package ru.emkn.kotlin.sms.io
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.GroupRequirement
-import ru.emkn.kotlin.sms.Route
+import ru.emkn.kotlin.sms.readRouteFromLine
 import java.io.File
 
 fun checkAndReadFileInFolder(
@@ -50,10 +50,11 @@ fun initializeCompetition(configFolderPath: String): Competition {
             throw IllegalArgumentException("Line $ind of 'Route_description' has no commas!")
     }
     val routes = routeDescription.mapIndexed { ind, row ->
-        val splittedRow = row.split(',').filter { it.isNotEmpty() }
-        if (splittedRow.isEmpty())
-            throw IllegalArgumentException("Line $ind in 'Route_description is empty!")
-        Route(splittedRow[0], splittedRow.subList(1, splittedRow.size))
+        try {
+            readRouteFromLine(row)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Line $ind: ${e.message}.")
+        }
     }
     Logger.info { "Initialized routes checkpoints" }
 
