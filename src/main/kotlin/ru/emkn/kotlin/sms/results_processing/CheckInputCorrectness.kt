@@ -38,12 +38,12 @@ fun checkInputCorrectnessCheckpointTimestamps(
         startingProtocols,
         competitionConfig
     )
-    val checkpointUsedInCompetition = competitionConfig.routes
+    val checkpointsUsedInCompetition = competitionConfig.routes
         .flatMap { it.checkpoints }.toSet()
     val checkpointsCoveredByProtocols =
         checkpointTimestampsProtocol.map { it.checkpointLabel }
     val uncoveredCheckpoints =
-        checkpointUsedInCompetition subtract checkpointsCoveredByProtocols.toSet()
+        checkpointsUsedInCompetition subtract checkpointsCoveredByProtocols.toSet()
     if (uncoveredCheckpoints.isNotEmpty()) {
         Logger.warn {
             "Some checkpoints were uncovered by the " +

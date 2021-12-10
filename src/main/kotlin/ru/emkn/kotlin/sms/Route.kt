@@ -58,8 +58,8 @@ private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
 
 class OrderedCheckpointsRoute(
     name: String,
-    private val route: List<CheckpointLabelT>
-) : Route(name, route.toSet()) {
+    val orderedCheckpoints: List<CheckpointLabelT>
+) : Route(name, orderedCheckpoints.toSet()) {
     override fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
@@ -68,7 +68,7 @@ class OrderedCheckpointsRoute(
             checkpointsToTimes.sortedBy { it.time }
         val chronologicalCheckpoints =
             checkpointsToTimesChronological.map { it.checkpointLabel }
-        if (chronologicalCheckpoints != route) {
+        if (chronologicalCheckpoints != orderedCheckpoints) {
             logDisqualificationWarning(chronologicalCheckpoints)
             return null
         } else {
@@ -86,7 +86,7 @@ class OrderedCheckpointsRoute(
         startingTime: Time
     ) {
         Logger.warn {
-            "current participant passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${
+            "Current participant passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${
                 startingTime
             }). Disqualifying."
         }
@@ -95,7 +95,7 @@ class OrderedCheckpointsRoute(
     private fun logDisqualificationWarning(chronologicalCheckpoints: List<CheckpointLabelT>) {
         Logger.warn {
             "Current participant passed checkpoints in wrong order (expected: ${
-                route
+                orderedCheckpoints
             }, actual: $chronologicalCheckpoints). Disqualifying."
         }
     }
@@ -104,10 +104,10 @@ class OrderedCheckpointsRoute(
 class AtLeastKCheckpointsRoute(
     name: String,
     checkpoints: Set<GroupLabelT>,
-    val k: Int
+    val threshold: Int
 ) : Route(name, checkpoints) {
     init {
-        require(k <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
+        require(threshold <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
     }
 
     override fun calculateResultingTime(
@@ -118,7 +118,7 @@ class AtLeastKCheckpointsRoute(
             .filter { it.checkpointLabel in checkpoints }
             .sortedBy { it.time }
         val lastRelevantCheckpoint = visitedCheckpointFromRoute
-            .elementAtOrNull(k - 1) ?: return null
+            .elementAtOrNull(threshold - 1) ?: return null
         return Time(lastRelevantCheckpoint.time - startingTime)
     }
 
