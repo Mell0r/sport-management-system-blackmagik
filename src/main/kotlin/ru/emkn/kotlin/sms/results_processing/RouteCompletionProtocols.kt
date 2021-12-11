@@ -1,10 +1,10 @@
 package ru.emkn.kotlin.sms.results_processing
 
+import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.CreatableFromFileContent
 import ru.emkn.kotlin.sms.logErrorAndThrow
 import ru.emkn.kotlin.sms.time.Time
 
-typealias CheckpointLabelT = String
 typealias FileContent = List<String>
 
 data class CheckpointLabelAndTime(

@@ -32,8 +32,9 @@ internal class ApiTests {
         )
     )
 
-    private val mainRoute = Route("main", listOf("1", "2", "3"))
-    private val shortRoute = Route("short", listOf("1"))
+    private val mainRoute =
+        OrderedCheckpointsRoute("main", listOf("1", "2", "3"))
+    private val shortRoute = OrderedCheckpointsRoute("short", listOf("1"))
     private val competition = Competition(
         "",
         "",
@@ -240,7 +241,7 @@ internal class ApiTests {
         val startingProtocols = listOf(
             StartingProtocol("М10", listOf(StartingProtocolEntry(1, 100.s())))
         )
-        val route = Route("main", listOf("1", "2"))
+        val route = OrderedCheckpointsRoute("main", listOf("1", "2"))
         val competition = Competition(
             "",
             "",
