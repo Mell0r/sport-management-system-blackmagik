@@ -3,18 +3,8 @@ package ru.emkn.kotlin.sms.cli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.io.*
-import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File
 import kotlin.system.exitProcess
-
-/**
- * All possible program modes.
- */
-enum class ProgramSubcommands {
-    START,
-    RESULT,
-    RESULT_TEAMS,
-}
 
 fun runCommandLineInterface(args: Array<String>) {
     Logger.debug { "Program started." }
@@ -22,48 +12,21 @@ fun runCommandLineInterface(args: Array<String>) {
     val argParsingSystem = ArgParsingSystem()
     argParsingSystem.parse(args)
 
-    val invokedSubcommand = argParsingSystem.invokedSubcommand
+    val invokedSubcommand = argParsingSystem.invokedCommand
         ?: return Logger.error { "No subcommand specified. Terminating." }
-    Logger.debug { "Invoked subcommand: $invokedSubcommand." }
+    Logger.debug { "Invoked subcommand: ${invokedSubcommand.javaClass}." }
 
     val competition =
         loadCompetition(argParsingSystem.competitionConfigDirectory.absolutePath)
     val outputDirectory =
         ensureOutputDirectory(argParsingSystem.outputDirectory.absolutePath)
 
-    processInvokedSubcommand(
-        invokedSubcommand,
-        argParsingSystem,
+    invokedSubcommand.execute(
         competition,
-        outputDirectory
+        outputDirectory,
     )
 
     Logger.debug { "Program successfully finished." }
-}
-
-private fun processInvokedSubcommand(
-    invokedSubcommand: ProgramSubcommands,
-    argParsingSystem: ArgParsingSystem,
-    competition: Competition,
-    outputDirectory: File
-) {
-    when (invokedSubcommand) {
-        ProgramSubcommands.START -> start(
-            argParsingSystem.startCommand,
-            competition,
-            outputDirectory
-        )
-        ProgramSubcommands.RESULT -> result(
-            argParsingSystem.resultCommand,
-            competition,
-            outputDirectory
-        )
-        ProgramSubcommands.RESULT_TEAMS -> resultTeams(
-            argParsingSystem.resultTeamsCommand,
-            competition,
-            outputDirectory
-        )
-    }
 }
 
 fun exitWithInfoLog(): Nothing {
@@ -94,68 +57,7 @@ private fun ensureOutputDirectory(outputDirectoryPath: String): File {
     }
 }
 
-private fun start(
-    startCommand: ArgParsingSystem.StartCommand,
-    competition: Competition,
-    outputDirectory: File,
-) {
-    val applications = readAndParseAllFiles(
-        files = startCommand.applicationFiles,
-        competition = competition,
-        parser = Application.Companion::readFromFileContentAndCompetition,
-        strategyIfCouldntRead = { file ->
-            // If some application couldn't be loaded as a file,
-            // Then organiser has to check it manually,
-            // No application should be missed due to organisers mistake.
-            Logger.error { "Couldn't reach or read application file \"${file.absolutePath}\"." }
-            exitWithInfoLog()
-        },
-        strategyOnWrongFormat = { file, exception ->
-            // If some application has invalid format, we skip it.
-            // It is probably team's responsibility to send a valid application???
-            Logger.warn {
-                "Application at \"${file.absolutePath}\" has invalid format:\n" +
-                        "${exception.message}" +
-                        "Skipping this application."
-            }
-        },
-    )
-
-    val (participantsList, startingProtocols) = try {
-        getStartConfigurationByApplications(applications, competition)
-    } catch (e: IllegalArgumentException) {
-        Logger.error {
-            "Some data needed to generate start configuration is invalid:\n" +
-                    "${e.message}"
-        }
-        exitWithInfoLog()
-    }
-
-    val participantsListContent = participantsList.dumpToCsv()
-    val participantsListFileName =
-        getFileNameOfParticipantsList(participantsList)
-    val participantsListOutputFolder = File(outputDirectory, "participant-list")
-    participantsListOutputFolder.mkdirs()
-    safeWriteContentToFile(
-        participantsListContent,
-        participantsListOutputFolder,
-        participantsListFileName
-    )
-    val startingProtocolsOutputFolder =
-        File(outputDirectory, "starting-protocols")
-    startingProtocolsOutputFolder.mkdirs()
-    startingProtocols.forEach { startingProtocol ->
-        val content = startingProtocol.dumpToCsv()
-        val fileName = getFileNameOfStartingProtocol(startingProtocol)
-        safeWriteContentToFile(
-            content,
-            startingProtocolsOutputFolder,
-            fileName
-        )
-    }
-}
-
-private fun loadParticipantsList(participantListFile: File, competition: Competition): ParticipantsList =
+fun loadParticipantsList(participantListFile: File, competition: Competition): ParticipantsList =
     readAndParseFile(
         file = participantListFile,
         competition = competition,
@@ -176,159 +78,3 @@ private fun loadParticipantsList(participantListFile: File, competition: Competi
             exitWithInfoLog()
         },
     )
-
-private fun result(
-    resultCommand: ArgParsingSystem.ResultCommand,
-    competition: Competition,
-    outputDirectory: File,
-) {
-    val participantsList =
-        loadParticipantsList(resultCommand.participantListFile, competition)
-
-    val startingProtocols = readAndParseAllFiles(
-        files = resultCommand.startingProtocolFiles,
-        competition = competition,
-        parser = StartingProtocol.Companion::readFromFileContentAndCompetition,
-        strategyIfCouldntRead = { file ->
-            // Starting protocol MUST be read
-            // Otherwise terminating
-            Logger.error { "Starting protocol at \"${file.absolutePath}\" cannot be reached or read." }
-            exitWithInfoLog()
-        },
-        strategyOnWrongFormat = { file, exception ->
-            // Starting protocol MUST have correct format
-            // Otherwise terminating
-            Logger.error {
-                "Starting protocol at \"${file.absolutePath}\" has invalid format:\n" +
-                        "${exception.message}"
-            }
-            exitWithInfoLog()
-        },
-    )
-
-    fun routeCompletionProtocolCouldntBeReadStrategy(file: File) {
-        Logger.error { "Route completion protocol at \"${file.absolutePath}\" cannot be reached or read" }
-        exitWithInfoLog()
-    }
-
-    fun routeCompletionProtocolHasWrongFormatStrategy(
-        file: File,
-        exception: IllegalArgumentException
-    ) {
-        Logger.error {
-            "Route completion protocol at \"${file.absolutePath}\" has wrong format:\n" +
-                    "${exception.message}"
-        }
-        exitWithInfoLog()
-    }
-
-    fun saveGroupResultProtocols(protocols: List<GroupResultProtocol>) {
-        protocols.forEach { protocol ->
-            val content = protocol.dumpToCsv()
-            val fileName = getFileNameOfGroupResultProtocol(protocol)
-            safeWriteContentToFile(content, outputDirectory, fileName)
-        }
-    }
-
-    val type = resultCommand.routeProtocolType
-
-    if (type == RouteProtocolType.OF_CHECKPOINT) {
-        val checkpointTimestampsProtocols = readAndParseAllFiles(
-            files = resultCommand.routeProtocolFiles,
-            competition = competition,
-            parser = CheckpointTimestampsProtocol.Companion::readFromFileContentAndCompetition,
-            strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
-            strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
-        )
-
-        val resultProtocols = try {
-            generateResultsProtocolsFromCheckpointTimestamps(
-                participantsList,
-                startingProtocols,
-                checkpointTimestampsProtocols,
-                competition
-            )
-        } catch (e: IllegalArgumentException) {
-            Logger.error {
-                "Some data needed to generate group result protocols is invalid:\n" +
-                        "${e.message}"
-            }
-            exitWithInfoLog()
-        }
-
-        saveGroupResultProtocols(resultProtocols)
-    } else {
-        val participantTimestampsProtocols = readAndParseAllFiles(
-            files = resultCommand.routeProtocolFiles,
-            competition = competition,
-            parser = ParticipantTimestampsProtocol.Companion::readFromFileContentAndCompetition,
-            strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
-            strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
-        )
-
-        val resultProtocols = try {
-            generateResultsProtocolsFromParticipantTimestamps(
-                participantsList,
-                startingProtocols,
-                participantTimestampsProtocols,
-                competition
-            )
-        } catch (e: IllegalArgumentException) {
-            Logger.error {
-                "Some data needed to generate result protocols is invalid:\n" +
-                        "${e.message}"
-            }
-            exitWithInfoLog()
-        }
-
-        // save in output folder
-        saveGroupResultProtocols(resultProtocols)
-    }
-
-}
-
-private fun resultTeams(
-    resultsTeamsCommand: ArgParsingSystem.ResultTeamsCommand,
-    competition: Competition,
-    outputDirectory: File,
-) {
-    val participantsList =
-        loadParticipantsList(resultsTeamsCommand.participantListFile, competition)
-
-    // All group result protocols must be valid and readable
-    val groupResultProtocols = readAndParseAllFiles(
-        files = resultsTeamsCommand.resultProtocolFiles,
-        competition = competition,
-        parser = GroupResultProtocol.Companion::readFromFileContentAndCompetition,
-        strategyIfCouldntRead = { file ->
-            Logger.error { "Group result protocol at \"${file.absolutePath}\" couldn't be reached or read." }
-            exitWithInfoLog()
-        },
-        strategyOnWrongFormat = { file, exception ->
-            Logger.error {
-                "Group result protocol at \"${file.absolutePath}\" has invalid format:\n" +
-                        "${exception.message}"
-            }
-            exitWithInfoLog()
-        },
-    )
-
-    val teamResultProtocol = try {
-        generateTeamResultsProtocol(
-            groupResultProtocols,
-            participantsList
-        )
-    } catch (e: IllegalArgumentException) {
-        Logger.error {
-            "Some data needed to generate team result protocol is invalid:\n" +
-                    "${e.message}"
-        }
-        exitWithInfoLog()
-    }
-
-    // TeamResultProtocol is CsvDumpable - thus, can trivially be saved as file
-    val content = teamResultProtocol.dumpToCsv()
-    val fileName = getFileNameOfTeamResultsProtocol(teamResultProtocol)
-    safeWriteContentToFile(content, outputDirectory, fileName)
-}
-

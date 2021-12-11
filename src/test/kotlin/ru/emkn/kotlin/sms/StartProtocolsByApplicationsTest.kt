@@ -52,8 +52,8 @@ internal class StartProtocolsByApplicationsTest {
 
     @Test
     fun checkApplicantTest() {
-        var aplt = testApplications[3][1].split(',')
-        var commandName = "CorrectOrg"
+        val aplt = testApplications[3][1].split(',')
+        val commandName = "CorrectOrg"
         assertEquals(
             checkApplicant(
                 Participant(

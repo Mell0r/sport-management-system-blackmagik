@@ -21,7 +21,7 @@ class ArgParsingSystem {
      * May equal to null only when no subcommand was specified
      * (but all mandatory arguments like [competitionConfigDirectory] were specified).
      */
-    var invokedSubcommand: ProgramSubcommands? = null
+    var invokedCommand: ProgramCommand? = null
 
     val competitionConfigDirectory by argParser.argument(
         FileArgType,
@@ -39,7 +39,7 @@ class ArgParsingSystem {
     /**
      * Mode 1 of the program (called "start")
      */
-    inner class StartCommand : Subcommand(
+    inner class StartSubcommand : Subcommand(
         "start",
         "Given team applications, generates starting protocols and participants list."
     ) {
@@ -51,17 +51,19 @@ class ArgParsingSystem {
         ).required()
 
         override fun execute() {
-            invokedSubcommand = ProgramSubcommands.START
+            invokedCommand = StartCommand(
+                applicationFiles = applicationFiles,
+            )
         }
     }
 
-    val startCommand = StartCommand()
+    val startSubcommand = StartSubcommand()
 
 
     /**
      * Mode 2 of the program (called "result")
      */
-    inner class ResultCommand : Subcommand(
+    inner class ResultSubcommand : Subcommand(
         "result",
         "Given participants list, starting protocols and route completion protocols, generates result protocols (by groups)."
     ) {
@@ -94,17 +96,22 @@ class ArgParsingSystem {
         ).required()
 
         override fun execute() {
-            invokedSubcommand = ProgramSubcommands.RESULT
+            invokedCommand = ResultCommand(
+                participantListFile = participantListFile,
+                startingProtocolFiles = startingProtocolFiles,
+                routeProtocolType = routeProtocolType,
+                routeProtocolFiles = routeProtocolFiles,
+            )
         }
     }
 
-    val resultCommand = ResultCommand()
+    val resultSubcommand = ResultSubcommand()
 
 
     /**
      * Mode 3 of the program (called "result_teams")
      */
-    inner class ResultTeamsCommand : Subcommand(
+    inner class ResultTeamsSubcommand : Subcommand(
         "result_teams",
         "Given result protocols (by groups) and participants list generates team result protocols."
     ) {
@@ -123,14 +130,17 @@ class ArgParsingSystem {
         ).required()
 
         override fun execute() {
-            invokedSubcommand = ProgramSubcommands.RESULT_TEAMS
+            invokedCommand = ResultTeamsCommand(
+                participantListFile = participantListFile,
+                resultProtocolFiles = resultProtocolFiles,
+            )
         }
     }
 
-    val resultTeamsCommand = ResultTeamsCommand()
+    val resultTeamsSubcommand = ResultTeamsSubcommand()
 
     init {
-        argParser.subcommands(startCommand, resultCommand, resultTeamsCommand)
+        argParser.subcommands(startSubcommand, resultSubcommand, resultTeamsSubcommand)
     }
 
     fun parse(args: Array<String>) {
@@ -140,7 +150,7 @@ class ArgParsingSystem {
 
         // Currently, kotlinx-cli doesn't handle the case, where no subcommand is given
         // So we need to check for it manually
-        if (invokedSubcommand == null) {
+        if (invokedCommand == null) {
             Logger.error {
                 "No subcommand is given.\n" +
                         "Please specify one of the subcommands: \"start\", \"result\", \"result_teams\";\n" +

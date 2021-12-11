@@ -3,10 +3,7 @@ package ru.emkn.kotlin.sms.cli
 import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import kotlin.test.*
 
 internal class CLITests {
 
@@ -154,13 +151,10 @@ internal class CLITests {
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(
-            ProgramSubcommands.START,
-            argParsingSystem.invokedSubcommand
-        )
+        assertIs<StartCommand>(argParsingSystem.invokedCommand)
         assertEquals(
             expectedApplicationFiles,
-            argParsingSystem.startCommand.applicationFiles
+            argParsingSystem.startSubcommand.applicationFiles
         )
     }
 
@@ -211,25 +205,22 @@ internal class CLITests {
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(
-            ProgramSubcommands.RESULT,
-            argParsingSystem.invokedSubcommand
-        )
+        assertIs<ResultCommand>(argParsingSystem.invokedCommand)
         assertEquals(
             expectedParticipantsListFile,
-            argParsingSystem.resultCommand.participantListFile
+            argParsingSystem.resultSubcommand.participantListFile
         )
         assertEquals(
             expectedStartingProtocolFiles,
-            argParsingSystem.resultCommand.startingProtocolFiles
+            argParsingSystem.resultSubcommand.startingProtocolFiles
         )
         assertEquals(
             expectedRouteProtocolType,
-            argParsingSystem.resultCommand.routeProtocolType
+            argParsingSystem.resultSubcommand.routeProtocolType
         )
         assertEquals(
             expectedRouteProtocolFiles,
-            argParsingSystem.resultCommand.routeProtocolFiles
+            argParsingSystem.resultSubcommand.routeProtocolFiles
         )
     }
 
@@ -457,17 +448,14 @@ internal class CLITests {
 
         val argParsingSystem = ArgParsingSystem()
         argParsingSystem.parse(args)
-        assertEquals(
-            ProgramSubcommands.RESULT_TEAMS,
-            argParsingSystem.invokedSubcommand
-        )
+        assertIs<ResultTeamsCommand>(argParsingSystem.invokedCommand)
         assertEquals(
             expectedParticipantsListFile,
-            argParsingSystem.resultTeamsCommand.participantListFile
+            argParsingSystem.resultTeamsSubcommand.participantListFile
         )
         assertEquals(
             expectedResultProtocolFiles,
-            argParsingSystem.resultTeamsCommand.resultProtocolFiles
+            argParsingSystem.resultTeamsSubcommand.resultProtocolFiles
         )
     }
 
