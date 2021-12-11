@@ -30,7 +30,7 @@ class Helper(
 /**
  * Part of API.
  */
-fun generateResultsProtocolsFromParticipantTimestamps(
+fun generateResultsProtocolsOfParticipant(
     participantsList: ParticipantsList,
     startingProtocols: List<StartingProtocol>,
     participantTimestampsProtocols: List<ParticipantTimestampsProtocol>,
@@ -54,7 +54,7 @@ fun generateResultsProtocolsFromParticipantTimestamps(
 /**
  * Part of API.
  */
-fun generateResultsProtocolsFromCheckpointTimestamps(
+fun generateResultsProtocolsOfCheckpoint(
     participantsList: ParticipantsList,
     startingProtocols: List<StartingProtocol>,
     checkpointTimestampsProtocols: List<CheckpointTimestampsProtocol>,

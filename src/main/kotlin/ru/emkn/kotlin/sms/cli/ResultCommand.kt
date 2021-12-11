@@ -10,8 +10,8 @@ import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromCheckpointTimestamps
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsFromParticipantTimestamps
+import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsOfCheckpoint
+import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsOfParticipant
 import java.io.File
 
 class ResultCommand(
@@ -81,7 +81,7 @@ class ResultCommand(
             )
 
             val resultProtocols = try {
-                generateResultsProtocolsFromCheckpointTimestamps(
+                generateResultsProtocolsOfCheckpoint(
                     participantsList,
                     startingProtocols,
                     checkpointTimestampsProtocols,
@@ -106,7 +106,7 @@ class ResultCommand(
             )
 
             val resultProtocols = try {
-                generateResultsProtocolsFromParticipantTimestamps(
+                generateResultsProtocolsOfParticipant(
                     participantsList,
                     startingProtocols,
                     participantTimestampsProtocols,

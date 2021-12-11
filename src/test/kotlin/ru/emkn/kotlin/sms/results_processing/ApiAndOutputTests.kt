@@ -91,7 +91,7 @@ internal class ApiTests {
                 quickProtocolEntryList(5, 15, 20)
             )
         )
-        return generateResultsProtocolsFromParticipantTimestamps(
+        return generateResultsProtocolsOfParticipant(
             participants,
             startingProtocols,
             protocols,
@@ -131,7 +131,7 @@ internal class ApiTests {
             )
         )
         val maleParticipants = ParticipantsList(participants.list.dropLast(1))
-        val resultProtocols = generateResultsProtocolsFromCheckpointTimestamps(
+        val resultProtocols = generateResultsProtocolsOfCheckpoint(
             maleParticipants,
             startingProtocols,
             protocols,
@@ -211,7 +211,7 @@ internal class ApiTests {
             listOf(shortRoute),
         )
         val groupResultProtocol =
-            generateResultsProtocolsFromCheckpointTimestamps(
+            generateResultsProtocolsOfCheckpoint(
                 participantsShort,
                 startingProtocolsShort,
                 protocolsWithSameTime,
@@ -252,7 +252,7 @@ internal class ApiTests {
             CheckpointTimestampsProtocol("1", listOf(IdAndTime(1, 10.s()))),
             CheckpointTimestampsProtocol("2", listOf(IdAndTime(1, 110.s()))),
         )
-        val results = generateResultsProtocolsFromCheckpointTimestamps(
+        val results = generateResultsProtocolsOfCheckpoint(
             participants,
             startingProtocols,
             checkpointProtocols,
