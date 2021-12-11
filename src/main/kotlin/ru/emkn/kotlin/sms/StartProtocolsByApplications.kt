@@ -29,12 +29,12 @@ fun getParticipantsListFromApplications(
     val applicationsWithParticipants = applications.map { application ->
         application.applicantsList.map {
             Participant(
-                competition.year - it[0].toInt(),
-                it[1],
-                it[2],
-                it[3],
-                it[4],
-                it[5]
+                age = competition.year - it.birthYear,
+                name = it.name,
+                lastName = it.lastName,
+                supposedGroup = it.supposedGroup,
+                team = it.teamName,
+                sportsCategory = it.sportsCategory,
             )
         }
     }
