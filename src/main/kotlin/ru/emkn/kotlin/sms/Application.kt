@@ -7,7 +7,7 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 const val SIZE_OF_APPLICATION_ROW = 5
 
 data class Applicant(
-    val supposedGroup: GroupLabelT,
+    val supposedGroupLabel: String,
     val lastName: String,
     val name: String,
     val birthYear: Int,
@@ -20,7 +20,7 @@ class Application(
     val teamName: String,
     val applicantsList: List<Applicant>,
 ) {
-    companion object : CreatableFromFileContent<Application> {
+    companion object : CreatableFromFileContentAndCompetition<Application> {
         private fun readApplicantFromLineOrNull(lineNo: Int, tokens: List<String>, teamName: String) : Applicant? {
             assert(tokens.size == 5)
             val birthYear = tokens[3].toIntOrNull()
@@ -29,7 +29,7 @@ class Application(
                 return null
             }
             return Applicant(
-                supposedGroup = tokens[0],
+                supposedGroupLabel = tokens[0],
                 lastName = tokens[1],
                 name = tokens[2],
                 birthYear = birthYear,
@@ -38,7 +38,7 @@ class Application(
             )
         }
 
-        override fun readFromFileContent(fileContent: FileContent): Application {
+        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): Application {
             val application = fileContent.map { row -> row.split(",") }
             if (application.size < 2)
                 throw IllegalArgumentException("Application can not be empty!")

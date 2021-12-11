@@ -6,10 +6,8 @@ import ru.emkn.kotlin.sms.time.Time
 /**
  * Checks whether the given applicant can to participate in the chosen group.
  */
-fun checkApplicant(applicant: Participant, competition: Competition): Boolean {
-    return competition.requirementByGroup[applicant.supposedGroup]?.checkApplicant(
-        applicant.age
-    ) ?: false
+fun checkApplicant(applicant: Participant): Boolean {
+    return applicant.group.checkParticipantValidity(applicant)
 }
 
 /**
@@ -27,21 +25,27 @@ fun getParticipantsListFromApplications(
     }
 
     val applicationsWithParticipants = applications.map { application ->
-        application.applicantsList.map {
-            Participant(
-                age = competition.year - it.birthYear,
-                name = it.name,
-                lastName = it.lastName,
-                supposedGroup = it.supposedGroup,
-                team = it.teamName,
-                sportsCategory = it.sportsCategory,
-            )
-        }
+        application.applicantsList.map { applicant ->
+            val group = competition.getGroupByLabelOrNull(applicant.supposedGroupLabel)
+            if (group == null) {
+                Logger.warn {"Applicant ${applicant.name} ${applicant.lastName} in team ${applicant.teamName} has invalid group label. Skipping."}
+                null
+            } else {
+                Participant(
+                    age = competition.year - applicant.birthYear,
+                    name = applicant.name,
+                    lastName = applicant.lastName,
+                    group = group,
+                    team = applicant.teamName,
+                    sportsCategory = applicant.sportsCategory,
+                )
+            }
+        }.filterNotNull()
     }
 
     applicationsWithParticipants.forEachIndexed { applicationInd, application ->
         application.forEachIndexed { applicantInd, applicant ->
-            if (!checkApplicant(applicant, competition)) {
+            if (!checkApplicant(applicant)) {
                 Logger.warn {
                     "Applicant number $applicantInd in $applicationInd application don't pass group requirement, " +
                             "so he/she is not allowed to competition."
@@ -50,7 +54,7 @@ fun getParticipantsListFromApplications(
         }
     }
     return ParticipantsList(applicationsWithParticipants.map { application ->
-        application.filter { checkApplicant(it, competition) }
+        application.filter { checkApplicant(it) }
     }.flatten())
 }
 
@@ -68,7 +72,7 @@ fun getStartConfigurationByApplications(
     val startingProtocols = competition.groups.map { group ->
         StartingProtocol(
             group,
-            participantsList.list.filter { it.supposedGroup == group }
+            participantsList.list.filter { it.group == group }
                 .map {
                     StartingProtocolEntry(
                         it.id,

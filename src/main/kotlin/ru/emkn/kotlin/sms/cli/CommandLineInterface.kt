@@ -101,7 +101,8 @@ private fun start(
 ) {
     val applications = readAndParseAllFiles(
         files = startCommand.applicationFiles,
-        parser = Application.Companion::readFromFileContent,
+        competition = competition,
+        parser = Application.Companion::readFromFileContentAndCompetition,
         strategyIfCouldntRead = { file ->
             // If some application couldn't be loaded as a file,
             // Then organiser has to check it manually,
@@ -154,10 +155,11 @@ private fun start(
     }
 }
 
-private fun loadParticipantsList(participantListFile: File): ParticipantsList =
+private fun loadParticipantsList(participantListFile: File, competition: Competition): ParticipantsList =
     readAndParseFile(
         file = participantListFile,
-        parser = ParticipantsList.Companion::readFromFileContent,
+        competition = competition,
+        parser = ParticipantsList.Companion::readFromFileContentAndCompetition,
         strategyIfCouldntRead = { file ->
             // Participants list MUST be readable
             // Otherwise, terminate
@@ -181,11 +183,12 @@ private fun result(
     outputDirectory: File,
 ) {
     val participantsList =
-        loadParticipantsList(resultCommand.participantListFile)
+        loadParticipantsList(resultCommand.participantListFile, competition)
 
     val startingProtocols = readAndParseAllFiles(
         files = resultCommand.startingProtocolFiles,
-        parser = StartingProtocol.Companion::readFromFileContent,
+        competition = competition,
+        parser = StartingProtocol.Companion::readFromFileContentAndCompetition,
         strategyIfCouldntRead = { file ->
             // Starting protocol MUST be read
             // Otherwise terminating
@@ -232,7 +235,8 @@ private fun result(
     if (type == RouteProtocolType.OF_CHECKPOINT) {
         val checkpointTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
-            parser = CheckpointTimestampsProtocol.Companion::readFromFileContent,
+            competition = competition,
+            parser = CheckpointTimestampsProtocol.Companion::readFromFileContentAndCompetition,
             strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
@@ -256,7 +260,8 @@ private fun result(
     } else {
         val participantTimestampsProtocols = readAndParseAllFiles(
             files = resultCommand.routeProtocolFiles,
-            parser = ParticipantTimestampsProtocol.Companion::readFromFileContent,
+            competition = competition,
+            parser = ParticipantTimestampsProtocol.Companion::readFromFileContentAndCompetition,
             strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
             strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
         )
@@ -288,12 +293,13 @@ private fun resultTeams(
     outputDirectory: File,
 ) {
     val participantsList =
-        loadParticipantsList(resultsTeamsCommand.participantListFile)
+        loadParticipantsList(resultsTeamsCommand.participantListFile, competition)
 
     // All group result protocols must be valid and readable
     val groupResultProtocols = readAndParseAllFiles(
         files = resultsTeamsCommand.resultProtocolFiles,
-        parser = GroupResultProtocol.Companion::readFromFileContent,
+        competition = competition,
+        parser = GroupResultProtocol.Companion::readFromFileContentAndCompetition,
         strategyIfCouldntRead = { file ->
             Logger.error { "Group result protocol at \"${file.absolutePath}\" couldn't be reached or read." }
             exitWithInfoLog()

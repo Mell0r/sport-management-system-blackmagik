@@ -9,11 +9,11 @@ data class StartingProtocolEntry(
 )
 
 data class StartingProtocol(
-    val group: GroupLabelT,
+    val group: Group,
     val entries: List<StartingProtocolEntry>
 ) : CsvDumpable {
-    companion object : CreatableFromFileContent<StartingProtocol> {
-        override fun readFromFileContent(fileContent: FileContent): StartingProtocol {
+    companion object : CreatableFromFileContentAndCompetition<StartingProtocol> {
+        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): StartingProtocol {
             require(fileContent.isNotEmpty()) { "Starting protocol can't be empty!" }
             fileContent.drop(1).forEachIndexed { i, row ->
                 require(row.count { it == ',' } == 1) {
@@ -23,8 +23,15 @@ data class StartingProtocol(
                 val splittedRow = row.split(',')
                 requireNotNull(splittedRow[0].toIntOrNull()) { "First parameter must be a number(it is ID of participant)!" }
             }
-            return StartingProtocol(fileContent[0].split(',')[0],
-                fileContent.drop(1)
+            val groupLabel = fileContent[0].split(',')[0]
+            val group = competition.getGroupByLabelOrNull(groupLabel)
+            requireNotNull(group) {
+                "Group with label \"$groupLabel\" does not exist."
+            }
+            return StartingProtocol(
+                group,
+                fileContent
+                    .drop(1)
                     .map { row ->
                         val splittedRow = row.split(',')
                         StartingProtocolEntry(
@@ -37,5 +44,5 @@ data class StartingProtocol(
     }
 
     override fun dumpToCsv() =
-        listOf("$group,") + entries.map { "${it.id},${it.startTime}" }
+        listOf("${group.label},") + entries.map { "${it.id},${it.startTime}" }
 }

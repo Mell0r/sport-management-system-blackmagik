@@ -8,30 +8,6 @@ import kotlin.test.assertEquals
 private fun Int.s() = Time(this)
 
 internal class ApiTests {
-    private val participants = ParticipantsList(
-        listOf(
-            Participant(1, 10, "Иван", "Иванов", "М10", "T1", ""),
-            Participant(2, 10, "Иван", "Неиванов", "М10", "T2", ""),
-            Participant(3, 10, "Иван", "Дурак", "М10", "T2", ""),
-            Participant(4, 10, "Афродита", "Иванова", "Ж10", "T1", ""),
-        )
-    )
-    private val startingProtocols = listOf(
-        StartingProtocol(
-            "М10",
-            listOf(
-                StartingProtocolEntry(1, 0.s()),
-                StartingProtocolEntry(2, 0.s()),
-                StartingProtocolEntry(3, 0.s())
-            )
-        ), StartingProtocol(
-            "Ж10",
-            listOf(
-                StartingProtocolEntry(4, 0.s()),
-            )
-        )
-    )
-
     private val mainRoute =
         OrderedCheckpointsRoute("main", listOf("1", "2", "3"))
     private val shortRoute = OrderedCheckpointsRoute("short", listOf("1"))
@@ -40,11 +16,34 @@ internal class ApiTests {
         "",
         0,
         "",
-        listOf("М10", "Ж10"),
+        listOf(AgeGroup("М10", mainRoute, -100, 100), AgeGroup("Ж10", mainRoute, -100, 100)),
         listOf(mainRoute, shortRoute),
-        mapOf("М10" to mainRoute, "Ж10" to mainRoute),
-        mapOf() // I won't be checking correctness of this either way
     )
+
+    private val participants = ParticipantsList(
+        listOf(
+            Participant(1, 10, "Иван", "Иванов", competition.getGroupByLabelOrNull("М10")!!, "T1", ""),
+            Participant(2, 10, "Иван", "Неиванов", competition.getGroupByLabelOrNull("М10")!!, "T2", ""),
+            Participant(3, 10, "Иван", "Дурак", competition.getGroupByLabelOrNull("М10")!!, "T2", ""),
+            Participant(4, 10, "Афродита", "Иванова", competition.getGroupByLabelOrNull("Ж10")!!, "T1", ""),
+        )
+    )
+    private val startingProtocols = listOf(
+        StartingProtocol(
+            competition.getGroupByLabelOrNull("М10")!!,
+            listOf(
+                StartingProtocolEntry(1, 0.s()),
+                StartingProtocolEntry(2, 0.s()),
+                StartingProtocolEntry(3, 0.s())
+            )
+        ), StartingProtocol(
+            competition.getGroupByLabelOrNull("Ж10")!!,
+            listOf(
+                StartingProtocolEntry(4, 0.s()),
+            )
+        )
+    )
+
 
     private fun quickProtocolEntryList(
         firstTime: Int,
@@ -62,14 +61,14 @@ internal class ApiTests {
     fun properResultGenerationForParticipantTimestampsProtocols() {
         val resultProtocols = sampleResultProtocols()
         assertEquals(2, resultProtocols.size)
-        val maleResults = resultProtocols.single { it.groupName == "М10" }
+        val maleResults = resultProtocols.single { it.group.label == "М10" }
         assertEquals(
             listOf(1, 3, 2),
             maleResults.entries.map { it.id })
         assertEquals(
             listOf(30.s(), 90.s(), null),
             maleResults.entries.map { it.totalTime })
-        val femaleResults = resultProtocols.single { it.groupName == "Ж10" }
+        val femaleResults = resultProtocols.single { it.group.label == "Ж10" }
         assertEquals(4, femaleResults.entries.single().id)
         assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
     }
@@ -139,7 +138,7 @@ internal class ApiTests {
             competition
         )
         assertEquals(1, resultProtocols.size)
-        val maleResults = resultProtocols.single { it.groupName == "М10" }
+        val maleResults = resultProtocols.single { it.group.label == "М10" }
         assertEquals(
             listOf(2, 1, 3),
             maleResults.entries.map { it.id })
@@ -152,7 +151,7 @@ internal class ApiTests {
     fun testOutput() {
         val sampleResultProtocols = sampleResultProtocols()
         val maleProtocol =
-            sampleResultProtocols.single { it.groupName == "М10" }
+            sampleResultProtocols.single { it.group.label == "М10" }
         assertEquals(
             listOf(
                 "М10",
@@ -166,14 +165,15 @@ internal class ApiTests {
 
     @Test
     fun peopleWithSameResultHaveSamePlaces() {
+        val group = AgeGroup("М10", shortRoute, -100, 100)
         val participantsShort = ParticipantsList(
             listOf(
-                Participant(1, 10, "Иван", "А", "М10", "T1", ""),
-                Participant(2, 10, "Иван", "Б", "М10", "T2", ""),
-                Participant(3, 10, "Иван", "В", "М10", "T2", ""),
-                Participant(4, 10, "Иван", "Г", "М10", "T1", ""),
-                Participant(5, 10, "Иван", "Д", "М10", "T1", ""),
-                Participant(6, 10, "Иван", "Е", "М10", "T1", ""),
+                Participant(1, 10, "Иван", "А", group, "T1", ""),
+                Participant(2, 10, "Иван", "Б", group, "T2", ""),
+                Participant(3, 10, "Иван", "В", group, "T2", ""),
+                Participant(4, 10, "Иван", "Г", group, "T1", ""),
+                Participant(5, 10, "Иван", "Д", group, "T1", ""),
+                Participant(6, 10, "Иван", "Е", group, "T1", ""),
             )
         )
         val protocolsWithSameTime = listOf(
@@ -191,7 +191,7 @@ internal class ApiTests {
         )
         val startingProtocolsShort = listOf(
             StartingProtocol(
-                "М10",
+                group,
                 listOf(
                     StartingProtocolEntry(1, 0.s()),
                     StartingProtocolEntry(2, 0.s()),
@@ -207,10 +207,8 @@ internal class ApiTests {
             "",
             0,
             "",
-            listOf("М10"),
+            listOf(),
             listOf(shortRoute),
-            mapOf("М10" to shortRoute),
-            mapOf() // I won't be checking correctness of this either way
         )
         val groupResultProtocol =
             generateResultsProtocolsFromCheckpointTimestamps(
@@ -218,7 +216,7 @@ internal class ApiTests {
                 startingProtocolsShort,
                 protocolsWithSameTime,
                 shortCompetition
-            ).single { it.groupName == "М10" }
+            ).single { it.group.label == "М10" }
         assertEquals(
             groupResultProtocol.dumpToCsv().asLines(), """
             М10
@@ -236,10 +234,10 @@ internal class ApiTests {
     @Test
     fun testDisqualificationOnFalseStart() {
         val participants = ParticipantsList(
-            listOf(Participant(1, 10, "Иван", "Иванов", "М10", "T1", ""))
+            listOf(Participant(1, 10, "Иван", "Иванов", competition.getGroupByLabelOrNull("М10")!!, "T1", ""))
         )
         val startingProtocols = listOf(
-            StartingProtocol("М10", listOf(StartingProtocolEntry(1, 100.s())))
+            StartingProtocol(competition.getGroupByLabelOrNull("М10")!!, listOf(StartingProtocolEntry(1, 100.s())))
         )
         val route = OrderedCheckpointsRoute("main", listOf("1", "2"))
         val competition = Competition(
@@ -247,10 +245,8 @@ internal class ApiTests {
             "",
             0,
             "",
-            listOf("М10"),
+            listOf(competition.getGroupByLabelOrNull("М10")!!),
             listOf(route),
-            mapOf("М10" to route),
-            mapOf()
         )
         val checkpointProtocols = listOf(
             CheckpointTimestampsProtocol("1", listOf(IdAndTime(1, 10.s()))),

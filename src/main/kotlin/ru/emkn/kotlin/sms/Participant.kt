@@ -1,13 +1,11 @@
 package ru.emkn.kotlin.sms
 
-typealias GroupLabelT = String
-
 data class Participant(
     val id: Int,
     val age: Int,
     val name: String,
     val lastName: String,
-    val supposedGroup: GroupLabelT,
+    val group: Group,
     val team: String,
     val sportsCategory: String // from fixed options from config
 ) {
@@ -15,7 +13,7 @@ data class Participant(
         age: Int,
         name: String,
         lastName: String,
-        supposedGroup: GroupLabelT,
+        group: Group,
         team: String,
         sportsCategory: String
     ) : this(
@@ -23,7 +21,7 @@ data class Participant(
         age,
         name,
         lastName,
-        supposedGroup,
+        group,
         team,
         sportsCategory
     ) {
@@ -34,5 +32,5 @@ data class Participant(
     }
 
     override fun toString() =
-        "$id,$age,$name,$lastName,$supposedGroup,$team,$sportsCategory"
+        "$id,$age,$name,$lastName,$group,$team,$sportsCategory"
 }

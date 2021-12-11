@@ -6,6 +6,6 @@ interface CsvDumpable {
     fun dumpToCsv(): FileContent
 }
 
-interface CreatableFromFileContent<T> {
-    fun readFromFileContent(fileContent: FileContent): T
+interface CreatableFromFileContentAndCompetition<T> {
+    fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): T
 }

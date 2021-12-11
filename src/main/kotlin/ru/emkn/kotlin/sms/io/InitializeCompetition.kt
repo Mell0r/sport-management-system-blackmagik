@@ -1,8 +1,8 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.kotlin.Logger
+import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.GroupRequirement
 import ru.emkn.kotlin.sms.readRouteFromLine
 import java.io.File
 
@@ -69,23 +69,35 @@ fun initializeCompetition(configFolderPath: String): Competition {
     val groupRequirement =
         checkAndReadFileInFolder(configFolderPath, "Groups_requirement.csv")
     val requirementByGroup = groupRequirement.associate { row ->
-        val splittedRow = row.split(',')
-        if (splittedRow.size != 3)
+        val splitRow = row.split(',')
+        if (splitRow.size != 3)
             throw IllegalArgumentException(
                 "Number of commas in $row line in 'Groups_requirement' incorrect! " +
                         "Should be exactly three."
             )
-        requireNotNull(splittedRow[1].toIntOrNull()) {
+        val label = splitRow[0]
+        val ageFrom = splitRow[1].toIntOrNull()
+        requireNotNull(ageFrom) {
             "First parameter in $row line should be integer! " +
-                    "Was '${splittedRow[1]}'."
+                    "Was '${splitRow[1]}'."
         }
-        requireNotNull(splittedRow[2].toIntOrNull()) {
+        val ageTo = splitRow[2].toIntOrNull()
+        requireNotNull(ageTo) {
             "Second parameter in $row line should be integer! " +
-                    "Was '${splittedRow[2]}'."
+                    "Was '${splitRow[2]}'."
+        }
+        val route = groupToRouteMapping[label]
+        requireNotNull(route) {
+            "No route specified for group $label."
         }
         Pair(
-            splittedRow[0],
-            GroupRequirement(splittedRow[1].toInt(), splittedRow[2].toInt())
+            label,
+            AgeGroup(
+                label = label,
+                route = route,
+                ageFrom = ageFrom,
+                ageTo = ageTo,
+            ),
         )
     }
     for (g in groups)
@@ -96,9 +108,7 @@ fun initializeCompetition(configFolderPath: String): Competition {
         name,
         year,
         date,
-        groups,
+        requirementByGroup.values.toList(),
         routes,
-        groupToRouteMapping,
-        requirementByGroup
     )
 }

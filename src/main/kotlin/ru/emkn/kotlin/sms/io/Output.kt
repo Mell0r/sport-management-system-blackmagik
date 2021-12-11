@@ -21,7 +21,7 @@ fun getFileNameOfStartingProtocol(startingProtocol: StartingProtocol): String =
     "starting-protocol-of-group-${startingProtocol.group}.csv"
 
 fun getFileNameOfGroupResultProtocol(groupResultProtocol: GroupResultProtocol): String =
-    "result-of-group-${groupResultProtocol.groupName}.csv"
+    "result-of-group-${groupResultProtocol.group.label}.csv"
 
 fun getFileNameOfTeamResultsProtocol(teamResultsProtocol: TeamResultsProtocol): String =
     "results-teams.csv"

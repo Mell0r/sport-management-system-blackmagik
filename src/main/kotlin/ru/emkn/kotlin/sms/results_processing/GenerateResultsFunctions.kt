@@ -10,8 +10,7 @@ class Helper(
 ) {
     fun getRouteOf(id: Int): Route {
         val group = getGroupOf(id)
-        return competitionConfig.groupToRouteMapping[group]
-            ?: throw InternalError("Bad input checker: group with label \"$group\" wasn't found!")
+        return group.route
     }
 
     fun getParticipantBy(id: Int): Participant {
@@ -19,8 +18,8 @@ class Helper(
             ?: throw InternalError("Bad input checker: participant with id \"$id\" wasn't found!")
     }
 
-    fun getGroupOf(id: Int): GroupLabelT {
-        return getParticipantBy(id).supposedGroup
+    fun getGroupOf(id: Int): Group {
+        return getParticipantBy(id).group
     }
 
     fun getStartingTimeOf(id: Int): Time =
@@ -94,7 +93,7 @@ private fun convertToGroupResults(
 }
 
 private fun generateResultProtocolWithinAGroup(
-    groupLabel: GroupLabelT,
+    groupLabel: Group,
     groupResults: List<ParticipantAndTime>,
     idToParticipantMapping: (Int) -> Participant
 ): GroupResultProtocol {

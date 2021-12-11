@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.Logger
+import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 import java.nio.file.Files
@@ -88,13 +89,14 @@ private fun readAllReadableFilesPairFile(
  */
 fun <T> readAndParseFile(
     file: File,
-    parser: (FileContent) -> T,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
     strategyIfCouldntRead: (File) -> Nothing,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing,
 ): T {
     val content = readFileContentOrNull(file) ?: strategyIfCouldntRead(file)
     return try {
-        parser(content)
+        parser(content, competition)
     } catch (e: IllegalArgumentException) {
         strategyOnWrongFormat(file, e)
     }
@@ -112,7 +114,8 @@ fun <T> readAndParseFile(
  */
 fun <T> readAndParseAllFiles(
     files: List<File>,
-    parser: (FileContent) -> T,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
     strategyIfCouldntRead: (File) -> Unit,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit,
 ): List<T> {
@@ -120,7 +123,7 @@ fun <T> readAndParseAllFiles(
         readAllReadableFilesPairFile(files, strategyIfCouldntRead)
     return filesWithContents.flatMap { (file, content) ->
         try {
-            listOf(parser(content))
+            listOf(parser(content, competition))
         } catch (e: IllegalArgumentException) {
             strategyOnWrongFormat(file, e)
             listOf()

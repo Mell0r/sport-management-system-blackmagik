@@ -1,12 +1,14 @@
 package ru.emkn.kotlin.sms
 
 import org.junit.Test
+import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertTrue
 
 internal class StartingProtocolOutputTest {
+
     private val startingProtocolTest1 = StartingProtocol(
-        "M10", listOf(
+        AgeGroup("M10", OrderedCheckpointsRoute("route", listOf()), 1, 2), listOf(
             StartingProtocolEntry(1, Time(0, 0, 0)),
             StartingProtocolEntry(2, Time(0, 0, 1)),
             StartingProtocolEntry(3, Time(0, 10, 20))
@@ -14,7 +16,7 @@ internal class StartingProtocolOutputTest {
     )
 
     private val startingProtocolTest2 = StartingProtocol(
-        "TestGroup", listOf(
+        AgeGroup("TestGroup", OrderedCheckpointsRoute("route", listOf()), 1, 2), listOf(
             StartingProtocolEntry(15, Time(5, 59, 0)),
             StartingProtocolEntry(10, Time(21, 53, 5)),
             StartingProtocolEntry(80, Time(23, 59, 59))

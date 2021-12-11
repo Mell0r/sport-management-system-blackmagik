@@ -9,13 +9,15 @@ data class ParticipantAndTime(
 )
 
 class GroupResultProtocol(
-    val groupName: GroupLabelT,
+    val group: Group,
     val entries: List<ParticipantAndTime>
     // sorted by placeInGroup
 ) : CsvDumpable {
-    companion object : CreatableFromFileContent<GroupResultProtocol> {
-        override fun readFromFileContent(fileContent: FileContent): GroupResultProtocol {
+    companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
+        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
+            val group = competition.getGroupByLabelOrNull(groupName)
+                ?: logErrorAndThrow("No group with name \"$groupName\" exist.")
             val rest = fileContent.drop(2) // group row and header row
             val participantAndTimeList = rest.mapIndexed { index, line ->
                 val tokens = line.split(",")
@@ -33,7 +35,7 @@ class GroupResultProtocol(
                     timeParsed
                 )
             }
-            return GroupResultProtocol(groupName, participantAndTimeList)
+            return GroupResultProtocol(group, participantAndTimeList)
         }
 
     }
@@ -61,7 +63,7 @@ class GroupResultProtocol(
 
         val places = generatePlaces()
         var index = -1
-        return listOf(groupName) + PlayersPrinter(listOf(
+        return listOf(group.label) + PlayersPrinter(listOf(
             FieldInfo("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->

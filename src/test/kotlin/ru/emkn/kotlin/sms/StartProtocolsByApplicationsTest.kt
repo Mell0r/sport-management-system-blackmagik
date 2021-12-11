@@ -22,28 +22,32 @@ internal class StartProtocolsByApplicationsTest {
             "C,Last3,Name3,3,"
         )
     )
-    private val testParticipantsList = ParticipantsList(
-        listOf(
-            Participant(1, 1, "Second", "Man", "B", "CorrectOrg", ""),
-            Participant(2, 2, "Name1", "Last1", "A", "AnotherCorrectOrg", ""),
-            Participant(3, 1, "Name2", "Last2", "B", "AnotherCorrectOrg", "F")
-        )
+    private val testRoutes = listOf(
+        OrderedCheckpointsRoute("R", listOf())
+    )
+    private val testGroups = listOf(
+        AgeGroup("A", testRoutes[0], 1, 2),
+        AgeGroup("B", testRoutes[0], 0, 10),
     )
     private val testCompetition = Competition(
-        "", "", 6, "", listOf("A", "B"),
-        listOf(OrderedCheckpointsRoute("R", listOf())),
-        mapOf(
-            "A" to OrderedCheckpointsRoute("R", listOf()),
-            "B" to OrderedCheckpointsRoute("R", listOf())
-        ),
-        mapOf("A" to GroupRequirement(1, 2), "B" to GroupRequirement(0, 10))
+        "", "", 6, "",
+        testGroups,
+        testRoutes,
+    )
+    private fun getTestGroupByLabel(label: String) = testCompetition.getGroupByLabelOrNull(label)!!
+    private val testParticipantsList = ParticipantsList(
+        listOf(
+            Participant(1, 1, "Second", "Man", getTestGroupByLabel("B"), "CorrectOrg", ""),
+            Participant(2, 2, "Name1", "Last1", getTestGroupByLabel("A"), "AnotherCorrectOrg", ""),
+            Participant(3, 1, "Name2", "Last2", getTestGroupByLabel("B"), "AnotherCorrectOrg", "F")
+        )
     )
 
     @Test
     fun applicationReadFromFileContentTest() {
-        assertFails { Application.readFromFileContent(testApplications[0]) }
-        assertFails { Application.readFromFileContent(testApplications[1]) }
-        assertFails { Application.readFromFileContent(testApplications[2]) }
+        assertFails { Application.readFromFileContentAndCompetition(testApplications[0], testCompetition) }
+        assertFails { Application.readFromFileContentAndCompetition(testApplications[1], testCompetition) }
+        assertFails { Application.readFromFileContentAndCompetition(testApplications[2], testCompetition) }
     }
 
     @Test
@@ -57,54 +61,19 @@ internal class StartProtocolsByApplicationsTest {
                     testCompetition.year - aplt[3].toInt(),
                     aplt[2],
                     aplt[1],
-                    aplt[0],
+                    getTestGroupByLabel(aplt[0]),
                     commandName,
                     aplt[4]
                 ),
-                testCompetition
             ), false
-        )
-
-        aplt = testApplications[4][3].split(',')
-        commandName = "AnotherCorrectOrg"
-        assertEquals(
-            checkApplicant(
-                Participant(
-                    0,
-                    testCompetition.year - aplt[3].toInt(),
-                    aplt[2],
-                    aplt[1],
-                    aplt[0],
-                    commandName,
-                    aplt[4]
-                ),
-                testCompetition
-            ), false
-        )
-
-        aplt = testApplications[3][2].split(',')
-        commandName = "CorrectOrg"
-        assertEquals(
-            checkApplicant(
-                Participant(
-                    0,
-                    testCompetition.year - aplt[3].toInt(),
-                    aplt[2],
-                    aplt[1],
-                    aplt[0],
-                    commandName,
-                    aplt[4]
-                ),
-                testCompetition
-            ), true
         )
     }
 
     @Test
     fun getParticipantsListFromApplicationsTest() {
         val applications = listOf(
-            Application.readFromFileContent(testApplications[3]),
-            Application.readFromFileContent(testApplications[4])
+            Application.readFromFileContentAndCompetition(testApplications[3], testCompetition),
+            Application.readFromFileContentAndCompetition(testApplications[4], testCompetition),
         )
         assertTrue {
             getParticipantsListFromApplications(

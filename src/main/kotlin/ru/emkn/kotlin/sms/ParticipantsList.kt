@@ -5,28 +5,32 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 const val SIZE_OF_PARTICIPANT_LIST_ROW = 6
 
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
-    companion object : CreatableFromFileContent<ParticipantsList> {
-        override fun readFromFileContent(fileContent: FileContent): ParticipantsList {
-            fileContent.forEachIndexed { ind, row ->
+    companion object : CreatableFromFileContentAndCompetition<ParticipantsList> {
+        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): ParticipantsList {
+            return ParticipantsList(fileContent.mapIndexed { ind, row ->
+                val splitRow = row.split(',')
                 if (row.count { it == ',' } != SIZE_OF_PARTICIPANT_LIST_ROW)
                     throw IllegalArgumentException(
                         "The line number $ind in fileContent has incorrect number of commas! " +
                                 "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
                     )
-                val splittedRow = row.split(',')
-                requireNotNull(splittedRow[0].toIntOrNull()) { "First argument(ID) of participant in line $ind is not a number!" }
-                requireNotNull(splittedRow[1].toIntOrNull()) { "Second argument(age) of participant in line $ind is not a number!" }
-            }
-            return ParticipantsList(fileContent.map { row ->
-                val splittedRow = row.split(',')
+                val id = splitRow[0].toIntOrNull()
+                requireNotNull(id) { "First argument(ID) of participant in line $ind is not a number!" }
+                val age = splitRow[1].toIntOrNull()
+                requireNotNull(age) { "Second argument(age) of participant in line $ind is not a number!" }
+                val groupLabel = splitRow[4]
+                val group = competition.getGroupByLabelOrNull(groupLabel)
+                requireNotNull(group) {
+                    "Invalid group label \"$groupLabel\" of participant in line $ind. No group with such label exist."
+                }
                 Participant(
-                    splittedRow[0].toInt(),
-                    splittedRow[1].toInt(),
-                    splittedRow[2],
-                    splittedRow[3],
-                    splittedRow[4],
-                    splittedRow[5],
-                    splittedRow[6]
+                    id,
+                    age,
+                    splitRow[2],
+                    splitRow[3],
+                    group,
+                    splitRow[5],
+                    splitRow[6]
                 )
             })
         }
