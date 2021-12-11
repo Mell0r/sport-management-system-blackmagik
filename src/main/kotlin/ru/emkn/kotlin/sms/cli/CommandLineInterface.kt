@@ -7,8 +7,6 @@ import java.io.File
 import kotlin.system.exitProcess
 
 fun runCommandLineInterface(args: Array<String>) {
-    Logger.debug { "Program started." }
-
     val argParsingSystem = ArgParsingSystem()
     argParsingSystem.parse(args)
 
@@ -25,8 +23,6 @@ fun runCommandLineInterface(args: Array<String>) {
         competition,
         outputDirectory,
     )
-
-    Logger.debug { "Program successfully finished." }
 }
 
 fun exitWithInfoLog(): Nothing {
