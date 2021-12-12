@@ -24,8 +24,8 @@ data class StartingProtocol(
                     "Line number $i contains not one comma, " +
                             "but must be exactly one!"
                 }
-                val splittedRow = row.split(',')
-                requireNotNull(splittedRow[0].toIntOrNull()) { "First parameter must be a number(it is ID of participant)!" }
+                val tokens = row.split(',')
+                requireNotNull(tokens[0].toIntOrNull()) { "First parameter must be a number(it is ID of participant)!" }
             }
             val groupLabel = fileContent[0].split(',')[0]
             val group = competition.getGroupByLabelOrNull(groupLabel)
@@ -52,11 +52,11 @@ data class StartingProtocol(
         }
 
         private fun readEntryFromRow(row: String): StartingProtocolEntry {
-            val splittedRow = row.split(',')
+            val tokens = row.split(',')
             return StartingProtocolEntry(
-                splittedRow[0].toIntOrNull()
+                tokens[0].toIntOrNull()
                     ?: throw IllegalArgumentException("Id should be an integer value"),
-                Time.fromString(splittedRow[1])
+                Time.fromString(tokens[1])
             )
         }
 

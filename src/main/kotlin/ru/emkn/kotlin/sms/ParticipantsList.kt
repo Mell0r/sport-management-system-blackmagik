@@ -26,18 +26,18 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
             row: String,
             competition: Competition
         ): Participant {
-            val splitRow = row.split(',')
+            val tokens = row.split(',')
             if (row.count { it == ',' } != SIZE_OF_PARTICIPANT_LIST_ROW)
                 throw IllegalArgumentException(
                     "Incorrect number of commas! " +
                             "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
                 )
-            val id = splitRow[0].toIntOrThrow(
+            val id = tokens[0].toIntOrThrow(
                 IllegalArgumentException("First argument(ID) of participant is not a number!")
             )
-            val age = splitRow[1].toIntOrNull()
+            val age = tokens[1].toIntOrNull()
             requireNotNull(age) { "Second argument(age) of participant is not a number!" }
-            val groupLabel = splitRow[4]
+            val groupLabel = tokens[4]
             val group = competition.getGroupByLabelOrNull(groupLabel)
             requireNotNull(group) {
                 "Invalid group label \"$groupLabel\" of participant. No group with such label exist."
@@ -45,11 +45,11 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
             return Participant(
                 id,
                 age,
-                splitRow[2],
-                splitRow[3],
+                tokens[2],
+                tokens[3],
                 group,
-                splitRow[5],
-                splitRow[6]
+                tokens[5],
+                tokens[6]
             )
         }
     }

@@ -59,32 +59,32 @@ fun initializeCompetition(configFolderPath: String): Competition {
     Logger.info { "Initialized routes checkpoints" }
 
     val groupToRouteMapping = routeOfGroups.associate { row ->
-        val splittedRow = row.split(',')
-        val route = routes.find { it.name == splittedRow[1] }
+        val tokens = row.split(',')
+        val route = routes.find { it.name == tokens[1] }
             ?: throw IllegalArgumentException("Routes in 'Route_description' and in 'Route_of_groups' don't match!")
-        Pair(splittedRow[0], route)
+        Pair(tokens[0], route)
     }
     Logger.info { "Mapped group to route" }
 
     val groupRequirement =
         checkAndReadFileInFolder(configFolderPath, "Groups_requirement.csv")
     val requirementByGroup = groupRequirement.associate { row ->
-        val splitRow = row.split(',')
-        if (splitRow.size != 3)
+        val tokens = row.split(',')
+        if (tokens.size != 3)
             throw IllegalArgumentException(
                 "Number of commas in $row line in 'Groups_requirement' incorrect! " +
                         "Should be exactly three."
             )
-        val label = splitRow[0]
-        val ageFrom = splitRow[1].toIntOrNull()
+        val label = tokens[0]
+        val ageFrom = tokens[1].toIntOrNull()
         requireNotNull(ageFrom) {
             "First parameter in $row line should be integer! " +
-                    "Was '${splitRow[1]}'."
+                    "Was '${tokens[1]}'."
         }
-        val ageTo = splitRow[2].toIntOrNull()
+        val ageTo = tokens[2].toIntOrNull()
         requireNotNull(ageTo) {
             "Second parameter in $row line should be integer! " +
-                    "Was '${splitRow[2]}'."
+                    "Was '${tokens[2]}'."
         }
         val route = groupToRouteMapping[label]
         requireNotNull(route) {
