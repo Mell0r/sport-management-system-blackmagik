@@ -50,8 +50,13 @@ class Application(
             val teamName = application[0][0]
             val applicantsList = application
                 .drop(1)
-                .mapIndexed { lineNo, tokens -> readApplicantFromLineOrNull(lineNo, tokens, teamName) }
-                .filterNotNull()
+                .mapIndexedNotNull { lineNo, tokens ->
+                    readApplicantFromLineOrNull(
+                        lineNo,
+                        tokens,
+                        teamName
+                    )
+                }
             return Application(teamName, applicantsList)
         }
     }
