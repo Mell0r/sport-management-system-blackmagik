@@ -58,7 +58,7 @@ fun loadParticipantsList(participantListFile: File, competition: Competition): P
         file = participantListFile,
         competition = competition,
         parser = ParticipantsList.Companion::readFromFileContentAndCompetition,
-        strategyIfCouldntRead = { file ->
+        strategyOnReadFail = { file ->
             // Participants list MUST be readable
             // Otherwise, terminate
             Logger.error { "Couldn't read participants list at \"${file.path}\"." }

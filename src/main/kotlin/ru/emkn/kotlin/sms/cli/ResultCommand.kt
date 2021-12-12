@@ -28,7 +28,7 @@ class ResultCommand(
             files = startingProtocolFiles,
             competition = competition,
             parser = StartingProtocol.Companion::readFromFileContentAndCompetition,
-            strategyIfCouldntRead = { file ->
+            strategyOnReadFail = { file ->
                 // Starting protocol MUST be read
                 // Otherwise terminating
                 Logger.error { "Starting protocol at \"${file.absolutePath}\" cannot be reached or read." }
@@ -76,7 +76,7 @@ class ResultCommand(
                 files = routeProtocolFiles,
                 competition = competition,
                 parser = CheckpointTimestampsProtocol.Companion::readFromFileContentAndCompetition,
-                strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
+                strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )
 
@@ -101,7 +101,7 @@ class ResultCommand(
                 files = routeProtocolFiles,
                 competition = competition,
                 parser = ParticipantTimestampsProtocol.Companion::readFromFileContentAndCompetition,
-                strategyIfCouldntRead = ::routeCompletionProtocolCouldntBeReadStrategy,
+                strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )
 

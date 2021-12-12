@@ -22,7 +22,7 @@ class ResultTeamsCommand(
             files = resultProtocolFiles,
             competition = competition,
             parser = GroupResultProtocol.Companion::readFromFileContentAndCompetition,
-            strategyIfCouldntRead = { file ->
+            strategyOnReadFail = { file ->
                 Logger.error { "Group result protocol at \"${file.absolutePath}\" couldn't be reached or read." }
                 exitWithInfoLog()
             },

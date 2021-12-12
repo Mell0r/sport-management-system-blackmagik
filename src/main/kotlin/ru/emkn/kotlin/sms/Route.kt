@@ -103,7 +103,7 @@ class OrderedCheckpointsRoute(
 
 class AtLeastKCheckpointsRoute(
     name: String,
-    checkpoints: Set<String>,
+    checkpoints: Set<CheckpointLabelT>,
     val threshold: Int
 ) : Route(name, checkpoints) {
     init {

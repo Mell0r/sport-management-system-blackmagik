@@ -84,17 +84,17 @@ private fun readAllReadableFilesPairFile(
  * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
  * when the file format is incorrect.
  *
- * If the file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If the file cannot be read, reacts based on [strategyOnReadFail] function.
  * If the file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
  */
 fun <T> readAndParseFile(
     file: File,
     competition: Competition,
     parser: (FileContent, Competition) -> T,
-    strategyIfCouldntRead: (File) -> Nothing,
+    strategyOnReadFail: (File) -> Nothing,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing,
 ): T {
-    val content = readFileContentOrNull(file) ?: strategyIfCouldntRead(file)
+    val content = readFileContentOrNull(file) ?: strategyOnReadFail(file)
     return try {
         parser(content, competition)
     } catch (e: IllegalArgumentException) {
@@ -109,18 +109,18 @@ fun <T> readAndParseFile(
  * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
  * when the file format is incorrect.
  *
- * If a file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If a file cannot be read, reacts based on [strategyOnReadFail] function.
  * If a file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
  */
 fun <T> readAndParseAllFiles(
     files: List<File>,
     competition: Competition,
     parser: (FileContent, Competition) -> T,
-    strategyIfCouldntRead: (File) -> Unit,
+    strategyOnReadFail: (File) -> Unit,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit,
 ): List<T> {
     val filesWithContents =
-        readAllReadableFilesPairFile(files, strategyIfCouldntRead)
+        readAllReadableFilesPairFile(files, strategyOnReadFail)
     return filesWithContents.flatMap { (file, content) ->
         try {
             listOf(parser(content, competition))

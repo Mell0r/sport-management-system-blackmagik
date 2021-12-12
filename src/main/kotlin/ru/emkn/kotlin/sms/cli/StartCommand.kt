@@ -18,7 +18,7 @@ class StartCommand(
             files = applicationFiles,
             competition = competition,
             parser = Application.Companion::readFromFileContentAndCompetition,
-            strategyIfCouldntRead = { file ->
+            strategyOnReadFail = { file ->
                 // If some application couldn't be loaded as a file,
                 // Then organiser has to check it manually,
                 // No application should be missed due to organisers mistake.
