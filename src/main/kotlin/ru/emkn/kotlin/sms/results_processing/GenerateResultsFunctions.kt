@@ -9,15 +9,17 @@ class Helper(
     private val startingProtocols: List<StartingProtocol>
 ) {
     fun getRouteOf(id: Int): Route {
-        return competitionConfig.groupToRouteMapping[getGroupOf(id)]!!
+        val group = getGroupOf(id)
+        return group.route
     }
 
     fun getParticipantBy(id: Int): Participant {
-        return participantsList.getParticipantById(id)!!
+        return participantsList.getParticipantById(id)
+            ?: throw InternalError("Bad input checker: participant with id \"$id\" wasn't found!")
     }
 
-    fun getGroupOf(id: Int): GroupLabelT {
-        return getParticipantBy(id).supposedGroup
+    fun getGroupOf(id: Int): Group {
+        return getParticipantBy(id).group
     }
 
     fun getStartingTimeOf(id: Int): Time =
@@ -28,7 +30,7 @@ class Helper(
 /**
  * Part of API.
  */
-fun generateResultsProtocolsFromParticipantTimestamps(
+fun generateResultsProtocolsOfParticipant(
     participantsList: ParticipantsList,
     startingProtocols: List<StartingProtocol>,
     participantTimestampsProtocols: List<ParticipantTimestampsProtocol>,
@@ -52,7 +54,7 @@ fun generateResultsProtocolsFromParticipantTimestamps(
 /**
  * Part of API.
  */
-fun generateResultsProtocolsFromCheckpointTimestamps(
+fun generateResultsProtocolsOfCheckpoint(
     participantsList: ParticipantsList,
     startingProtocols: List<StartingProtocol>,
     checkpointTimestampsProtocols: List<CheckpointTimestampsProtocol>,
@@ -91,7 +93,7 @@ private fun convertToGroupResults(
 }
 
 private fun generateResultProtocolWithinAGroup(
-    groupLabel: GroupLabelT,
+    groupLabel: Group,
     groupResults: List<ParticipantAndTime>,
     idToParticipantMapping: (Int) -> Participant
 ): GroupResultProtocol {
@@ -111,10 +113,9 @@ private fun generateResultProtocolWithinAGroup(
 private fun sortedGroupResultsForResultsTable(
     groupResults: List<ParticipantAndTime>,
     idToParticipantMapping: (Int) -> Participant
-) =
-    groupResults.filter { it.totalTime != null }
-        .sortedBy { idToParticipantMapping(it.id).lastName }
-        .sortedBy { it.totalTime!! } +
-            groupResults.filter { it.totalTime == null }
-                .sortedBy { idToParticipantMapping(it.id).lastName }
+) = groupResults
+    .sortedBy { idToParticipantMapping(it.id).lastName }
+    .sortedWith(
+        compareBy(nullsLast()) { it.totalTime }
+    )
 

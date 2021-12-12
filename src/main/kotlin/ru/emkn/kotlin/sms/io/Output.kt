@@ -1,7 +1,12 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.StartingProtocol
+import ru.emkn.kotlin.sms.TeamResultsProtocol
+import ru.emkn.kotlin.sms.cli.exitWithInfoLog
+import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 /**
@@ -17,7 +22,7 @@ fun getFileNameOfStartingProtocol(startingProtocol: StartingProtocol): String =
     "starting-protocol-of-group-${startingProtocol.group}.csv"
 
 fun getFileNameOfGroupResultProtocol(groupResultProtocol: GroupResultProtocol): String =
-    "result-of-group-${groupResultProtocol.groupName}.csv"
+    "result-of-group-${groupResultProtocol.group.label}.csv"
 
 fun getFileNameOfTeamResultsProtocol(teamResultsProtocol: TeamResultsProtocol): String =
     "results-teams.csv"
@@ -52,7 +57,7 @@ fun askYesNoQuestionInConsole(question: String): Boolean {
  * If it couldn't write to a file, or some exception occurred, terminates the program.
  */
 fun safeWriteContentToFile(
-    content: List<String>,
+    content: FileContent,
     outputDirectory: File,
     fileName: String
 ) {

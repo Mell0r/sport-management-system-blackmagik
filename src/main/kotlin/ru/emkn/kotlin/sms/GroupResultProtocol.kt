@@ -3,39 +3,50 @@ package ru.emkn.kotlin.sms
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
-typealias Score = Int
-
 data class ParticipantAndTime(
     val id: Int,
     val totalTime: Time? // null if disqualified
 )
 
 class GroupResultProtocol(
-    val groupName: GroupLabelT,
+    val group: Group,
     val entries: List<ParticipantAndTime>
     // sorted by placeInGroup
 ) : CsvDumpable {
-    companion object : CreatableFromFileContent<GroupResultProtocol> {
-        override fun readFromFileContent(fileContent: FileContent): GroupResultProtocol {
+    companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
+        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
+            val group = competition.getGroupByLabelOrNull(groupName)
+                ?: logErrorAndThrow("No group with name \"$groupName\" exist.")
             val rest = fileContent.drop(2) // group row and header row
-            val participantAndTimeList = rest.mapIndexed { index, line ->
-                val tokens = line.split(",")
-                if (tokens.size != 3)
-                    logErrorAndThrow("Line $line: not three comma separated values.")
-                val (_, id, time) = tokens
-                val idNum =
-                    id.toIntOrNull() ?: logErrorAndThrow("Line $index: bad id.")
-                val timeParsed = when (time) {
-                    "снят" -> null
-                    else -> Time.fromString(time)
+            val participantAndTimeList = rest.mapIndexed { index, row ->
+                try {
+                    readParticipantAndTimeFromRow(row)
+                } catch (e: IllegalArgumentException) {
+                    val lineNumber =
+                        index + 3 // 3 = 1 for zero-based indexing + 2 for the first two lines being dropped
+                    val messageWithLineNumber = "Line $lineNumber: ${e.message}"
+                    logErrorAndThrow(messageWithLineNumber)
                 }
-                ParticipantAndTime(
-                    idNum,
-                    timeParsed
-                )
             }
-            return GroupResultProtocol(groupName, participantAndTimeList)
+            return GroupResultProtocol(group, participantAndTimeList)
+        }
+
+        private fun readParticipantAndTimeFromRow(row: String): ParticipantAndTime {
+            val tokens = row.split(",")
+            if (tokens.size != 3)
+                logErrorAndThrow("Not three comma separated values.")
+            val (_, id, time) = tokens
+            val idNum =
+                id.toIntOrNull() ?: logErrorAndThrow("Bad id.")
+            val timeParsed = when (time) {
+                "снят" -> null
+                else -> Time.fromString(time)
+            }
+            return ParticipantAndTime(
+                idNum,
+                timeParsed
+            )
         }
 
     }
@@ -63,7 +74,7 @@ class GroupResultProtocol(
 
         val places = generatePlaces()
         var index = -1
-        return listOf(groupName) + PlayersPrinter(listOf(
+        return listOf(group.label) + PlayersPrinter(listOf(
             FieldInfo("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->

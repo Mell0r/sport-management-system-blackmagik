@@ -1,10 +1,13 @@
 package ru.emkn.kotlin.sms
 
-import kotlinx.cli.ExperimentalCli
+import org.tinylog.kotlin.Logger
+import ru.emkn.kotlin.sms.cli.*
 
-
-@ExperimentalCli
 fun main(args: Array<String>) {
+    Logger.debug { "Program started." }
+
     runCommandLineInterface(args)
+
+    Logger.debug { "Program successfully finished." }
 }
 

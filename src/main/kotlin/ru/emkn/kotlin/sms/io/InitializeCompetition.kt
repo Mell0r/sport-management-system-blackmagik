@@ -1,18 +1,20 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.kotlin.Logger
+import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.GroupRequirement
 import ru.emkn.kotlin.sms.readRouteFromLine
+import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 fun checkAndReadFileInFolder(
     folderPath: String,
     fileName: String
-): List<String> {
-    if (!File("$folderPath/$fileName").exists())
+): FileContent {
+    val file = File("$folderPath/$fileName")
+    if (!file.exists())
         throw IllegalArgumentException("!File '$fileName' is missed!")
-    return File("$folderPath/$fileName").readLines()
+    return file.readLines()
 }
 
 fun initializeCompetition(configFolderPath: String): Competition {
@@ -59,33 +61,45 @@ fun initializeCompetition(configFolderPath: String): Competition {
     Logger.info { "Initialized routes checkpoints" }
 
     val groupToRouteMapping = routeOfGroups.associate { row ->
-        val splittedRow = row.split(',')
-        val route = routes.find { it.name == splittedRow[1] }
+        val tokens = row.split(',')
+        val route = routes.find { it.name == tokens[1] }
             ?: throw IllegalArgumentException("Routes in 'Route_description' and in 'Route_of_groups' don't match!")
-        Pair(splittedRow[0], route)
+        Pair(tokens[0], route)
     }
     Logger.info { "Mapped group to route" }
 
     val groupRequirement =
         checkAndReadFileInFolder(configFolderPath, "Groups_requirement.csv")
     val requirementByGroup = groupRequirement.associate { row ->
-        val splittedRow = row.split(',')
-        if (splittedRow.size != 3)
+        val tokens = row.split(',')
+        if (tokens.size != 3)
             throw IllegalArgumentException(
                 "Number of commas in $row line in 'Groups_requirement' incorrect! " +
                         "Should be exactly three."
             )
-        requireNotNull(splittedRow[1].toIntOrNull()) {
+        val label = tokens[0]
+        val ageFrom = tokens[1].toIntOrNull()
+        requireNotNull(ageFrom) {
             "First parameter in $row line should be integer! " +
-                    "Was '${splittedRow[1]}'."
+                    "Was '${tokens[1]}'."
         }
-        requireNotNull(splittedRow[2].toIntOrNull()) {
+        val ageTo = tokens[2].toIntOrNull()
+        requireNotNull(ageTo) {
             "Second parameter in $row line should be integer! " +
-                    "Was '${splittedRow[2]}'."
+                    "Was '${tokens[2]}'."
+        }
+        val route = groupToRouteMapping[label]
+        requireNotNull(route) {
+            "No route specified for group $label."
         }
         Pair(
-            splittedRow[0],
-            GroupRequirement(splittedRow[1].toInt(), splittedRow[2].toInt())
+            label,
+            AgeGroup(
+                label = label,
+                route = route,
+                ageFrom = ageFrom,
+                ageTo = ageTo,
+            ),
         )
     }
     for (g in groups)
@@ -96,9 +110,7 @@ fun initializeCompetition(configFolderPath: String): Competition {
         name,
         year,
         date,
-        groups,
+        requirementByGroup.values.toList(),
         routes,
-        groupToRouteMapping,
-        requirementByGroup
     )
 }

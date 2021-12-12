@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.Logger
+import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 import java.nio.file.Files
@@ -24,7 +25,7 @@ fun ensureDirectory(directoryPath: String): File {
  * Reads an entire [java.io.File].
  * Returns a [List] of [String], or null if it couldn't reach or read the file.
  */
-fun readFileContentOrNull(file: File): List<String>? {
+fun readFileContentOrNull(file: File): FileContent? {
     if (!file.exists()) {
         Logger.info { "File \"$file\" doesn't exist." }
         return null
@@ -64,7 +65,7 @@ fun readAllReadableFiles(
 private fun readAllReadableFilesPairFile(
     files: List<File>,
     reactionOnFailure: (File) -> Unit = {},
-): List<Pair<File, List<String>>> {
+): List<Pair<File, FileContent>> {
     return files.map { file -> file to readFileContentOrNull(file) }
         .flatMap { (file, contentOrNull) ->
             if (contentOrNull == null) {
@@ -83,18 +84,19 @@ private fun readAllReadableFilesPairFile(
  * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
  * when the file format is incorrect.
  *
- * If the file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If the file cannot be read, reacts based on [strategyOnReadFail] function.
  * If the file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
  */
 fun <T> readAndParseFile(
     file: File,
-    parser: (FileContent) -> T,
-    strategyIfCouldntRead: (File) -> Nothing,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
+    strategyOnReadFail: (File) -> Nothing,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing,
 ): T {
-    val content = readFileContentOrNull(file) ?: strategyIfCouldntRead(file)
+    val content = readFileContentOrNull(file) ?: strategyOnReadFail(file)
     return try {
-        parser(content)
+        parser(content, competition)
     } catch (e: IllegalArgumentException) {
         strategyOnWrongFormat(file, e)
     }
@@ -107,20 +109,21 @@ fun <T> readAndParseFile(
  * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
  * when the file format is incorrect.
  *
- * If a file cannot be read, reacts based on [strategyIfCouldntRead] function.
+ * If a file cannot be read, reacts based on [strategyOnReadFail] function.
  * If a file was read, but has incorrect format, reacts based on [strategyOnWrongFormat] function.
  */
 fun <T> readAndParseAllFiles(
     files: List<File>,
-    parser: (FileContent) -> T,
-    strategyIfCouldntRead: (File) -> Unit,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
+    strategyOnReadFail: (File) -> Unit,
     strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit,
 ): List<T> {
     val filesWithContents =
-        readAllReadableFilesPairFile(files, strategyIfCouldntRead)
+        readAllReadableFilesPairFile(files, strategyOnReadFail)
     return filesWithContents.flatMap { (file, content) ->
         try {
-            listOf(parser(content))
+            listOf(parser(content, competition))
         } catch (e: IllegalArgumentException) {
             strategyOnWrongFormat(file, e)
             listOf()

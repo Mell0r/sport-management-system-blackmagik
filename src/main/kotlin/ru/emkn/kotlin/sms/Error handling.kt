@@ -6,3 +6,7 @@ fun logErrorAndThrow(message: String): Nothing {
     Logger.error(message)
     throw IllegalArgumentException(message)
 }
+
+fun String.toIntOrThrow(e: Exception): Int {
+    return toIntOrNull() ?: throw e
+}
