@@ -19,7 +19,7 @@ class ResultCommand(
     val startingProtocolFiles: List<File>,
     val routeProtocolType: RouteProtocolType,
     val routeProtocolFiles: List<File>,
-) : ProgramCommand() {
+) : ProgramCommand {
     override fun execute(competition: Competition, outputDirectory: File) {
         val participantsList =
             loadParticipantsList(participantListFile, competition)

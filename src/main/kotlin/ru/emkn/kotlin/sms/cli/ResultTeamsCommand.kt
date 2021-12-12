@@ -12,7 +12,7 @@ import java.io.File
 class ResultTeamsCommand(
     val participantListFile: File,
     val resultProtocolFiles: List<File>,
-) : ProgramCommand() {
+) : ProgramCommand {
     override fun execute(competition: Competition, outputDirectory: File) {
         val participantsList =
             loadParticipantsList(participantListFile, competition)

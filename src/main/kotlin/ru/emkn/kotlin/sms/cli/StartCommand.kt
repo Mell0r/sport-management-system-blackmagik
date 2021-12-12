@@ -12,7 +12,7 @@ import java.io.File
 
 class StartCommand(
     val applicationFiles: List<File>,
-) : ProgramCommand() {
+) : ProgramCommand {
     override fun execute(competition: Competition, outputDirectory: File) {
         val applications = readAndParseAllFiles(
             files = applicationFiles,
