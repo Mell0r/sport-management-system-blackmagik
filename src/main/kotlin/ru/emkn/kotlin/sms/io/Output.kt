@@ -6,6 +6,7 @@ import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.TeamResultsProtocol
 import ru.emkn.kotlin.sms.cli.exitWithInfoLog
+import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 /**
@@ -56,7 +57,7 @@ fun askYesNoQuestionInConsole(question: String): Boolean {
  * If it couldn't write to a file, or some exception occurred, terminates the program.
  */
 fun safeWriteContentToFile(
-    content: List<String>,
+    content: FileContent,
     outputDirectory: File,
     fileName: String
 ) {

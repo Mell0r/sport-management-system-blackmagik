@@ -4,15 +4,17 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.readRouteFromLine
+import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 fun checkAndReadFileInFolder(
     folderPath: String,
     fileName: String
-): List<String> {
-    if (!File("$folderPath/$fileName").exists())
+): FileContent {
+    val file = File("$folderPath/$fileName")
+    if (!file.exists())
         throw IllegalArgumentException("!File '$fileName' is missed!")
-    return File("$folderPath/$fileName").readLines()
+    return file.readLines()
 }
 
 fun initializeCompetition(configFolderPath: String): Competition {

@@ -25,7 +25,7 @@ fun ensureDirectory(directoryPath: String): File {
  * Reads an entire [java.io.File].
  * Returns a [List] of [String], or null if it couldn't reach or read the file.
  */
-fun readFileContentOrNull(file: File): List<String>? {
+fun readFileContentOrNull(file: File): FileContent? {
     if (!file.exists()) {
         Logger.info { "File \"$file\" doesn't exist." }
         return null
@@ -65,7 +65,7 @@ fun readAllReadableFiles(
 private fun readAllReadableFilesPairFile(
     files: List<File>,
     reactionOnFailure: (File) -> Unit = {},
-): List<Pair<File, List<String>>> {
+): List<Pair<File, FileContent>> {
     return files.map { file -> file to readFileContentOrNull(file) }
         .flatMap { (file, contentOrNull) ->
             if (contentOrNull == null) {
