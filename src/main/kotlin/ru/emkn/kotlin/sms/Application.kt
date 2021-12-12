@@ -25,7 +25,10 @@ class Application(
             assert(tokens.size == 5)
             val birthYear = tokens[3].toIntOrNull()
             if (birthYear == null) {
-                Logger.warn { "Applicant at line $lineNo has incorrect birth year, so he/she is not allowed to competition." }
+                Logger.warn {
+                    "Line $lineNo: The applicant has incorrect birth " +
+                            "year, so he/she is not allowed to competition."
+                }
                 return null
             }
             return Applicant(
@@ -50,7 +53,9 @@ class Application(
             val teamName = application[0][0]
             val applicantsList = application
                 .drop(1)
-                .mapIndexedNotNull { lineNo, tokens ->
+                .mapIndexedNotNull { index, tokens ->
+                    val lineNo =
+                        index + 2 // 2 = 1 for zero-based indexing + 1 for the first line being dropped
                     readApplicantFromLineOrNull(
                         lineNo,
                         tokens,

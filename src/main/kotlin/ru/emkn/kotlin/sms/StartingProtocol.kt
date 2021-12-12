@@ -12,8 +12,12 @@ data class StartingProtocol(
     val group: Group,
     val entries: List<StartingProtocolEntry>
 ) : CsvDumpable {
-    companion object : CreatableFromFileContentAndCompetition<StartingProtocol> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): StartingProtocol {
+    companion object :
+        CreatableFromFileContentAndCompetition<StartingProtocol> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): StartingProtocol {
             require(fileContent.isNotEmpty()) { "Starting protocol can't be empty!" }
             fileContent.drop(1).forEachIndexed { i, row ->
                 require(row.count { it == ',' } == 1) {
@@ -28,17 +32,32 @@ data class StartingProtocol(
             requireNotNull(group) {
                 "Group with label \"$groupLabel\" does not exist."
             }
+            val entries = fileContent
+                .drop(1)
+                .mapIndexed { index, row ->
+                    try {
+                        readEntryFromRow(row)
+                    } catch (e: java.lang.IllegalArgumentException) {
+                        val lineNumber =
+                            index + 2 // 2 = 1 for zero-based indexing + 1 for the first line being dropped.
+                        val messageWithLineNumber =
+                            "Line $lineNumber: ${e.message}"
+                        logErrorAndThrow(messageWithLineNumber)
+                    }
+                }
             return StartingProtocol(
                 group,
-                fileContent
-                    .drop(1)
-                    .map { row ->
-                        val splittedRow = row.split(',')
-                        StartingProtocolEntry(
-                            splittedRow[0].toInt(),
-                            Time.fromString(splittedRow[1])
-                        )
-                    })
+                entries
+            )
+        }
+
+        private fun readEntryFromRow(row: String): StartingProtocolEntry {
+            val splittedRow = row.split(',')
+            return StartingProtocolEntry(
+                splittedRow[0].toIntOrNull()
+                    ?: throw IllegalArgumentException("Id should be an integer value"),
+                Time.fromString(splittedRow[1])
+            )
         }
 
     }

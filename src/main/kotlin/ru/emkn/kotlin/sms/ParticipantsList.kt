@@ -5,34 +5,52 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 const val SIZE_OF_PARTICIPANT_LIST_ROW = 6
 
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
-    companion object : CreatableFromFileContentAndCompetition<ParticipantsList> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): ParticipantsList {
-            return ParticipantsList(fileContent.mapIndexed { ind, row ->
-                val splitRow = row.split(',')
-                if (row.count { it == ',' } != SIZE_OF_PARTICIPANT_LIST_ROW)
-                    throw IllegalArgumentException(
-                        "The line number $ind in fileContent has incorrect number of commas! " +
-                                "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
-                    )
-                val id = splitRow[0].toIntOrNull()
-                requireNotNull(id) { "First argument(ID) of participant in line $ind is not a number!" }
-                val age = splitRow[1].toIntOrNull()
-                requireNotNull(age) { "Second argument(age) of participant in line $ind is not a number!" }
-                val groupLabel = splitRow[4]
-                val group = competition.getGroupByLabelOrNull(groupLabel)
-                requireNotNull(group) {
-                    "Invalid group label \"$groupLabel\" of participant in line $ind. No group with such label exist."
+    companion object :
+        CreatableFromFileContentAndCompetition<ParticipantsList> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): ParticipantsList {
+            return ParticipantsList(fileContent.mapIndexed { index, row ->
+                try {
+                    readParticipantFromRow(row, competition)
+                } catch (e: IllegalArgumentException) {
+                    val lineNumber = index + 1
+                    val messageWithLineNumber = "Line $lineNumber: ${e.message}"
+                    logErrorAndThrow(messageWithLineNumber)
                 }
-                Participant(
-                    id,
-                    age,
-                    splitRow[2],
-                    splitRow[3],
-                    group,
-                    splitRow[5],
-                    splitRow[6]
-                )
             })
+        }
+
+        private fun readParticipantFromRow(
+            row: String,
+            competition: Competition
+        ): Participant {
+            val splitRow = row.split(',')
+            if (row.count { it == ',' } != SIZE_OF_PARTICIPANT_LIST_ROW)
+                throw IllegalArgumentException(
+                    "Incorrect number of commas! " +
+                            "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
+                )
+            val id = splitRow[0].toIntOrThrow(
+                IllegalArgumentException("First argument(ID) of participant is not a number!")
+            )
+            val age = splitRow[1].toIntOrNull()
+            requireNotNull(age) { "Second argument(age) of participant is not a number!" }
+            val groupLabel = splitRow[4]
+            val group = competition.getGroupByLabelOrNull(groupLabel)
+            requireNotNull(group) {
+                "Invalid group label \"$groupLabel\" of participant. No group with such label exist."
+            }
+            return Participant(
+                id,
+                age,
+                splitRow[2],
+                splitRow[3],
+                group,
+                splitRow[5],
+                splitRow[6]
+            )
         }
     }
 
