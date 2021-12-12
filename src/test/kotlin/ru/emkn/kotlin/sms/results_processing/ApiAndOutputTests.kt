@@ -16,16 +16,23 @@ internal class ApiTests {
         "",
         0,
         "",
-        listOf(AgeGroup("М10", mainRoute, -100, 100), AgeGroup("Ж10", mainRoute, -100, 100)),
+        listOf(
+            AgeGroup("М10", mainRoute, -100, 100),
+            AgeGroup("Ж10", mainRoute, -100, 100)
+        ),
         listOf(mainRoute, shortRoute),
     )
+    private val groupM10 = competition.getGroupByLabelOrNull("М10")
+        ?: throw Error("Competition::getGroupByLabelOrNull si buggy (or typo in test.)")
+    private val groupF10 = competition.getGroupByLabelOrNull("Ж10")
+        ?: throw Error("Competition::getGroupByLabelOrNull si buggy (or typo in test.)")
 
     private val participants = ParticipantsList(
         listOf(
-            Participant(1, 10, "Иван", "Иванов", competition.getGroupByLabelOrNull("М10")!!, "T1", ""),
-            Participant(2, 10, "Иван", "Неиванов", competition.getGroupByLabelOrNull("М10")!!, "T2", ""),
-            Participant(3, 10, "Иван", "Дурак", competition.getGroupByLabelOrNull("М10")!!, "T2", ""),
-            Participant(4, 10, "Афродита", "Иванова", competition.getGroupByLabelOrNull("Ж10")!!, "T1", ""),
+            Participant(1, 10, "Иван", "Иванов", groupM10, "T1", ""),
+            Participant(2, 10, "Иван", "Неиванов", groupM10, "T2", ""),
+            Participant(3, 10, "Иван", "Дурак", groupM10, "T2", ""),
+            Participant(4, 10, "Афродита", "Иванова", groupF10, "T1", ""),
         )
     )
     private val startingProtocols = listOf(
