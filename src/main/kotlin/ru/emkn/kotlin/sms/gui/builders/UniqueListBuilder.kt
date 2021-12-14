@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui
+package ru.emkn.kotlin.sms.gui.builders
 
 /**
  * Builds a list of elements, guaranteed to be unique.

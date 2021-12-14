@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui
+package ru.emkn.kotlin.sms.gui.competitonModel
 
 import ru.emkn.kotlin.sms.TeamResultsProtocol
 

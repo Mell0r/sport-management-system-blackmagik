@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui
+package ru.emkn.kotlin.sms.gui.builders
 
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Group
@@ -7,7 +7,7 @@ import ru.emkn.kotlin.sms.Route
 /**
  * aka "Mutable competition": a class which allows to
  * configure a desired competition, and then build an
- * instance of Competition class.
+ * instance of [Competition] class.
  */
 class CompetitionBuilder (
     var discipline: String = "",

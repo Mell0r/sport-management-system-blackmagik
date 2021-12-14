@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui
+package ru.emkn.kotlin.sms.gui.builders
 
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ParticipantsList
