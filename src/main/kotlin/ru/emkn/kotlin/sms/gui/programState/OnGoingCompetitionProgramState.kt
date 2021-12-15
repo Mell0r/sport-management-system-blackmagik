@@ -18,6 +18,8 @@ import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
  * [competition], [participantsList] and [startingTimes]
  * are fixed and given via constructor.
  * [competitionModel] can be changed via [competitionModelController].
+ *
+ * Views of [competitionModel] can become a listener of it via [CompetitionModel.addListener] method.
  */
 class OnGoingCompetitionProgramState(
     override val competition: Competition,

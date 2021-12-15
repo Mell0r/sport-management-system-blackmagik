@@ -8,8 +8,8 @@ import ru.emkn.kotlin.sms.io.initializeCompetition
 
 /**
  * aka "Mutable competition": a class which allows to
- * configure a desired competition, and then build an
- * instance of [Competition] class.
+ * configure a desired competition,
+ * and then build an instance of [Competition] class.
  */
 class CompetitionBuilder {
     var discipline: String = ""
@@ -42,6 +42,8 @@ class CompetitionBuilder {
     /**
      * Replaces all data in builder with data from [Competition].
      * Useful for loading competition and then modifying it in GUI.
+     *
+     * @throws [IllegalArgumentException] if something went wrong.
      */
     fun replaceFromCompetition(competition: Competition) {
         discipline = competition.discipline
@@ -54,7 +56,7 @@ class CompetitionBuilder {
     }
 
     /**
-     * Creates a [CompetitionBuilder]
+     * Replaces all data in builder with data
      * from files in directory [configFolderPath]
      * in format consistent with [initializeCompetition].
      *

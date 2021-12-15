@@ -14,8 +14,8 @@ import ru.emkn.kotlin.sms.gui.competitonModel.FinishedCompetitionModelController
  *
  * [competition] is fixed and given via constructor.
  * [participantsList] can be edited via [ParticipantsListBuilder].
- * [startingTimes] is an instance of [MutableStartingTimes], which means
- * the starting times can be changed.
+ * [startingTimes] is an instance of [MutableStartingTimes],
+ * which means the starting times can be changed.
  * [competitionModel] is empty and cannot be changed.
  *
  * Views of [participantsList] can become a listener via [ParticipantsListBuilder.addListener] method.
