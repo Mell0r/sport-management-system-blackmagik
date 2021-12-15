@@ -50,20 +50,23 @@ class UniqueListBuilder<T>(
     }
 
     /**
-     * Tries to add an element the list,
+     * Tries to add [element] the list,
      * checks that it is unique to all the others.
      *
-     * @return true if the element was added successfully, false otherwise
+     * @return true if [element] was added successfully, false otherwise
      */
     fun add(element: T) : Boolean {
         TODO()
     }
 
     /**
-     * Tries to remove an element from the list.
+     * Tries to remove [element] from the list.
      *
-     * @return true if the element was removed successfully,
-     * false in case the element was not present in the list
+     * @return true if [element] was removed successfully,
+     * false in case the [element] was not present in the list
+     *
+     * Note: it searches for the exact object in the list,
+     * not an object which satisfies [equals] with [element].
      */
     fun remove(element: T) : Boolean {
         TODO()

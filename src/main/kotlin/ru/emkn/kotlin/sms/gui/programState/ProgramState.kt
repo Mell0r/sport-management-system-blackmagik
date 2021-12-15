@@ -10,8 +10,8 @@ import ru.emkn.kotlin.sms.gui.competitonModel.GroupResultProtocolsView
 import ru.emkn.kotlin.sms.gui.competitonModel.TeamResultsProtocolView
 
 /**
- * Abstract class with all properties and methods
- * needed for GUI.
+ * Abstract class with all backend
+ * properties and methods needed for GUI.
  *
  * All program modes are implemented by classes inherited from [ProgramState].
  * They are:

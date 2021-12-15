@@ -13,6 +13,9 @@ import ru.emkn.kotlin.sms.gui.competitonModel.FinishedCompetitionModelController
  *
  * [competition] can be edited through [competitionBuilder].
  * All other properties are fixed and empty.
+ *
+ * View of the competition can become a listener of [competitionBuilder] changes
+ * via [CompetitionBuilder.addListener] method (interface [ModelListener<CompetitionBuilder>]).
  */
 class ConfiguringCompetitionProgramState : ProgramState() {
     val competitionBuilder = CompetitionBuilder()
