@@ -9,8 +9,8 @@ private fun Int.s() = Time(this)
 
 internal class ApiTests {
     private val mainRoute =
-        OrderedCheckpointsRoute("main", listOf("1", "2", "3"))
-    private val shortRoute = OrderedCheckpointsRoute("short", listOf("1"))
+        OrderedCheckpointsRoute("main", mutableListOf("1", "2", "3"))
+    private val shortRoute = OrderedCheckpointsRoute("short", mutableListOf("1"))
     private val competition = Competition(
         "",
         "",
@@ -246,7 +246,7 @@ internal class ApiTests {
         val startingProtocols = listOf(
             StartingProtocol(competition.getGroupByLabelOrNull("М10")!!, listOf(StartingProtocolEntry(1, 100.s())))
         )
-        val route = OrderedCheckpointsRoute("main", listOf("1", "2"))
+        val route = OrderedCheckpointsRoute("main", mutableListOf("1", "2"))
         val competition = Competition(
             "",
             "",

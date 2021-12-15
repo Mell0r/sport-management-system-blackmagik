@@ -1,6 +1,6 @@
 package ru.emkn.kotlin.sms
 
-abstract class Group(val label: String, val route: Route) {
+abstract class Group(val label: String, var route: Route) {
     abstract fun checkParticipantValidity(participant: Participant) : Boolean
     override fun toString() = label
 }

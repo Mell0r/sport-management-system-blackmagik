@@ -3,10 +3,13 @@ package ru.emkn.kotlin.sms
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
+import kotlin.reflect.jvm.internal.impl.util.Check
 
 typealias CheckpointLabelT = String
 
-sealed class Route(val name: String, val checkpoints: Set<CheckpointLabelT>) {
+sealed class Route(val name: String) {
+    abstract val checkpoints: Set<CheckpointLabelT>
+
     // null if disqualified
     abstract fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
@@ -46,20 +49,23 @@ private fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute
     val k = tokens[1].toIntOrNull()
         ?: throw IllegalArgumentException("Bad k (not a number): ${tokens[1]}")
     val droppedNameAndK = tokens.drop(2)
-    val checkpoints = droppedNameAndK.toSet()
+    val checkpoints = droppedNameAndK.toMutableSet()
     return AtLeastKCheckpointsRoute(name, checkpoints, k)
 }
 
 private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
     val tokens = line.split(',').filter { it.isNotEmpty() }
     require(tokens.isNotEmpty()) { "Empty line in 'Route_description." }
-    return OrderedCheckpointsRoute(tokens[0], tokens.drop(1))
+    return OrderedCheckpointsRoute(tokens[0], tokens.drop(1).toMutableList())
 }
 
 class OrderedCheckpointsRoute(
     name: String,
-    val orderedCheckpoints: List<CheckpointLabelT>
-) : Route(name, orderedCheckpoints.toSet()) {
+    val orderedCheckpoints: MutableList<CheckpointLabelT>,
+) : Route(name) {
+    override val checkpoints: Set<CheckpointLabelT>
+        get() = orderedCheckpoints.toSet()
+
     override fun calculateResultingTime(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
@@ -103,9 +109,9 @@ class OrderedCheckpointsRoute(
 
 class AtLeastKCheckpointsRoute(
     name: String,
-    checkpoints: Set<CheckpointLabelT>,
-    val threshold: Int
-) : Route(name, checkpoints) {
+    override val checkpoints: MutableSet<CheckpointLabelT>,
+    var threshold: Int,
+) : Route(name) {
     init {
         require(threshold <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
     }

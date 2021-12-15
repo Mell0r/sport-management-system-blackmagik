@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 class RouteResultCalculationTest {
     @Test
     fun `result on properly passed ordered checkpoints protocols are proper`() {
-        val route = OrderedCheckpointsRoute("", listOf("1", "2", "3"))
+        val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
@@ -21,7 +21,7 @@ class RouteResultCalculationTest {
 
     @Test
     fun `result on ordered checkpoints protocols with wrong order are proper`() {
-        val route = OrderedCheckpointsRoute("", listOf("1", "2", "3"))
+        val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
@@ -34,7 +34,7 @@ class RouteResultCalculationTest {
 
     @Test
     fun `result on ordered checkpoints protocols with false start are proper`() {
-        val route = OrderedCheckpointsRoute("", listOf("1", "2", "3"))
+        val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
@@ -47,7 +47,7 @@ class RouteResultCalculationTest {
 
     @Test
     fun `result on ordered checkpoints protocols with repeated checkpoints are proper`() {
-        val route = OrderedCheckpointsRoute("", listOf("1", "2", "3", "1"))
+        val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3", "1"))
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
@@ -61,7 +61,7 @@ class RouteResultCalculationTest {
 
     @Test
     fun `result on at least k checkpoints protocols when k are visited are proper`() {
-        val route = AtLeastKCheckpointsRoute("", setOf("1", "2", "3", "4"), 2)
+        val route = AtLeastKCheckpointsRoute("", mutableSetOf("1", "2", "3", "4"), 2)
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
@@ -75,7 +75,7 @@ class RouteResultCalculationTest {
     // (the participant might run them for fun)
     @Test
     fun `result on at least k checkpoints protocols when more than k are visited are proper`() {
-        val route = AtLeastKCheckpointsRoute("", setOf("1", "2", "3", "4"), 2)
+        val route = AtLeastKCheckpointsRoute("", mutableSetOf("1", "2", "3", "4"), 2)
         val passTime = route.calculateResultingTime(
             listOf(
                 CheckpointLabelAndTime("1", Time(5)),
