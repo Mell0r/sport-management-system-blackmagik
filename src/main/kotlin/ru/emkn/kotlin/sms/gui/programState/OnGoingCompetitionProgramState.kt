@@ -4,7 +4,6 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
-import ru.emkn.kotlin.sms.gui.competitonModel.OnGoingCompetitionModelController
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
 
@@ -27,11 +26,18 @@ class OnGoingCompetitionProgramState(
     override val startingTimes: FixedStartingTimes,
 ) : ProgramState() {
     override val competitionModel = CompetitionModel()
-    override val competitionModelController = OnGoingCompetitionModelController(competitionModel)
+    val competitionModelController = competitionModel.Controller()
 
     init {
         Logger.info{"Initialized OnGoingCompetitionProgramState."}
         competitionModel.addListener(super.groupResultProtocolsView)
         competitionModel.addListener(super.teamResultsProtocolView)
     }
+
+    override fun nextProgramState() = FinishedCompetitionProgramState(
+        competition = competition,
+        participantsList = participantsList,
+        startingTimes = startingTimes,
+        competitionModel = competitionModel,
+    )
 }

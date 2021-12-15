@@ -5,7 +5,6 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
 import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
-import ru.emkn.kotlin.sms.gui.competitonModel.FinishedCompetitionModelController
 
 /**
  * Mode 4 of the program:
@@ -21,11 +20,12 @@ class FinishedCompetitionProgramState(
     override val startingTimes: FixedStartingTimes,
     override val competitionModel: CompetitionModel,
 ) : ProgramState() {
-    override val competitionModelController = FinishedCompetitionModelController(competitionModel)
 
     init {
         Logger.info {"Initialized FinishedCompetitionProgramState."}
         competitionModel.addListener(super.groupResultProtocolsView)
         competitionModel.addListener(super.teamResultsProtocolView)
     }
+
+    override fun nextProgramState() : FinishedCompetitionProgramState = this
 }

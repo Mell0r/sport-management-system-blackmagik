@@ -1,11 +1,9 @@
 package ru.emkn.kotlin.sms.gui.programState
 
-import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.StartingTimes
 import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
-import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModelController
 import ru.emkn.kotlin.sms.gui.competitonModel.GroupResultProtocolsView
 import ru.emkn.kotlin.sms.gui.competitonModel.TeamResultsProtocolView
 
@@ -39,7 +37,8 @@ abstract class ProgramState {
 
     // Mode 3
     abstract val competitionModel: CompetitionModel
-    abstract val competitionModelController: CompetitionModelController
     val groupResultProtocolsView = GroupResultProtocolsView()
     val teamResultsProtocolView = TeamResultsProtocolView()
+
+    abstract fun nextProgramState() : ProgramState // moves on to the next program state
 }

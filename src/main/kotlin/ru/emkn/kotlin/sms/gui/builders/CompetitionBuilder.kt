@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.gui.builders
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.Route
-import ru.emkn.kotlin.sms.gui.ModelListener
 import ru.emkn.kotlin.sms.io.initializeCompetition
 
 /**
@@ -28,14 +27,14 @@ class CompetitionBuilder {
         equals = { route1, route2 -> route1.name == route2.name }
     )
 
-    private val listeners: MutableList<ModelListener<CompetitionBuilder>> = mutableListOf()
-    fun addListener(listener: ModelListener<CompetitionBuilder>) {
+    private val listeners: MutableList<BuilderListener<CompetitionBuilder>> = mutableListOf()
+    fun addListener(listener: BuilderListener<CompetitionBuilder>) {
         listeners.add(listener)
     }
 
     private fun notifyAllListeners() {
         listeners.forEach {
-            it.modelChanged(this)
+            it.dataChanged(this)
         }
     }
 
@@ -91,7 +90,7 @@ class CompetitionBuilder {
      * false if a group with the same name already exists.
      */
     fun addGroup(group: Group) : Boolean {
-        return checkModification(groupsBuilder.add(group))
+        TODO()
     }
 
     /**
@@ -99,7 +98,7 @@ class CompetitionBuilder {
      * false if the given group was not present in the list.
      */
     fun removeGroup(group: Group) : Boolean {
-        return checkModification(groupsBuilder.remove(group))
+        TODO()
     }
 
     /**
@@ -107,7 +106,7 @@ class CompetitionBuilder {
      * false if a route with the same name already exists.
      */
     fun addRoute(route: Route) : Boolean {
-        return checkModification(routesBuilder.add(route))
+        TODO()
     }
 
     /**
@@ -115,6 +114,7 @@ class CompetitionBuilder {
      * false if the given route was not present in the list.
      */
     fun removeRoute(route: Route) : Boolean {
-        return checkModification(routesBuilder.remove(route))
+        TODO()
     }
+
 }

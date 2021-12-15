@@ -1,10 +1,9 @@
 package ru.emkn.kotlin.sms.gui.builders
 
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.gui.ModelListener
-import ru.emkn.kotlin.sms.io.initializeCompetition
 import ru.emkn.kotlin.sms.results_processing.FileContent
 
 class ParticipantsListBuilder {
@@ -14,14 +13,14 @@ class ParticipantsListBuilder {
         }
     )
 
-    private val listeners: MutableList<ModelListener<ParticipantsListBuilder>> = mutableListOf()
-    fun addListener(listener: ModelListener<ParticipantsListBuilder>) {
+    private val listeners: MutableList<BuilderListener<ParticipantsListBuilder>> = mutableListOf()
+    fun addListener(listener: BuilderListener<ParticipantsListBuilder>) {
         listeners.add(listener)
     }
 
     private fun notifyAllListeners() {
         listeners.forEach {
-            it.modelChanged(this)
+            it.dataChanged(this)
         }
     }
 
@@ -37,7 +36,7 @@ class ParticipantsListBuilder {
      * false if a participant with the same id already present in the list.
      */
     fun addParticipant(participant: Participant) : Boolean {
-        return checkModification(listBuilder.add(participant))
+        TODO()
     }
 
     /**
@@ -45,7 +44,7 @@ class ParticipantsListBuilder {
      * false if [participant] was not present in the list.
      */
     fun removeParticipant(participant: Participant) : Boolean {
-        return checkModification(listBuilder.remove(participant))
+        TODO()
     }
 
     /**
@@ -90,7 +89,6 @@ class ParticipantsListBuilder {
     ) : Boolean {
         TODO()
     }
-
 
     fun build(): ParticipantsList {
         TODO()
