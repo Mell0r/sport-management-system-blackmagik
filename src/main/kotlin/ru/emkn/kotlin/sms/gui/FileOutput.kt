@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.gui
 
+import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CsvDumpable
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
@@ -9,10 +10,22 @@ import java.io.File
  * Creates all necessary parent directories.
  * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
  *
- * @throws [Exception] in case any IO exception occurs.
+ * @return true if it successfully wrote, false if some exception occurred
  */
-fun safeWriteFileContentToFile(content: FileContent, filePath: String) {
-    TODO()
+fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean {
+    return try {
+        val file = File(filePath)
+        file.mkdirs()
+        file.createNewFile()
+        file.writeText(content.joinToString("\n"))
+        true
+    } catch (e: Exception) {
+        Logger.error {
+            "Could not write to file at \"$filePath\". Following exception occured:\n" +
+            "${e.message}"
+        }
+        false
+    }
 }
 
 /**
@@ -20,8 +33,8 @@ fun safeWriteFileContentToFile(content: FileContent, filePath: String) {
  * Creates all necessary parent directories.
  * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
  *
- * @throws [Exception] in case any IO exception occurs.
+ * @return true if it successfully wrote, false if some exception occurred
  */
-fun safeCSVDumpbaleToFile(dumpable: CsvDumpable, filePath: String) {
-    safeWriteFileContentToFile(dumpable.dumpToCsv(), filePath)
+fun safeCSVDumpbaleToFile(dumpable: CsvDumpable, filePath: String) : Boolean {
+    return safeWriteFileContentToFile(dumpable.dumpToCsv(), filePath)
 }
