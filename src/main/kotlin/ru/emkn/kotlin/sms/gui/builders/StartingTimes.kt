@@ -8,7 +8,7 @@ import ru.emkn.kotlin.sms.time.Time
  * Stores starting times for Participants.
  */
 abstract class StartingTimes(
-    internal val mapping: Map<Participant, Time> = mutableMapOf()
+    internal val mapping: Map<Participant, Time> = mapOf(),
 ) {
     fun getStartingTimeOfOrNull(participant: Participant) : Time? {
         return mapping[participant]

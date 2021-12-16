@@ -1,5 +1,7 @@
 package ru.emkn.kotlin.sms.gui.builders
 
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.StartingProtocol
@@ -7,24 +9,8 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
 class MutableStartingTimes (
-    private val mutableMapping: MutableMap<Participant, Time> = mutableMapOf()
-) : StartingTimes(mutableMapping) {
-
-    private val listeners: MutableList<BuilderListener<MutableStartingTimes>> = mutableListOf()
-    fun addListener(listener: BuilderListener<MutableStartingTimes>) {
-        listeners.add(listener)
-    }
-
-    private fun notifyAllListeners() {
-        listeners.forEach {
-            it.dataChanged(this)
-        }
-    }
-
-    fun setStartingTimeOf(participant: Participant, time: Time) {
-        mutableMapping[participant] = time
-        notifyAllListeners()
-    }
+    val startingTimesMapping: SnapshotStateMap<Participant, Time> = mutableStateMapOf(),
+) : StartingTimes(startingTimesMapping) {
 
     /**
      * Replaces all starting times with data from [startingProtocols].
