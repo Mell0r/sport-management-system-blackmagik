@@ -13,8 +13,7 @@ internal class CompetitionBuilderTests {
     @Test
     fun `CompetitionBuilder dot build() tests`() {
         fun singleTest(competition: Competition) {
-            val builder = CompetitionBuilder()
-            builder.replaceFromCompetition(competition)
+            val builder = CompetitionBuilder.fromCompetition(competition)
             val builtCompetition = builder.build()
             assertTrue(competitionEquals(competition, builtCompetition))
         }

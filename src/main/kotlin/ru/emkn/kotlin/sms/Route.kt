@@ -3,19 +3,22 @@ package ru.emkn.kotlin.sms
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
+import java.lang.Integer.max
 
 typealias CheckpointLabelT = String
 
-sealed class Route(val name: String) {
+sealed class Route(val name: String) : CsvStringDumpable {
     abstract val checkpoints: Set<CheckpointLabelT>
 
-    // null if disqualified
-    abstract fun calculateResultingTime(
+    fun calculateFinalResult(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
-    ): Time?
+    ): FinalParticipantResult = calculateLiveResult(checkpointsToTimes, startingTime).toFinalParticipantResult()
 
-    abstract fun dumpToCsvString() : String
+    abstract fun calculateLiveResult(
+        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        startingTime: Time
+    ): LiveParticipantResult
 }
 
 /*
@@ -67,24 +70,34 @@ class OrderedCheckpointsRoute(
     override val checkpoints: Set<CheckpointLabelT>
         get() = orderedCheckpoints.toSet()
 
-    override fun calculateResultingTime(
+    override fun calculateLiveResult(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
-    ): Time? {
-        val checkpointsToTimesChronological =
-            checkpointsToTimes.sortedBy { it.time }
+    ): LiveParticipantResult {
+        if (checkpointsToTimes.minOf { it.time } < startingTime) {
+            // Finished earlier than started
+            // Disqualifying
+            return LiveParticipantResult.Disqualified()
+        }
+
+        val checkpointsToTimesChronological = checkpointsToTimes
+            .sortedBy { it.time }
+            .dropLast(max(0, checkpointsToTimes.size - orderedCheckpoints.size)) // remove checkpoints after the last one
         val chronologicalCheckpoints =
             checkpointsToTimesChronological.map { it.checkpointLabel }
-        if (chronologicalCheckpoints != orderedCheckpoints) {
-            logDisqualificationWarning(chronologicalCheckpoints)
-            return null
+        val lastCheckpointTime = checkpointsToTimesChronological.last().time
+
+        return if (chronologicalCheckpoints == orderedCheckpoints) {
+            // Finished
+            LiveParticipantResult.Finished(Time(lastCheckpointTime - startingTime))
+        } else if (chronologicalCheckpoints.size < orderedCheckpoints.size &&
+            chronologicalCheckpoints == orderedCheckpoints.dropLast(orderedCheckpoints.size - chronologicalCheckpoints.size)) {
+            // [chronologicalCheckpoints] is a strict prefix of [orderedCheckpoints]
+            // Participant is in process
+            LiveParticipantResult.InProcess(chronologicalCheckpoints.size, Time(lastCheckpointTime - startingTime))
         } else {
-            if (checkpointsToTimes.minOf { it.time } < startingTime) {
-                logFalseStartWarning(checkpointsToTimes, startingTime)
-                return null
-            }
-            val finishTime = checkpointsToTimesChronological.last().time
-            return Time(finishTime - startingTime)
+            // Passed checkpoints in wrong order
+            LiveParticipantResult.Disqualified()
         }
     }
 
@@ -137,16 +150,34 @@ class AtLeastKCheckpointsRoute(
         require(threshold <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
     }
 
-    override fun calculateResultingTime(
+    override fun calculateLiveResult(
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
-    ): Time? {
+    ): LiveParticipantResult {
+        if (checkpointsToTimes.minOf { it.time } < startingTime) {
+            // Finished earlier than started
+            // Disqualifying
+            return LiveParticipantResult.Disqualified()
+        }
+
         val visitedCheckpointFromRoute = checkpointsToTimes
             .filter { it.checkpointLabel in checkpoints }
             .sortedBy { it.time }
-        val lastRelevantCheckpoint = visitedCheckpointFromRoute
-            .elementAtOrNull(threshold - 1) ?: return null
-        return Time(lastRelevantCheckpoint.time - startingTime)
+            .distinctBy { it.checkpointLabel }
+
+        if (visitedCheckpointFromRoute.size < threshold) {
+            // In process
+            return LiveParticipantResult.InProcess(
+                completedCheckpoints = visitedCheckpointFromRoute.size,
+                lastCheckpointTime = visitedCheckpointFromRoute.last().time,
+            )
+        }
+
+        // Finished
+        val lastRelevantCheckpoint = visitedCheckpointFromRoute[threshold - 1]
+        return LiveParticipantResult.Finished(
+            Time(lastRelevantCheckpoint.time - startingTime)
+        )
     }
 
     override fun dumpToCsvString(): String {

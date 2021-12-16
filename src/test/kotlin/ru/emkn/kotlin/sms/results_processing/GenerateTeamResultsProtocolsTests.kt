@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.ParticipantIdAndTime
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,27 +33,27 @@ internal class GenerateTeamResultsProtocolsTests {
         GroupResultProtocol(
             group = groupM12To15,
             entries = listOf(
-                ParticipantIdAndTime(7, Time(500)),
-                ParticipantIdAndTime(1, Time(600)),
-                ParticipantIdAndTime(0, Time(600)),
-                ParticipantIdAndTime(8, null),
+                IdWithFinalResult(7, FinalParticipantResult.Finished(Time(500))),
+                IdWithFinalResult(1, FinalParticipantResult.Finished(Time(600))),
+                IdWithFinalResult(0, FinalParticipantResult.Finished(Time(600))),
+                IdWithFinalResult(8, FinalParticipantResult.Disqualified()),
             )
         ),
         GroupResultProtocol(
             group = groupM16To18,
             entries = listOf(
-                ParticipantIdAndTime(4, Time(1500)),
-                ParticipantIdAndTime(9, Time(2000)),
-                ParticipantIdAndTime(3, Time(3000)),
+                IdWithFinalResult(4, FinalParticipantResult.Finished(Time(1500))),
+                IdWithFinalResult(9, FinalParticipantResult.Finished(Time(2000))),
+                IdWithFinalResult(3, FinalParticipantResult.Finished(Time(3000))),
             )
         ),
         GroupResultProtocol(
             group = groupM19To35,
             entries = listOf(
                 // whole group was disqualified --- definitely a real situation
-                ParticipantIdAndTime(2, null),
-                ParticipantIdAndTime(5, null),
-                ParticipantIdAndTime(6, null),
+                IdWithFinalResult(2, FinalParticipantResult.Disqualified()),
+                IdWithFinalResult(5, FinalParticipantResult.Disqualified()),
+                IdWithFinalResult(6, FinalParticipantResult.Disqualified()),
             )
         ),
     )
@@ -101,8 +100,8 @@ internal class GenerateTeamResultsProtocolsTests {
             GroupResultProtocol(
                 group = group1,
                 entries = listOf(
-                    ParticipantIdAndTime(0, Time(0)),
-                    ParticipantIdAndTime(1, Time(0)),
+                    IdWithFinalResult(0, FinalParticipantResult.Finished(Time(0))),
+                    IdWithFinalResult(1, FinalParticipantResult.Finished(Time(0))),
                 ),
             )
         )

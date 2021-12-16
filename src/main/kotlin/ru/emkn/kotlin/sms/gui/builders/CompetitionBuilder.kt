@@ -1,5 +1,10 @@
 package ru.emkn.kotlin.sms.gui.builders
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.Route
@@ -10,62 +15,39 @@ import ru.emkn.kotlin.sms.io.initializeCompetition
  * configure a desired competition,
  * and then build an instance of [Competition] class.
  */
-class CompetitionBuilder {
-    var discipline: String = ""
-        set(value) { field = value; notifyAllListeners() }
-    var name: String = ""
-        set(value) { field = value; notifyAllListeners() }
-    var year: Int = 0
-        set(value) { field = value; notifyAllListeners() }
-    var date: String = ""
-        set(value) { field = value; notifyAllListeners() }
+class CompetitionBuilder (
+    val discipline: MutableState<String> = mutableStateOf(""),
+    val name: MutableState<String> = mutableStateOf(""),
+    val year: MutableState<Int> = mutableStateOf(0),
+    val date: MutableState<String> = mutableStateOf(""),
+    val groups: SnapshotStateList<Group> = mutableStateListOf(),
+    val routes: SnapshotStateList<Route> = mutableStateListOf(),
+) {
+    companion object {
+        /**
+         * Creates a new [CompetitionBuilder] with data from Competition.
+         * Useful for loading competition and then modifying it in GUI.
+         */
+        fun fromCompetition(competition: Competition) = CompetitionBuilder (
+            discipline = mutableStateOf(competition.discipline),
+            name = mutableStateOf(competition.name),
+            year = mutableStateOf(competition.year),
+            date = mutableStateOf(competition.date),
+            groups = competition.groups.toMutableStateList(),
+            routes = competition.routes.toMutableStateList(),
+        )
 
-
-    var groups: MutableList<Group> = mutableListOf()
-    var routes: MutableList<Route> = mutableListOf()
-
-    private val listeners: MutableList<BuilderListener<CompetitionBuilder>> = mutableListOf()
-    fun addListener(listener: BuilderListener<CompetitionBuilder>) {
-        listeners.add(listener)
-    }
-
-    private fun notifyAllListeners() {
-        listeners.forEach {
-            it.dataChanged(this)
+        /**
+         * Creates a new [CompetitionBuilder] with data
+         * from files in directory [configFolderPath]
+         * in format consistent with [initializeCompetition].
+         *
+         * @throws [IllegalArgumentException] if something went wrong.
+         */
+        fun fromFilesInFolder(configFolderPath: String) : CompetitionBuilder {
+            val competition = initializeCompetition(configFolderPath)
+            return fromCompetition(competition)
         }
-    }
-
-    /**
-     * Replaces all data in builder with data from [Competition].
-     * Useful for loading competition and then modifying it in GUI.
-     *
-     * @throws [IllegalArgumentException] if something went wrong.
-     */
-    fun replaceFromCompetition(competition: Competition) {
-        discipline = competition.discipline
-        name = competition.name
-        year = competition.year
-        date = competition.date
-        groups = competition.groups.toMutableList()
-        routes = competition.routes.toMutableList()
-        notifyAllListeners()
-    }
-
-    /**
-     * Replaces all data in builder with data
-     * from files in directory [configFolderPath]
-     * in format consistent with [initializeCompetition].
-     *
-     * @return true if the replacement was successful, false if the config files were corrupted
-     */
-    fun replaceFromFilesInFolder(configFolderPath: String) : Boolean {
-        val competition = try {
-            initializeCompetition(configFolderPath)
-        } catch (e: IllegalArgumentException) {
-            return false
-        }
-        replaceFromCompetition(competition)
-        return true
     }
 
     /**
@@ -73,10 +55,10 @@ class CompetitionBuilder {
      */
     fun build(): Competition {
         return Competition(
-            discipline = discipline,
-            name = name,
-            year = year,
-            date = date,
+            discipline = discipline.value,
+            name = name.value,
+            year = year.value,
+            date = date.value,
             groups = groups.toMutableList().toList(),
             routes = routes.toMutableList().toList(),
         )

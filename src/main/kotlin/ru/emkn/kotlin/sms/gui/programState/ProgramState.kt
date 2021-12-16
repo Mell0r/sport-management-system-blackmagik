@@ -4,7 +4,7 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.StartingTimes
 import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
-import ru.emkn.kotlin.sms.gui.competitonModel.GroupResultProtocolsView
+import ru.emkn.kotlin.sms.gui.competitonModel.LiveGroupResultProtocolsView
 import ru.emkn.kotlin.sms.gui.competitonModel.TeamResultsProtocolView
 
 /**
@@ -37,7 +37,7 @@ abstract class ProgramState {
 
     // Mode 3
     abstract val competitionModel: CompetitionModel
-    val groupResultProtocolsView = GroupResultProtocolsView()
+    val liveGroupResultProtocolsView = LiveGroupResultProtocolsView()
     val teamResultsProtocolView = TeamResultsProtocolView()
 
     abstract fun nextProgramState() : ProgramState // moves on to the next program state
