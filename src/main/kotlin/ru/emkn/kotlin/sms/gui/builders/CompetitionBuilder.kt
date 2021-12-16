@@ -20,12 +20,9 @@ class CompetitionBuilder {
     var date: String = ""
         set(value) { field = value; notifyAllListeners() }
 
-    private val groupsBuilder = UniqueListBuilder<Group>(
-        equals = { group1, group2 -> group1.label == group2.label }
-    )
-    private val routesBuilder = UniqueListBuilder<Route>(
-        equals = { route1, route2 -> route1.name == route2.name }
-    )
+
+    var groups: MutableList<Group> = mutableListOf()
+    var routes: MutableList<Route> = mutableListOf()
 
     private val listeners: MutableList<BuilderListener<CompetitionBuilder>> = mutableListOf()
     fun addListener(listener: BuilderListener<CompetitionBuilder>) {
@@ -49,8 +46,8 @@ class CompetitionBuilder {
         name = competition.name
         year = competition.year
         date = competition.date
-        require(groupsBuilder.replaceList(competition.groups))
-        require(routesBuilder.replaceList(competition.routes))
+        groups = competition.groups.toMutableList()
+        routes = competition.routes.toMutableList()
         notifyAllListeners()
     }
 
@@ -77,44 +74,4 @@ class CompetitionBuilder {
     fun build(): Competition {
         TODO()
     }
-
-    private fun checkModification(modified: Boolean) : Boolean {
-        if (modified) {
-            notifyAllListeners()
-        }
-        return modified
-    }
-
-    /**
-     * @return true if it could successfully add [group]
-     * false if a group with the same name already exists.
-     */
-    fun addGroup(group: Group) : Boolean {
-        TODO()
-    }
-
-    /**
-     * @return true if it could successfully remove a [group]
-     * false if the given group was not present in the list.
-     */
-    fun removeGroup(group: Group) : Boolean {
-        TODO()
-    }
-
-    /**
-     * @return true if it could successfully add [route]
-     * false if a route with the same name already exists.
-     */
-    fun addRoute(route: Route) : Boolean {
-        TODO()
-    }
-
-    /**
-     * @return true if it could successfully remove a [route]
-     * false if the given route was not present in the list.
-     */
-    fun removeRoute(route: Route) : Boolean {
-        TODO()
-    }
-
 }
