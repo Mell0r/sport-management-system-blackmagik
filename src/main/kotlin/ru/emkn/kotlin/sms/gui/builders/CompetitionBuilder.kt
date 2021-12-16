@@ -72,6 +72,13 @@ class CompetitionBuilder {
      * Returns built instance of [Competition] class.
      */
     fun build(): Competition {
-        TODO()
+        return Competition(
+            discipline = discipline,
+            name = name,
+            year = year,
+            date = date,
+            groups = groups.toMutableList().toList(),
+            routes = routes.toMutableList().toList(),
+        )
     }
 }
