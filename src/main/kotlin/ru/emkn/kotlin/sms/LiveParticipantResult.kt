@@ -18,6 +18,23 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
                 is Finished -> totalTime.compareTo(other.totalTime)
                 is InProcess, is Disqualified-> -1
             }
+
+        override fun toFinalParticipantResult() = FinalParticipantResult.Finished(totalTime)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Finished
+
+            if (totalTime != other.totalTime) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return totalTime.hashCode()
+        }
     }
 
     /**
@@ -37,6 +54,26 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
                 }
                 is Disqualified -> -1
             }
+
+        override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as InProcess
+
+            if (completedCheckpoints != other.completedCheckpoints) return false
+            if (lastCheckpointTime != other.lastCheckpointTime) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = completedCheckpoints
+            result = 31 * result + lastCheckpointTime.hashCode()
+            return result
+        }
     }
 
     /**
@@ -50,16 +87,19 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
                 is Finished, is InProcess -> 1
                 is Disqualified -> 0
             }
+
+        override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return javaClass.hashCode()
+        }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
-
+    abstract fun toFinalParticipantResult(): FinalParticipantResult
 }

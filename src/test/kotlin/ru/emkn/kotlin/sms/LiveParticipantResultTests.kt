@@ -8,44 +8,44 @@ import kotlin.test.assertTrue
 
 internal class LiveParticipantResultTests {
     /* Test data */
-    private val finished1a = LiveParticipantResult.Finished(Time(1))
-    private val finished1b = LiveParticipantResult.Finished(Time(1))
-    private val finished2 = LiveParticipantResult.Finished(Time(2))
-    private val finished3 = LiveParticipantResult.Finished(Time(3))
-    private val inProcess21 = LiveParticipantResult.InProcess(2, Time(1))
-    private val inProcess22a = LiveParticipantResult.InProcess(2, Time(2))
-    private val inProcess22b = LiveParticipantResult.InProcess(2, Time(2))
-    private val inProcess11 = LiveParticipantResult.InProcess(1, Time(1))
-    private val inProcess12 = LiveParticipantResult.InProcess(1, Time(2))
-    private val disqualified1 = LiveParticipantResult.Disqualified()
-    private val disqualified2 = LiveParticipantResult.Disqualified()
+    private val finished1a = LiveParticipantResult.Finished(Time(1)) as LiveParticipantResult
+    private val finished1b = LiveParticipantResult.Finished(Time(1)) as LiveParticipantResult
+    private val finished2 = LiveParticipantResult.Finished(Time(2)) as LiveParticipantResult
+    private val finished3 = LiveParticipantResult.Finished(Time(3)) as LiveParticipantResult
+    private val inProcess21 = LiveParticipantResult.InProcess(2, Time(1)) as LiveParticipantResult
+    private val inProcess22a = LiveParticipantResult.InProcess(2, Time(2)) as LiveParticipantResult
+    private val inProcess22b = LiveParticipantResult.InProcess(2, Time(2)) as LiveParticipantResult
+    private val inProcess11 = LiveParticipantResult.InProcess(1, Time(1)) as LiveParticipantResult
+    private val inProcess12 = LiveParticipantResult.InProcess(1, Time(2)) as LiveParticipantResult
+    private val disqualified1 = LiveParticipantResult.Disqualified() as LiveParticipantResult
+    private val disqualified2 = LiveParticipantResult.Disqualified() as LiveParticipantResult
 
     @Test
-    fun `LiveParticipantResult equality test`() {
-        assertEquals<LiveParticipantResult>(finished1a, finished1a)
-        assertEquals<LiveParticipantResult>(finished1a, finished1b)
-        assertNotEquals<LiveParticipantResult>(finished1a, finished2)
-        assertNotEquals<LiveParticipantResult>(finished1a, finished3)
-        assertNotEquals<LiveParticipantResult>(finished1a, inProcess11)
-        assertNotEquals<LiveParticipantResult>(finished1a, inProcess12)
-        assertNotEquals<LiveParticipantResult>(finished1a, inProcess22a)
-        assertNotEquals<LiveParticipantResult>(finished1a, inProcess22b)
-        assertNotEquals<LiveParticipantResult>(finished1a, disqualified1)
-        assertNotEquals<LiveParticipantResult>(finished1a, disqualified2)
-        assertNotEquals<LiveParticipantResult>(finished2, finished3)
-        assertNotEquals<LiveParticipantResult>(inProcess11, inProcess12)
-        assertNotEquals<LiveParticipantResult>(inProcess11, inProcess22a)
-        assertEquals<LiveParticipantResult>(inProcess22a, inProcess22b)
-        assertNotEquals<LiveParticipantResult>(inProcess22a, inProcess21)
-        assertNotEquals<LiveParticipantResult>(inProcess21, inProcess11)
-        assertNotEquals<LiveParticipantResult>(inProcess11, disqualified1)
-        assertNotEquals<LiveParticipantResult>(inProcess12, inProcess22b)
-        assertNotEquals<LiveParticipantResult>(inProcess12, disqualified2)
-        assertEquals<LiveParticipantResult>(disqualified1, disqualified2)
+    fun `LiveParticipantResult equals() test`() {
+        assertTrue { finished1a == finished1a }
+        assertTrue { finished1a == finished1b }
+        assertTrue { finished1a != finished2 }
+        assertTrue { finished1a != finished3 }
+        assertTrue { finished1a != inProcess11 }
+        assertTrue { finished1a != inProcess12 }
+        assertTrue { finished1a != inProcess22a }
+        assertTrue { finished1a != inProcess22b }
+        assertTrue { finished1a != disqualified1 }
+        assertTrue { finished1a != disqualified2 }
+        assertTrue { finished2 != finished3 }
+        assertTrue { inProcess11 != inProcess12 }
+        assertTrue { inProcess11 != inProcess22a }
+        assertTrue { inProcess22a == inProcess22b }
+        assertTrue { inProcess22a != inProcess21 }
+        assertTrue { inProcess21 != inProcess11 }
+        assertTrue { inProcess11 != disqualified1 }
+        assertTrue { inProcess12 != inProcess22b }
+        assertTrue { inProcess12 != disqualified2 }
+        assertTrue { disqualified1 == disqualified2 }
     }
 
     @Test
-    fun `LiveParticipantResult comparison test`() {
+    fun `LiveParticipantResult compareTo() test`() {
         assertTrue { finished1a.compareTo(finished1a) == 0 }
         assertTrue { finished1a.compareTo(finished1b) == 0 }
         assertTrue { finished1a < finished2 }
@@ -120,5 +120,20 @@ internal class LiveParticipantResultTests {
         assertTrue { disqualified1.compareTo(disqualified2) == 0 }
 
         assertTrue { disqualified2.compareTo(disqualified1) == 0 }
+    }
+
+    @Test
+    fun `LiveParticipantResult toFinalParticipantResult() test`() {
+        assertEquals(FinalParticipantResult.Finished(Time(1)), finished1a.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Finished(Time(1)), finished1b.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Finished(Time(2)), finished2.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Finished(Time(3)), finished3.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), inProcess21.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), inProcess22a.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), inProcess22b.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), inProcess11.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), inProcess12.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), disqualified1.toFinalParticipantResult())
+        assertEquals(FinalParticipantResult.Disqualified(), disqualified2.toFinalParticipantResult())
     }
 }
