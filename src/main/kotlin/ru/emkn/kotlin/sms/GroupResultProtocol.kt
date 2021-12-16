@@ -3,14 +3,14 @@ package ru.emkn.kotlin.sms
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
-data class ParticipantAndTime(
+data class ParticipantIdAndTime(
     val id: Int,
     val totalTime: Time? // null if disqualified
 )
 
 class GroupResultProtocol(
     val group: Group,
-    val entries: List<ParticipantAndTime>
+    val entries: List<ParticipantIdAndTime>
     // sorted by placeInGroup
 ) : CsvDumpable {
     companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
@@ -32,7 +32,7 @@ class GroupResultProtocol(
             return GroupResultProtocol(group, participantAndTimeList)
         }
 
-        private fun readParticipantAndTimeFromRow(row: String): ParticipantAndTime {
+        private fun readParticipantAndTimeFromRow(row: String): ParticipantIdAndTime {
             val tokens = row.split(",")
             if (tokens.size != 3)
                 logErrorAndThrow("Not three comma separated values.")
@@ -43,7 +43,7 @@ class GroupResultProtocol(
                 "снят" -> null
                 else -> Time.fromString(time)
             }
-            return ParticipantAndTime(
+            return ParticipantIdAndTime(
                 idNum,
                 timeParsed
             )

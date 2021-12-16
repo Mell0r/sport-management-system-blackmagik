@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.ParticipantIdAndTime
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,27 +34,27 @@ internal class GenerateTeamResultsProtocolsTests {
         GroupResultProtocol(
             group = groupM12To15,
             entries = listOf(
-                ParticipantAndTime(7, Time(500)),
-                ParticipantAndTime(1, Time(600)),
-                ParticipantAndTime(0, Time(600)),
-                ParticipantAndTime(8, null),
+                ParticipantIdAndTime(7, Time(500)),
+                ParticipantIdAndTime(1, Time(600)),
+                ParticipantIdAndTime(0, Time(600)),
+                ParticipantIdAndTime(8, null),
             )
         ),
         GroupResultProtocol(
             group = groupM16To18,
             entries = listOf(
-                ParticipantAndTime(4, Time(1500)),
-                ParticipantAndTime(9, Time(2000)),
-                ParticipantAndTime(3, Time(3000)),
+                ParticipantIdAndTime(4, Time(1500)),
+                ParticipantIdAndTime(9, Time(2000)),
+                ParticipantIdAndTime(3, Time(3000)),
             )
         ),
         GroupResultProtocol(
             group = groupM19To35,
             entries = listOf(
                 // whole group was disqualified --- definitely a real situation
-                ParticipantAndTime(2, null),
-                ParticipantAndTime(5, null),
-                ParticipantAndTime(6, null),
+                ParticipantIdAndTime(2, null),
+                ParticipantIdAndTime(5, null),
+                ParticipantIdAndTime(6, null),
             )
         ),
     )
@@ -100,8 +101,8 @@ internal class GenerateTeamResultsProtocolsTests {
             GroupResultProtocol(
                 group = group1,
                 entries = listOf(
-                    ParticipantAndTime(0, Time(0)),
-                    ParticipantAndTime(1, Time(0)),
+                    ParticipantIdAndTime(0, Time(0)),
+                    ParticipantIdAndTime(1, Time(0)),
                 ),
             )
         )

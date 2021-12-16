@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.ParticipantIdAndTime
 import ru.emkn.kotlin.sms.time.Time
 
 class Helper(
@@ -76,13 +77,13 @@ fun generateResultsProtocolsOfCheckpoint(
 }
 
 private fun convertToGroupResults(
-    participantTimes: List<ParticipantAndTime>,
+    participantTimes: List<ParticipantIdAndTime>,
     helper: Helper
 ): List<GroupResultProtocol> {
     val groupedByGroups = participantTimes.groupBy({ (id, _) ->
         helper.getGroupOf(id)
     }) { (participant, completionTime) ->
-        ParticipantAndTime(participant, completionTime)
+        ParticipantIdAndTime(participant, completionTime)
     }
     return groupedByGroups.map { (groupLabel, participantResults) ->
         generateResultProtocolWithinAGroup(
@@ -94,7 +95,7 @@ private fun convertToGroupResults(
 
 private fun generateResultProtocolWithinAGroup(
     groupLabel: Group,
-    groupResults: List<ParticipantAndTime>,
+    groupResults: List<ParticipantIdAndTime>,
     idToParticipantMapping: (Int) -> Participant
 ): GroupResultProtocol {
     val idsSorted =
@@ -103,7 +104,7 @@ private fun generateResultProtocolWithinAGroup(
     return GroupResultProtocol(
         groupLabel,
         idsSorted.map { id ->
-            ParticipantAndTime(
+            ParticipantIdAndTime(
                 id,
                 groupResults.single { it.id == id }.totalTime
             )
@@ -111,7 +112,7 @@ private fun generateResultProtocolWithinAGroup(
 }
 
 private fun sortedGroupResultsForResultsTable(
-    groupResults: List<ParticipantAndTime>,
+    groupResults: List<ParticipantIdAndTime>,
     idToParticipantMapping: (Int) -> Participant
 ) = groupResults
     .sortedBy { idToParticipantMapping(it.id).lastName }
