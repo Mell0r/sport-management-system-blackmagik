@@ -24,7 +24,7 @@ fun getParticipantsTimesFromParticipantTimestampsProtocols(
     return processIdCheckpointTimeList(
         listOfIdAndCheckpointAndTimes,
         helper
-    )
+    ).map { it.toIdWithFinalResult() }
 }
 
 
@@ -43,5 +43,5 @@ fun getParticipantsTimesFromCheckpointTimestampsProtocols(
     return processIdCheckpointTimeList(
         listOfIdCheckpointTimes,
         helper
-    )
+    ).map { it.toIdWithFinalResult() }
 }
