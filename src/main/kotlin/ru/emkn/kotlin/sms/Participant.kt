@@ -2,12 +2,12 @@ package ru.emkn.kotlin.sms
 
 data class Participant(
     val id: Int,
-    val age: Int,
-    val name: String,
-    val lastName: String,
-    val group: Group,
-    val team: String,
-    val sportsCategory: String // from fixed options from config
+    var age: Int,
+    var name: String,
+    var lastName: String,
+    var group: Group,
+    var team: String,
+    var sportsCategory: String // from fixed options from config
 ) {
     constructor(
         age: Int,

@@ -9,8 +9,8 @@ private fun Int.s() = Time(this)
 
 internal class ApiTests {
     private val mainRoute =
-        OrderedCheckpointsRoute("main", listOf("1", "2", "3"))
-    private val shortRoute = OrderedCheckpointsRoute("short", listOf("1"))
+        OrderedCheckpointsRoute("main", mutableListOf("1", "2", "3"))
+    private val shortRoute = OrderedCheckpointsRoute("short", mutableListOf("1"))
     private val competition = Competition(
         "",
         "",
@@ -73,11 +73,15 @@ internal class ApiTests {
             listOf(1, 3, 2),
             maleResults.entries.map { it.id })
         assertEquals(
-            listOf(30.s(), 90.s(), null),
-            maleResults.entries.map { it.totalTime })
+            listOf(
+                FinalParticipantResult.Finished(Time(30)),
+                FinalParticipantResult.Finished(Time(90)),
+                FinalParticipantResult.Disqualified(),
+            ),
+            maleResults.entries.map { it.result })
         val femaleResults = resultProtocols.single { it.group.label == "Ж10" }
         assertEquals(4, femaleResults.entries.single().id)
-        assertEquals(20, femaleResults.entries.single().totalTime?.asSeconds())
+        assertEquals(FinalParticipantResult.Finished(Time(20)), femaleResults.entries.single().result)
     }
 
     private fun sampleResultProtocols(): List<GroupResultProtocol> {
@@ -150,8 +154,12 @@ internal class ApiTests {
             listOf(2, 1, 3),
             maleResults.entries.map { it.id })
         assertEquals(
-            listOf(3.s(), 6.s(), null),
-            maleResults.entries.map { it.totalTime })
+            listOf(
+                FinalParticipantResult.Finished(Time(3)),
+                FinalParticipantResult.Finished(Time(6)),
+                FinalParticipantResult.Disqualified()
+            ),
+            maleResults.entries.map { it.result })
     }
 
     @Test
@@ -246,7 +254,7 @@ internal class ApiTests {
         val startingProtocols = listOf(
             StartingProtocol(competition.getGroupByLabelOrNull("М10")!!, listOf(StartingProtocolEntry(1, 100.s())))
         )
-        val route = OrderedCheckpointsRoute("main", listOf("1", "2"))
+        val route = OrderedCheckpointsRoute("main", mutableListOf("1", "2"))
         val competition = Competition(
             "",
             "",
@@ -265,7 +273,7 @@ internal class ApiTests {
             checkpointProtocols,
             competition
         )
-        assertEquals(null, results.single().entries.single().totalTime)
+        assertEquals(FinalParticipantResult.Disqualified(), results.single().entries.single().result)
     }
 }
 

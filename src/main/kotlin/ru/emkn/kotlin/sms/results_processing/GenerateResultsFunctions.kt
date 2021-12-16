@@ -76,13 +76,13 @@ fun generateResultsProtocolsOfCheckpoint(
 }
 
 private fun convertToGroupResults(
-    participantTimes: List<ParticipantAndTime>,
+    participantTimes: List<IdWithFinalResult>,
     helper: Helper
 ): List<GroupResultProtocol> {
     val groupedByGroups = participantTimes.groupBy({ (id, _) ->
         helper.getGroupOf(id)
     }) { (participant, completionTime) ->
-        ParticipantAndTime(participant, completionTime)
+        IdWithFinalResult(participant, completionTime)
     }
     return groupedByGroups.map { (groupLabel, participantResults) ->
         generateResultProtocolWithinAGroup(
@@ -94,7 +94,7 @@ private fun convertToGroupResults(
 
 private fun generateResultProtocolWithinAGroup(
     groupLabel: Group,
-    groupResults: List<ParticipantAndTime>,
+    groupResults: List<IdWithFinalResult>,
     idToParticipantMapping: (Int) -> Participant
 ): GroupResultProtocol {
     val idsSorted =
@@ -103,19 +103,19 @@ private fun generateResultProtocolWithinAGroup(
     return GroupResultProtocol(
         groupLabel,
         idsSorted.map { id ->
-            ParticipantAndTime(
+            IdWithFinalResult(
                 id,
-                groupResults.single { it.id == id }.totalTime
+                groupResults.single { it.id == id }.result
             )
         })
 }
 
 private fun sortedGroupResultsForResultsTable(
-    groupResults: List<ParticipantAndTime>,
+    groupResults: List<IdWithFinalResult>,
     idToParticipantMapping: (Int) -> Participant
 ) = groupResults
     .sortedBy { idToParticipantMapping(it.id).lastName }
     .sortedWith(
-        compareBy(nullsLast()) { it.totalTime }
+        compareBy(nullsLast()) { it.result }
     )
 

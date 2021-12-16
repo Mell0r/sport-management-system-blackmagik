@@ -23,7 +23,7 @@ internal class StartProtocolsByApplicationsTest {
         )
     )
     private val testRoutes = listOf(
-        OrderedCheckpointsRoute("R", listOf())
+        OrderedCheckpointsRoute("R", mutableListOf())
     )
     private val testGroups = listOf(
         AgeGroup("A", testRoutes[0], 1, 2),

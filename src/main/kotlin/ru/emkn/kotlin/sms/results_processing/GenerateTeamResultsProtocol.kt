@@ -1,9 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.GroupResultProtocol
-import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.TeamResultsProtocol
-import ru.emkn.kotlin.sms.TeamToScore
+import ru.emkn.kotlin.sms.*
 import kotlin.math.roundToInt
 
 fun generateTeamResultsProtocol(
@@ -39,18 +36,21 @@ private fun moveCalculatedScoresIntoMap(
     groupResultProtocol: GroupResultProtocol,
     idToScore: HashMap<Int, Int>
 ) {
-    val bestResult: Int? =
-        groupResultProtocol.entries.mapNotNull { it.totalTime }
-            .minOfOrNull { it.asSeconds() }
+    val bestResult = groupResultProtocol
+        .entries
+        .map { it.result }
+        .filterIsInstance<FinalParticipantResult.Finished>()
+        .minOfOrNull { it.totalTime.asSeconds() }
     if (bestResult == null) {
         groupResultProtocol.entries.map { it.id }
             .forEach { id -> idToScore[id] = 0 }
     } else {
-        groupResultProtocol.entries.map { it.id to it.totalTime?.asSeconds() }
-            .forEach { (id, totalTime) ->
-                val score = when (totalTime) {
-                    null -> 0
-                    else -> (100 * (2 - totalTime.toFloat() / bestResult.toFloat())).roundToInt()
+        groupResultProtocol.entries.map { it.id to it.result }
+            .forEach { (id, result) ->
+                val score = when (result) {
+                    is FinalParticipantResult.Disqualified -> 0
+                    is FinalParticipantResult.Finished ->
+                        (100 * (2 - result.totalTime.asSeconds().toFloat() / bestResult.toFloat())).roundToInt()
                 }
                 idToScore[id] = score
             }

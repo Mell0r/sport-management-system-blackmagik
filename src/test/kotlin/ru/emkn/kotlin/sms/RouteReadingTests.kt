@@ -23,6 +23,17 @@ internal class RouteReadingTests {
     }
 
     @Test
+    fun `Properly writes and reads back ordered checkpoints routes`() {
+        fun checkRoute(route: OrderedCheckpointsRoute) {
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
+        }
+        checkRoute(OrderedCheckpointsRoute("orderedRoute1", mutableListOf("c1", "c2", "c3")))
+        checkRoute(OrderedCheckpointsRoute("orderedRoute2", mutableListOf("c2", "c1", "c3")))
+        checkRoute(OrderedCheckpointsRoute("orderedRoute3", mutableListOf("c1", "c2", "c1", "c4", "d")))
+        checkRoute(OrderedCheckpointsRoute("n", mutableListOf("c")))
+    }
+
+    @Test
     fun `properly reads at least k checkpoints routes`() {
         val routeLine = ("\$1\$name1,2,chp1,chp2,chp3")
         val route = readRouteFromLine(routeLine)
@@ -30,6 +41,17 @@ internal class RouteReadingTests {
         assertEquals(setOf("chp1", "chp2", "chp3"), route.checkpoints)
         assertEquals("name1", route.name)
         assertEquals(2, route.threshold)
+    }
+
+    @Test
+    fun `Properly writes and reads back at least k checkpoints routes`() {
+        fun checkRoute(route: AtLeastKCheckpointsRoute) {
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
+        }
+        checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute1", mutableSetOf("c1", "c2", "c3"), 1))
+        checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute2", mutableSetOf("c2", "c1", "c3"), 2))
+        checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute3", mutableSetOf("c1", "c2", "c1", "c4", "d"), 3))
+        checkRoute(AtLeastKCheckpointsRoute("n", mutableSetOf("c"), 1))
     }
 
     @Test

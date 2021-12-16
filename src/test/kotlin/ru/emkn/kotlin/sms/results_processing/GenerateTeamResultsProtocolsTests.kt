@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
 internal class GenerateTeamResultsProtocolsTests {
-    private val testRoute = OrderedCheckpointsRoute("", listOf())
+    private val testRoute = OrderedCheckpointsRoute("", mutableListOf())
     private val groupM12To15 = AgeGroup("M12-15", testRoute, 12, 15)
     private val groupM19To35 = AgeGroup("M19-35", testRoute, 19, 35)
     private val groupM16To18 = AgeGroup("M16-18", testRoute, 16, 18)
@@ -33,27 +33,27 @@ internal class GenerateTeamResultsProtocolsTests {
         GroupResultProtocol(
             group = groupM12To15,
             entries = listOf(
-                ParticipantAndTime(7, Time(500)),
-                ParticipantAndTime(1, Time(600)),
-                ParticipantAndTime(0, Time(600)),
-                ParticipantAndTime(8, null),
+                IdWithFinalResult(7, FinalParticipantResult.Finished(Time(500))),
+                IdWithFinalResult(1, FinalParticipantResult.Finished(Time(600))),
+                IdWithFinalResult(0, FinalParticipantResult.Finished(Time(600))),
+                IdWithFinalResult(8, FinalParticipantResult.Disqualified()),
             )
         ),
         GroupResultProtocol(
             group = groupM16To18,
             entries = listOf(
-                ParticipantAndTime(4, Time(1500)),
-                ParticipantAndTime(9, Time(2000)),
-                ParticipantAndTime(3, Time(3000)),
+                IdWithFinalResult(4, FinalParticipantResult.Finished(Time(1500))),
+                IdWithFinalResult(9, FinalParticipantResult.Finished(Time(2000))),
+                IdWithFinalResult(3, FinalParticipantResult.Finished(Time(3000))),
             )
         ),
         GroupResultProtocol(
             group = groupM19To35,
             entries = listOf(
                 // whole group was disqualified --- definitely a real situation
-                ParticipantAndTime(2, null),
-                ParticipantAndTime(5, null),
-                ParticipantAndTime(6, null),
+                IdWithFinalResult(2, FinalParticipantResult.Disqualified()),
+                IdWithFinalResult(5, FinalParticipantResult.Disqualified()),
+                IdWithFinalResult(6, FinalParticipantResult.Disqualified()),
             )
         ),
     )
@@ -89,7 +89,7 @@ internal class GenerateTeamResultsProtocolsTests {
 
     @Test
     fun `Test division by zero`() {
-        val group1 = AgeGroup("group1", OrderedCheckpointsRoute("", listOf()), -100, 100)
+        val group1 = AgeGroup("group1", OrderedCheckpointsRoute("", mutableListOf()), -100, 100)
         val participantsList = ParticipantsList(
             listOf(
                 Participant(0, 18, "Name1", "Surname1", group1, "Team1", ""),
@@ -100,8 +100,8 @@ internal class GenerateTeamResultsProtocolsTests {
             GroupResultProtocol(
                 group = group1,
                 entries = listOf(
-                    ParticipantAndTime(0, Time(0)),
-                    ParticipantAndTime(1, Time(0)),
+                    IdWithFinalResult(0, FinalParticipantResult.Finished(Time(0))),
+                    IdWithFinalResult(1, FinalParticipantResult.Finished(Time(0))),
                 ),
             )
         )
