@@ -30,7 +30,7 @@ class OnGoingCompetitionProgramState(
 
     init {
         Logger.info{"Initialized OnGoingCompetitionProgramState."}
-        competitionModel.addListener(super.groupResultProtocolsView)
+        competitionModel.addListener(super.liveGroupResultProtocolsView)
         competitionModel.addListener(super.teamResultsProtocolView)
     }
 

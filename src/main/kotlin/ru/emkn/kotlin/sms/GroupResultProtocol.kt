@@ -100,3 +100,14 @@ class GroupResultProtocol(
         return places
     }
 }
+
+class LiveGroupResultProtocol(
+    val group: Group,
+    val entries: List<IdWithLiveResult>,
+    // sorted by placeInGroup
+) {
+    fun toGroupResultProtocol() = GroupResultProtocol(
+        group = group,
+        entries = entries.map { it.toIdWithFinalResult() }
+    )
+}

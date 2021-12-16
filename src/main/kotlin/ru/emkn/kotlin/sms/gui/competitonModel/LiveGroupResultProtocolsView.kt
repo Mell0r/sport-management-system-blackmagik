@@ -1,11 +1,11 @@
 package ru.emkn.kotlin.sms.gui.competitonModel
 
-import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.LiveGroupResultProtocol
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 
-class GroupResultProtocolsView(
+class LiveGroupResultProtocolsView(
 ) : CompetitionModelListener {
-    var protocols: MutableList<GroupResultProtocol> = mutableListOf()
+    var protocols: MutableList<LiveGroupResultProtocol> = mutableListOf()
 
     override fun modelChanged(timestamps: List<ParticipantCheckpointTime>) {
         TODO()
