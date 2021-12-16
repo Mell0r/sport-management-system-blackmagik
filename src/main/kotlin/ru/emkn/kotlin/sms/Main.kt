@@ -5,14 +5,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.application
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.gui.programState.*
@@ -87,13 +93,12 @@ fun <T> FoldingList(
 
 @Composable
 fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
-    Column {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState(0))) {
+        var isYearIncorrect by remember { mutableStateOf(true) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(horizontalAlignment = Alignment.End) {
-                //                @Composable
-//                fun ConfigRow(fieldName: String, )\
                 @Composable
-                fun BindableTextField(string: MutableState<String>, name: String) {
+                fun BindableTextField(name: String, string: MutableState<String>) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("$name:")
                         TextField(string.value, onValueChange = {
@@ -102,15 +107,19 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
                     }
                 }
 
-                val discipline = remember { mutableStateOf("") }
-                val competitionName = remember { mutableStateOf("") }
-                val year = remember { mutableStateOf("") }
-                val date = remember { mutableStateOf("") }
-
-                BindableTextField(competitionName, "Название")
-                BindableTextField(discipline, "Дисциплина")
-                BindableTextField(year, "Год")
-                BindableTextField(date, "Дата")
+                val configCompetitionState = programState.value as ConfiguringCompetitionProgramState
+                BindableTextField("Дисциплина", configCompetitionState.competitionBuilder.discipline)
+                BindableTextField("Название", configCompetitionState.competitionBuilder.name)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Год:")
+                    TextField(configCompetitionState.competitionBuilder.year.value.toString(), onValueChange = { newValue ->
+                        isYearIncorrect = newValue.toIntOrNull() == null
+                        configCompetitionState.competitionBuilder.year.value = newValue.toIntOrNull() ?: 0
+                    })
+                }
+                if (isYearIncorrect)
+                    Text("Год соревнования должен быть числом", color = Color.Red)
+                BindableTextField("Дата", configCompetitionState.competitionBuilder.date)
             }
             Button(
                 onClick = { programState.value = programState.value.nextProgramState() },
@@ -118,6 +127,11 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
             )
         }
+        Button(
+            onClick = { println((programState.value as ConfiguringCompetitionProgramState).competitionBuilder.discipline.value) },
+            content = { Text("Debug") },
+            modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
+        )
     }
 }
 
@@ -128,6 +142,7 @@ fun main() = application {
     when (programState.value) {
         is ConfiguringCompetitionProgramState ->
             Dialog(title = "Настройка соревнования",
+                state = DialogState(size = DpSize(800.dp, 800.dp)),
                 onCloseRequest = ::exitApplication,
                 content = { CompetitionConfiguration(programState) })
         is FormingStartingProtocolsProgramState ->
@@ -141,5 +156,5 @@ fun main() = application {
                 content = { TODO() })
     }
 
-    Logger.debug { "Program successfully finished." }
+    //Logger.debug { "Program successfully finished." }
 }
