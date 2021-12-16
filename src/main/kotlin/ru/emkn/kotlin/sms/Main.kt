@@ -11,6 +11,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,11 +56,10 @@ fun FoldingObject(Header: @Composable() () -> Unit, Content: @Composable() () ->
 @Composable
 fun <T> FoldingList(
     Header: @Composable () -> Unit,
-    list: MutableList<T>,
+    list: SnapshotStateList<T>,
     DisplayElement: @Composable (T) -> Unit,
     newElement: () -> T
 ) {
-    val stateList = list.toMutableStateList()
     val Content = @Composable {
         Column {
             @Composable
@@ -70,10 +70,10 @@ fun <T> FoldingList(
                 }
             }
 
-            stateList.forEach {
+            list.forEach {
                 DisplayRow(it) {
                     Button(
-                        onClick = { list.remove(it); stateList.remove(it) },
+                        onClick = { list.remove(it) },
                         content = { Text(redCross) }
                     )
                 }
@@ -82,7 +82,6 @@ fun <T> FoldingList(
             Button(onClick = {
                 val newValue = newElement()
                 list.add(newValue)
-                stateList.add(newValue)
             }) {
                 Text(plus)
             }
@@ -92,9 +91,16 @@ fun <T> FoldingList(
 }
 
 @Composable
+fun DisplayRoute(route : Route) {
+    TODO()
+}
+
+@Composable
 fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState(0))) {
+        val configCompetitionState = programState.value as ConfiguringCompetitionProgramState
         var isYearIncorrect by remember { mutableStateOf(true) }
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(horizontalAlignment = Alignment.End) {
                 @Composable
@@ -107,30 +113,31 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
                     }
                 }
 
-                val configCompetitionState = programState.value as ConfiguringCompetitionProgramState
                 BindableTextField("Дисциплина", configCompetitionState.competitionBuilder.discipline)
                 BindableTextField("Название", configCompetitionState.competitionBuilder.name)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Год:")
-                    TextField(configCompetitionState.competitionBuilder.year.value.toString(), onValueChange = { newValue ->
+                    TextField( if(configCompetitionState.competitionBuilder.year.value != -1000) configCompetitionState.competitionBuilder.year.value.toString() else "", onValueChange = { newValue ->
                         isYearIncorrect = newValue.toIntOrNull() == null
-                        configCompetitionState.competitionBuilder.year.value = newValue.toIntOrNull() ?: 0
+                        configCompetitionState.competitionBuilder.year.value = newValue.toIntOrNull() ?: -1000
                     })
                 }
                 if (isYearIncorrect)
                     Text("Год соревнования должен быть числом", color = Color.Red)
                 BindableTextField("Дата", configCompetitionState.competitionBuilder.date)
             }
+
             Button(
                 onClick = { programState.value = programState.value.nextProgramState() },
                 content = { Text("Сохранить и далее") },
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
             )
         }
-        Button(
-            onClick = { println((programState.value as ConfiguringCompetitionProgramState).competitionBuilder.discipline.value) },
-            content = { Text("Debug") },
-            modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
+        FoldingList(
+            { Text("Маршруты") },
+            configCompetitionState.competitionBuilder.routes,
+            { route -> DisplayRoute(route) },
+            { Route("") }
         )
     }
 }
