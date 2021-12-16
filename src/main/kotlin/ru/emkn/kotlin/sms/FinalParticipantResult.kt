@@ -5,7 +5,7 @@ import ru.emkn.kotlin.sms.time.Time
 /**
  * Participants' final result (after competition has been finished).
  */
-sealed class FinalParticipantResult : Comparable<FinalParticipantResult> {
+sealed class FinalParticipantResult : Comparable<FinalParticipantResult>, CsvStringDumpable {
     /**
      *  1. Participant has finished the route with [totalTime].
      *  He goes before all participants that are disqualified.
@@ -17,6 +17,8 @@ sealed class FinalParticipantResult : Comparable<FinalParticipantResult> {
                 is Finished -> totalTime.compareTo(other.totalTime)
                 is Disqualified -> -1
             }
+
+        override fun dumpToCsvString(): String = totalTime.toString()
     }
 
     /**
@@ -31,6 +33,8 @@ sealed class FinalParticipantResult : Comparable<FinalParticipantResult> {
                 is Finished -> 1
                 is Disqualified -> 0
             }
+
+        override fun dumpToCsvString(): String = "снят"
     }
 
     override fun equals(other: Any?): Boolean {

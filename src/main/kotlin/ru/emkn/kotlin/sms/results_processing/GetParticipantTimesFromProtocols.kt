@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.CheckpointLabelT
-import ru.emkn.kotlin.sms.ParticipantIdAndTime
+import ru.emkn.kotlin.sms.IdWithFinalResult
 import ru.emkn.kotlin.sms.time.Time
 
 internal data class IdAndCheckpointAndTime(
@@ -11,7 +11,7 @@ internal data class IdAndCheckpointAndTime(
 fun getParticipantsTimesFromParticipantTimestampsProtocols(
     routeCompletionProtocols: List<ParticipantTimestampsProtocol>,
     helper: Helper
-): List<ParticipantIdAndTime> {
+): List<IdWithFinalResult> {
 
     val listOfIdAndCheckpointAndTimes =
         routeCompletionProtocols.flatMap { protocol ->
@@ -31,7 +31,7 @@ fun getParticipantsTimesFromParticipantTimestampsProtocols(
 fun getParticipantsTimesFromCheckpointTimestampsProtocols(
     routeCompletionProtocols: List<CheckpointTimestampsProtocol>,
     helper: Helper
-): List<ParticipantIdAndTime> {
+): List<IdWithFinalResult> {
     val listOfIdCheckpointTimes =
         routeCompletionProtocols.flatMap { protocol ->
             val checkpointLabel = protocol.checkpointLabel

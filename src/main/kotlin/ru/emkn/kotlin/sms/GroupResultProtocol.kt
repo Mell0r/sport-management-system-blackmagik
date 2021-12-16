@@ -3,14 +3,14 @@ package ru.emkn.kotlin.sms
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
-data class ParticipantIdAndTime(
+data class IdWithFinalResult(
     val id: Int,
-    val totalTime: Time? // null if disqualified
+    val result: FinalParticipantResult,
 )
 
 class GroupResultProtocol(
     val group: Group,
-    val entries: List<ParticipantIdAndTime>
+    val entries: List<IdWithFinalResult>
     // sorted by placeInGroup
 ) : CsvDumpable {
     companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
@@ -21,7 +21,7 @@ class GroupResultProtocol(
             val rest = fileContent.drop(2) // group row and header row
             val participantAndTimeList = rest.mapIndexed { index, row ->
                 try {
-                    readParticipantAndTimeFromRow(row)
+                    readIdWithFinalResultFromRow(row)
                 } catch (e: IllegalArgumentException) {
                     val lineNumber =
                         index + 3 // 3 = 1 for zero-based indexing + 2 for the first two lines being dropped
@@ -32,20 +32,20 @@ class GroupResultProtocol(
             return GroupResultProtocol(group, participantAndTimeList)
         }
 
-        private fun readParticipantAndTimeFromRow(row: String): ParticipantIdAndTime {
+        private fun readIdWithFinalResultFromRow(row: String): IdWithFinalResult {
             val tokens = row.split(",")
             if (tokens.size != 3)
                 logErrorAndThrow("Not three comma separated values.")
             val (_, id, time) = tokens
             val idNum =
                 id.toIntOrNull() ?: logErrorAndThrow("Bad id.")
-            val timeParsed = when (time) {
-                "снят" -> null
-                else -> Time.fromString(time)
+            val result = when (time) {
+                "снят" -> FinalParticipantResult.Disqualified()
+                else -> FinalParticipantResult.Finished(Time.fromString(time))
             }
-            return ParticipantIdAndTime(
+            return IdWithFinalResult(
                 idNum,
-                timeParsed
+                result,
             )
         }
 
@@ -78,8 +78,7 @@ class GroupResultProtocol(
             FieldInfo("Место") { ++index; places[index].toString() },
             FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
             FieldInfo("Результат") { id ->
-                entries.first { it.id == id }.totalTime?.toString()
-                    ?: "снят"
+                entries.first { it.id == id }.result.dumpToCsvString()
             }
         )).toTable(entries.map { it.id })
 
@@ -88,7 +87,7 @@ class GroupResultProtocol(
     private fun generatePlaces(): List<Int> {
         val places = (1..entries.size).toMutableList()
         for (i in 0 until entries.lastIndex) {
-            if (entries[i].totalTime == entries[i + 1].totalTime)
+            if (entries[i].result == entries[i + 1].result)
                 places[i + 1] = places[i]
         }
         return places

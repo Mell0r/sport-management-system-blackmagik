@@ -1,9 +1,8 @@
 package ru.emkn.kotlin.sms
 
-abstract class Group(val label: String, var route: Route) {
+abstract class Group(val label: String, var route: Route) : CsvStringDumpable {
     abstract fun checkParticipantValidity(participant: Participant) : Boolean
     override fun toString() = label
-    abstract fun dumpToCsvString(): String // only requirement, without route
 }
 
 class AgeGroup(label: String, route: Route, val ageFrom: Int, val ageTo: Int) : Group(label, route) {
