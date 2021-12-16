@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
-import kotlin.reflect.jvm.internal.impl.util.Check
 
 typealias CheckpointLabelT = String
 
@@ -15,6 +14,8 @@ sealed class Route(val name: String) {
         checkpointsToTimes: List<CheckpointLabelAndTime>,
         startingTime: Time
     ): Time?
+
+    abstract fun dumpToString() : String
 }
 
 /*
@@ -105,6 +106,26 @@ class OrderedCheckpointsRoute(
             }, actual: $chronologicalCheckpoints). Disqualifying."
         }
     }
+
+    override fun dumpToString(): String {
+        return "$0$${name}," + orderedCheckpoints.joinToString(",")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OrderedCheckpointsRoute
+
+        if (orderedCheckpoints != other.orderedCheckpoints) return false
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode() + 31 * orderedCheckpoints.hashCode()
+    }
 }
 
 class AtLeastKCheckpointsRoute(
@@ -128,4 +149,27 @@ class AtLeastKCheckpointsRoute(
         return Time(lastRelevantCheckpoint.time - startingTime)
     }
 
+    override fun dumpToString(): String {
+        return "$1$${name},${threshold}," + checkpoints.joinToString(",")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AtLeastKCheckpointsRoute
+
+        if (checkpoints != other.checkpoints) return false
+        if (threshold != other.threshold) return false
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = checkpoints.hashCode()
+        result = 31 * result + threshold
+        result = 31 * result + name.hashCode()
+        return result
+    }
 }
