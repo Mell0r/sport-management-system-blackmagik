@@ -15,7 +15,7 @@ sealed class Route(val name: String) {
         startingTime: Time
     ): Time?
 
-    abstract fun dumpToString() : String
+    abstract fun dumpToCsvString() : String
 }
 
 /*
@@ -107,7 +107,7 @@ class OrderedCheckpointsRoute(
         }
     }
 
-    override fun dumpToString(): String {
+    override fun dumpToCsvString(): String {
         return "$0$${name}," + orderedCheckpoints.joinToString(",")
     }
 
@@ -149,7 +149,7 @@ class AtLeastKCheckpointsRoute(
         return Time(lastRelevantCheckpoint.time - startingTime)
     }
 
-    override fun dumpToString(): String {
+    override fun dumpToCsvString(): String {
         return "$1$${name},${threshold}," + checkpoints.joinToString(",")
     }
 

@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms
 
-import org.tinylog.kotlin.Logger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -26,7 +25,7 @@ internal class RouteReadingTests {
     @Test
     fun `Properly writes and reads back ordered checkpoints routes`() {
         fun checkRoute(route: OrderedCheckpointsRoute) {
-            assertEquals(route, readRouteFromLine(route.dumpToString()))
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
         }
         checkRoute(OrderedCheckpointsRoute("orderedRoute1", mutableListOf("c1", "c2", "c3")))
         checkRoute(OrderedCheckpointsRoute("orderedRoute2", mutableListOf("c2", "c1", "c3")))
@@ -47,7 +46,7 @@ internal class RouteReadingTests {
     @Test
     fun `Properly writes and reads back at least k checkpoints routes`() {
         fun checkRoute(route: AtLeastKCheckpointsRoute) {
-            assertEquals(route, readRouteFromLine(route.dumpToString()))
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
         }
         checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute1", mutableSetOf("c1", "c2", "c3"), 1))
         checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute2", mutableSetOf("c2", "c1", "c3"), 2))
