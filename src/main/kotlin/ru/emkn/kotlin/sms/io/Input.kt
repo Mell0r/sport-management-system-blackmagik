@@ -116,8 +116,8 @@ fun <T> readAndParseAllFiles(
     files: List<File>,
     competition: Competition,
     parser: (FileContent, Competition) -> T,
-    strategyOnReadFail: (File) -> Unit,
-    strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit,
+    strategyOnReadFail: (File) -> Unit = ::throwReadFailOnFile,
+    strategyOnWrongFormat: (File, IllegalArgumentException) -> Unit = ::throwWrongFormatOnFile,
 ): List<T> {
     val filesWithContents =
         readAllReadableFilesPairFile(files, strategyOnReadFail)
@@ -129,4 +129,21 @@ fun <T> readAndParseAllFiles(
             listOf()
         }
     }
+}
+
+internal class ReadFailException(val file: File) : Exception(
+    message = "Could not read file at \"${file.absolutePath}\"!"
+)
+
+private fun throwReadFailOnFile(file: File): Nothing {
+    throw ReadFailException(file)
+}
+
+internal class WrongFormatException(val file: File, val illegalArgumentException: IllegalArgumentException) : Exception(
+    message = "File at \"${file.absolutePath}\" has invalid format:\n" +
+            illegalArgumentException.message
+)
+
+private fun throwWrongFormatOnFile(file: File, illegalArgumentException: IllegalArgumentException): Nothing {
+    throw WrongFormatException(file, illegalArgumentException)
 }

@@ -12,9 +12,6 @@ import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
  *
  * [competition] can be edited through [competitionBuilder].
  * All other properties are fixed and empty.
- *
- * View of the competition can become a listener of [competitionBuilder] changes
- * via [CompetitionBuilder.addListener] method (interface [ModelListener<CompetitionBuilder>]).
  */
 class ConfiguringCompetitionProgramState : ProgramState() {
     val competitionBuilder = CompetitionBuilder()
@@ -24,7 +21,7 @@ class ConfiguringCompetitionProgramState : ProgramState() {
     // following properties are always empty in this program mode
     override val participantsList = ParticipantsList(listOf())
     override val startingTimes = FixedStartingTimes()
-    override val competitionModel = CompetitionModel()
+    override val competitionModel = CompetitionModel(this)
 
     init {
         Logger.info {"Initialized ConfiguredCompetitionProgramState."}
