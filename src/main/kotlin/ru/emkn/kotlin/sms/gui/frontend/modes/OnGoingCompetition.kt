@@ -34,6 +34,12 @@ fun OnGoingCompetition(programState: MutableState<ProgramState>) {
             state.competitionModelController
                 .addTimestampsFromProtocolFilesByCheckpoint(files)
         }) { Text("Load checkpoint timestamps protocols") }
+        Button(
+            onClick = {
+                programState.value = programState.value.nextProgramState()
+            },
+            content = { Text("Сохранить и далее") },
+        )
     }
 }
 
