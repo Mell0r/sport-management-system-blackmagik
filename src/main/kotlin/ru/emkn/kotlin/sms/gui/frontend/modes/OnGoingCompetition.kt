@@ -18,59 +18,21 @@ import ru.emkn.kotlin.sms.time.Time
 @Composable
 fun OnGoingCompetition(programState: MutableState<ProgramState>) {
     val state = programState.value as OnGoingCompetitionProgramState
-
-    DisplayResults(state.competitionModel.timestamps, state)
+    DisplayResults(state)
 }
 
 @Composable
 fun DisplayResults(
-    timestamps: MutableList<ParticipantCheckpointTime>,
     state: OnGoingCompetitionProgramState,
 ) {
+    val liveResultProtocols = state.liveGroupResultProtocolsView.protocols
 
-    val byGroups = timestamps.groupBy { it.participant.group }
-        .mapValues { (_, participantCheckpointTime) ->
-            val subresults =
-                participantCheckpointTime.groupBy { it.participant }
-                    .map { (participant, timestamps) ->
-                        val startingTime = state.startingTimes.getStartingTimeOf(participant)
-                        val checkpointToTimePairs = timestamps.map { it.toCheckPointAndTime() }
-                        val liveResult = participant.group.route.calculateLiveResult(
-                            checkpointsToTimes = checkpointToTimePairs,
-                            startingTime = startingTime,
-                        )
-                        ParticipantWithLiveResult(
-                            participant,
-                            liveResult,
-                        )
-                    }
-            subresults
-        }.toMutableMap()
-
-    state.participantsList.list.groupBy { it.group }
-        .forEach { (group, participants) ->
-            if (!byGroups.containsKey(group))
-                byGroups[group] = participants.map {
-                    ParticipantWithLiveResult(it, LiveParticipantResult.InProcess(0, Time(0)))
-                }
-            else {
-                val participantsWithAtLeastOneTimestamp =
-                    byGroups[group]?.toMutableList()
-                        ?: throw InternalError("Broken check for key's existense")
-                for (participant in participants) {
-                    if (participantsWithAtLeastOneTimestamp.firstOrNull { it.participant === participant } == null) {
-                        participantsWithAtLeastOneTimestamp.add(
-                            ParticipantWithLiveResult(participant, LiveParticipantResult.InProcess(0, Time(0)))
-                        )
-                    }
-                }
-                byGroups[group] = participantsWithAtLeastOneTimestamp
-            }
-        }
     ImmutableFoldingList(
         { Text("Result") },
-        byGroups.toList(),
-        @Composable { (group, participants) ->
+        liveResultProtocols,
+        @Composable { liveResultProtocol ->
+            val group = liveResultProtocol.group
+            val participantsWithLiveResults = liveResultProtocol.entries
             val participantField = FieldComparableBySelector(
                 "Участник",
                 { it: ParticipantWithLiveResult -> it.participant.toString() },
@@ -88,7 +50,7 @@ fun DisplayResults(
             Column {
                 Text("Группа $group")
                 SortableTable(
-                    participants,
+                    participantsWithLiveResults,
                     listOf(participantField, liveResultField)
                 )
             }

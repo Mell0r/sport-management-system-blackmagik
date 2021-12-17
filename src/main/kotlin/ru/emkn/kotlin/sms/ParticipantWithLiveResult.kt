@@ -10,4 +10,9 @@ data class ParticipantWithLiveResult(
             is LiveParticipantResult.InProcess -> liveResult.completedCheckpoints
             is LiveParticipantResult.Disqualified -> Int.MIN_VALUE
         }
+
+    fun toIdWithFinalResult() = IdWithFinalResult(
+        id = participant.id,
+        result = liveResult.toFinalParticipantResult(),
+    )
 }

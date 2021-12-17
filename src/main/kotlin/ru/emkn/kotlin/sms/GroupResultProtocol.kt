@@ -103,7 +103,7 @@ class GroupResultProtocol(
 
 class LiveGroupResultProtocol(
     val group: Group,
-    val entries: List<IdWithLiveResult>,
+    val entries: List<ParticipantWithLiveResult>,
     // sorted by placeInGroup
 ) {
     fun toGroupResultProtocol() = GroupResultProtocol(
