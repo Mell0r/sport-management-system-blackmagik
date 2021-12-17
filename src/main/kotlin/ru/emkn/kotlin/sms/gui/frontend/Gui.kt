@@ -1,9 +1,5 @@
 package ru.emkn.kotlin.sms
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,7 +7,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,71 +21,6 @@ import ru.emkn.kotlin.sms.gui.programState.*
 
 fun getEmojiByUnicode(unicode: Int): String {
     return String(Character.toChars(unicode))
-}
-
-val downArrow = getEmojiByUnicode(11167)
-val rightArrow = getEmojiByUnicode(11166)
-val redCross = getEmojiByUnicode(10060)
-val plus = getEmojiByUnicode(10133)
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun FoldingObject(
-    Header: @Composable() () -> Unit,
-    Content: @Composable() () -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Column(Modifier.clickable { expanded = !expanded }) {
-        Row {
-            AnimatedContent(targetState = expanded) { targetState ->
-                if (targetState)
-                    Text(downArrow)
-                else
-                    Text(rightArrow)
-            }
-            Header()
-        }
-        AnimatedVisibility(expanded) {
-            Content()
-        }
-    }
-}
-
-@Composable
-fun <T> FoldingList(
-    Header: @Composable () -> Unit,
-    list: SnapshotStateList<T>,
-    DisplayElement: @Composable (T) -> Unit,
-    newElement: () -> T
-) {
-    val Content = @Composable {
-        Column {
-            @Composable
-            fun DisplayRow(element: T, Button: @Composable() () -> Unit) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    DisplayElement(element)
-                    Button()
-                }
-            }
-
-            list.forEach {
-                DisplayRow(it) {
-                    Button(
-                        onClick = { list.remove(it) },
-                        content = { Text(redCross) }
-                    )
-                }
-            }
-
-            Button(onClick = {
-                val newValue = newElement()
-                list.add(newValue)
-            }) {
-                Text(plus)
-            }
-        }
-    }
-    FoldingObject(Header, Content)
 }
 
 @Composable
