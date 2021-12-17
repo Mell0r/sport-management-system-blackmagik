@@ -25,6 +25,7 @@ fun DisplayResults(
     timestamps: MutableList<ParticipantCheckpointTime>,
     state: OnGoingCompetitionProgramState
 ) {
+    // the class below duplicates the LiveResult class, might be a good idea to refactor it.
     data class ParticipantIntermediateResult(
         val participant: Participant,
         val checkpointsPassed: Int,
@@ -34,7 +35,7 @@ fun DisplayResults(
     val byGroups = timestamps.groupBy { it.participant.group }
         .mapValues { (_, participantCheckpointTime) ->
             val subresults =
-                participantCheckpointTime.groupBy({ it.participant })
+                participantCheckpointTime.groupBy { it.participant }
                     .map { (participant, timestamps) ->
                         val timeUsed =
                             Time(timestamps.maxOf { it.time } - state.startingTimes.getStartingTimeOf(
@@ -47,32 +48,56 @@ fun DisplayResults(
                         )
                     }
             subresults
+        }.toMutableMap()
+    state.participantsList.list.groupBy { it.group }
+        .forEach { (group, participants) ->
+            if (!byGroups.containsKey(group))
+                byGroups[group] = participants.map {
+                    ParticipantIntermediateResult(it, 0, Time(0))
+                }
+            else {
+                val participantsWithAtLeastOneTimestamp =
+                    byGroups[group]?.toMutableList()
+                        ?: throw InternalError("Broken check for key's existense")
+                for (participant in participants) {
+                    if (participantsWithAtLeastOneTimestamp.firstOrNull { it.participant === participant } == null) {
+                        participantsWithAtLeastOneTimestamp.add(
+                            ParticipantIntermediateResult(
+                                participant,
+                                0,
+                                Time(0)
+                            )
+                        )
+                    }
+                }
+                byGroups[group] = participantsWithAtLeastOneTimestamp
+            }
         }
     ImmutableFoldingList(
         { Text("Result") },
         byGroups.toList(),
-        @Composable { (_, participants) ->
+        @Composable { (group, participants) ->
             val participantField = FieldComparableBySelector(
                 "Участник",
                 { it: ParticipantIntermediateResult -> it.participant.toString() },
                 { it.participant.toString() },
-                100f
+                200f
             )
             val checkpointNumberField = FieldComparableBySelector(
                 "Пройдено кп",
                 { it: ParticipantIntermediateResult -> it.checkpointsPassed.toString() },
-                { it.checkpointsPassed },
-                100f
+                { -it.checkpointsPassed },
+                200f
             )
             val timeField = FieldComparableBySelector(
-                "Пройдено кп",
-                { it: ParticipantIntermediateResult -> it.checkpointsPassed.toString() },
-                { it.checkpointsPassed },
-                100f
+                "Время прохождения",
+                { it: ParticipantIntermediateResult -> it.time.toString() },
+                { it.time ?: Time(Int.MAX_VALUE) },
+                250f
             )
             // TODO : sort in result order
             Column {
-                Text("Group")
+                Text("Группа $group")
                 SortableTable(
                     participants,
                     listOf(participantField, checkpointNumberField, timeField)
