@@ -13,31 +13,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
+import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
 import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
 import ru.emkn.kotlin.sms.gui.frontend.FoldingList
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-
-@Composable
-fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
-    fun ShowCheckpoint(): @Composable (MutableState<CheckpointLabelT>) -> Unit =
-        { checkpoint ->
-            TextField(checkpoint.value, { checkpoint.value = it; })
-        }
-
-    @Composable
-    fun ShowName() {
-        var nameLabel by remember { mutableStateOf(route.name) }
-        TextField(nameLabel, { nameLabel = it; route.name = it })
-    }
-
-    FoldingList(
-        { ShowName() },
-        route.orderedCheckpoints,
-        ShowCheckpoint(),
-        { mutableStateOf(String()) }
-    )
-}
 
 @Composable
 fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
@@ -47,27 +27,23 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
 
         val competitionBuilder = configCompetitionState.competitionBuilder
 
-        DisplayCompetition(competitionBuilder, programState)
+        DisplayCompetition(competitionBuilder) { programState.value = programState.value.nextProgramState() }
     }
 }
 
 @Composable
-private fun DisplayCompetition(
-    competitionBuilder: CompetitionBuilder,
-    programState: MutableState<ProgramState>
-) {
+private fun DisplayCompetition(competitionBuilder: CompetitionBuilder, changeProgramState: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        DisplayCompetition(competitionBuilder)
+        DisplayCompetitionTextFields(competitionBuilder)
 
         Button(
-            onClick = {
-                programState.value = programState.value.nextProgramState()
-            },
+            onClick = { changeProgramState() },
             content = { Text("Сохранить и далее") },
             modifier = Modifier.fillMaxWidth().fillMaxHeight()
                 .padding(16.dp)
         )
     }
+
     @Composable
     fun DisplayRoutes() {
         FoldingList(
@@ -82,9 +58,7 @@ private fun DisplayCompetition(
 }
 
 @Composable
-private fun DisplayCompetition(
-    competitionBuilder: CompetitionBuilder
-) {
+private fun DisplayCompetitionTextFields(competitionBuilder: CompetitionBuilder) {
     Column(horizontalAlignment = Alignment.End) {
         var isYearIncorrect by remember { mutableStateOf(true) }
 
@@ -111,11 +85,11 @@ private fun DisplayCompetition(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Год:")
             TextField(
-                if (competitionBuilder.year.value != -1000) competitionBuilder.year.value.toString() else "",
+                if (competitionBuilder.year.value != INCORRECT_YEAR) competitionBuilder.year.value.toString() else "",
                 onValueChange = { newValue ->
                     isYearIncorrect = newValue.toIntOrNull() == null
                     competitionBuilder.year.value =
-                        newValue.toIntOrNull() ?: -1000
+                        newValue.toIntOrNull() ?: INCORRECT_YEAR
                 })
         }
         if (isYearIncorrect)
@@ -128,4 +102,24 @@ private fun DisplayCompetition(
             competitionBuilder.date
         )
     }
+}
+
+@Composable
+fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
+    fun ShowCheckpoint(): @Composable (MutableState<CheckpointLabelT>) -> Unit = { checkpoint ->
+        TextField(checkpoint.value, { checkpoint.value = it; })
+    }
+
+    @Composable
+    fun ShowName() {
+        var nameLabel by remember { mutableStateOf(route.name) }
+        TextField(nameLabel, { nameLabel = it; route.name = it })
+    }
+
+    FoldingList(
+        { ShowName() },
+        route.orderedCheckpoints,
+        ShowCheckpoint(),
+        { mutableStateOf(String()) }
+    )
 }

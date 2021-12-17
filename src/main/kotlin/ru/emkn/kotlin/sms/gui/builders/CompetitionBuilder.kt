@@ -10,6 +10,8 @@ import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
 import ru.emkn.kotlin.sms.io.initializeCompetition
 
+const val INCORRECT_YEAR = -6666
+
 /**
  * aka "Mutable competition": a class which allows to
  * configure a desired competition,
@@ -18,7 +20,7 @@ import ru.emkn.kotlin.sms.io.initializeCompetition
 class CompetitionBuilder(
     val discipline: MutableState<String> = mutableStateOf(""),
     val name: MutableState<String> = mutableStateOf(""),
-    val year: MutableState<Int> = mutableStateOf(0),
+    val year: MutableState<Int> = mutableStateOf(INCORRECT_YEAR),
     val date: MutableState<String> = mutableStateOf(""),
     val groups: SnapshotStateList<Group> = mutableStateListOf(),
     val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
