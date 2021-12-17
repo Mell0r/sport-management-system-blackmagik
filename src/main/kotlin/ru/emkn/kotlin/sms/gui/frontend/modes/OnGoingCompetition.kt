@@ -25,7 +25,7 @@ fun DisplayResults(
 
     ImmutableFoldingList(
         { Text("Result") },
-        liveResultProtocols,
+        liveResultProtocols.value,
         @Composable { liveResultProtocol ->
             val group = liveResultProtocol.group
             val participantsWithLiveResults = liveResultProtocol.entries
