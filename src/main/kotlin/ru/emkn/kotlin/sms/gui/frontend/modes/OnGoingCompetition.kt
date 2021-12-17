@@ -77,24 +77,19 @@ fun DisplayResults(
                 { it.participant.toString() },
                 200f
             )
-            val checkpointNumberField = FieldComparableBySelector(
-                "Пройдено кп",
-                { it: ParticipantWithLiveResult -> it.completedCheckpointsOrNegativeINF.toString() },
-                { -it.completedCheckpointsOrNegativeINF },
-                200f
+            val liveResultField = FieldComparableBySelector(
+                name = "Результат",
+                stringRepresentation = { it: ParticipantWithLiveResult ->
+                    it.liveResult.toString()
+                },
+                { it.liveResult },
+                width = 400f
             )
-            val timeField = FieldComparableBySelector(
-                "Время прохождения",
-                { it: ParticipantWithLiveResult -> it.liveResult.timeOrINF.toString() },
-                { it.liveResult.timeOrINF },
-                250f
-            )
-            // TODO : sort in result order
             Column {
                 Text("Группа $group")
                 SortableTable(
                     participants,
-                    listOf(participantField, checkpointNumberField, timeField)
+                    listOf(participantField, liveResultField)
                 )
             }
         })

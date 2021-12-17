@@ -37,6 +37,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
         override fun hashCode(): Int {
             return totalTime.hashCode()
         }
+
+        override fun toString() = "Финишировал за $totalTime"
     }
 
     /**
@@ -78,6 +80,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             result = 31 * result + lastCheckpointTime.hashCode()
             return result
         }
+
+        override fun toString() = "Прошел $completedCheckpoints к.п, последний пройдён в $lastCheckpointTime"
     }
 
     /**
@@ -105,6 +109,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
         override fun hashCode(): Int {
             return javaClass.hashCode()
         }
+
+        override fun toString() = "Снят"
     }
 
     abstract fun toFinalParticipantResult(): FinalParticipantResult
