@@ -132,7 +132,7 @@ fun <T> readAndParseAllFiles(
 }
 
 internal class ReadFailException(val file: File) : Exception(
-    message = "Could not read file at \"${file.absolutePath}\"!"
+    "Could not read file at \"${file.absolutePath}\"!"
 )
 
 private fun throwReadFailOnFile(file: File): Nothing {
@@ -140,7 +140,7 @@ private fun throwReadFailOnFile(file: File): Nothing {
 }
 
 internal class WrongFormatException(val file: File, val illegalArgumentException: IllegalArgumentException) : Exception(
-    message = "File at \"${file.absolutePath}\" has invalid format:\n" +
+    "File at \"${file.absolutePath}\" has invalid format:\n" +
             illegalArgumentException.message
 )
 
