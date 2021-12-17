@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.gui.frontend
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility

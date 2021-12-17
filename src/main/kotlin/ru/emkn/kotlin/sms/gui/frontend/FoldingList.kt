@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.gui.frontend
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,3 +52,4 @@ fun <T> FoldingList(
     }
     FoldingObject(Header, Content)
 }
+
