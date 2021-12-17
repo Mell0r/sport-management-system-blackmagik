@@ -20,6 +20,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Finished(totalTime)
+        override val timeOrINF: Time
+            get() = totalTime
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -56,6 +58,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override val timeOrINF: Time
+            get() = lastCheckpointTime
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -89,6 +93,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override val timeOrINF: Time
+            get() = Time(Int.MAX_VALUE)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -102,4 +108,5 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
     }
 
     abstract fun toFinalParticipantResult(): FinalParticipantResult
+    abstract val timeOrINF: Time
 }

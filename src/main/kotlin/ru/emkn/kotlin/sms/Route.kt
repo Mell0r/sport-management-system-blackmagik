@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
 import java.lang.Integer.max
 
@@ -11,12 +10,12 @@ sealed class Route(val name: String) : CsvStringDumpable {
     abstract val checkpoints: Set<CheckpointLabelT>
 
     fun calculateFinalResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): FinalParticipantResult = calculateLiveResult(checkpointsToTimes, startingTime).toFinalParticipantResult()
 
     abstract fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult
 }
@@ -28,6 +27,7 @@ Example (ChP stands for checkpoint here):
 $0$orderedRouteName,firstChP, secondChP,thirdChP
 $1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
  */
+@kotlin.ExperimentalStdlibApi
 fun readRouteFromLine(line: String): Route {
     if (!line.startsWith("\$"))
         return readOrderedRouteCheckpoint(line)
@@ -71,7 +71,7 @@ class OrderedCheckpointsRoute(
         get() = orderedCheckpoints.toSet()
 
     override fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
         if (checkpointsToTimes.minOf { it.time } < startingTime) {
@@ -102,7 +102,7 @@ class OrderedCheckpointsRoute(
     }
 
     private fun logFalseStartWarning(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ) {
         Logger.warn {
@@ -151,7 +151,7 @@ class AtLeastKCheckpointsRoute(
     }
 
     override fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
         if (checkpointsToTimes.minOf { it.time } < startingTime) {

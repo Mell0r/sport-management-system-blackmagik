@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import ru.emkn.kotlin.sms.LiveParticipantResult
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
+import ru.emkn.kotlin.sms.ParticipantWithLiveResult
 import ru.emkn.kotlin.sms.gui.frontend.FieldComparableBySelector
 import ru.emkn.kotlin.sms.gui.frontend.ImmutableFoldingList
 import ru.emkn.kotlin.sms.gui.frontend.SortableTable
@@ -23,37 +25,33 @@ fun OnGoingCompetition(programState: MutableState<ProgramState>) {
 @Composable
 fun DisplayResults(
     timestamps: MutableList<ParticipantCheckpointTime>,
-    state: OnGoingCompetitionProgramState
+    state: OnGoingCompetitionProgramState,
 ) {
-    // the class below duplicates the LiveResult class, might be a good idea to refactor it.
-    data class ParticipantIntermediateResult(
-        val participant: Participant,
-        val checkpointsPassed: Int,
-        val time: Time? // null if false start or wrong checkpoints order
-    )
 
     val byGroups = timestamps.groupBy { it.participant.group }
         .mapValues { (_, participantCheckpointTime) ->
             val subresults =
                 participantCheckpointTime.groupBy { it.participant }
                     .map { (participant, timestamps) ->
-                        val timeUsed =
-                            Time(timestamps.maxOf { it.time } - state.startingTimes.getStartingTimeOf(
-                                participant
-                            )) // probably should be delegated to Route
-                        ParticipantIntermediateResult(
+                        val startingTime = state.startingTimes.getStartingTimeOf(participant)
+                        val checkpointToTimePairs = timestamps.map { it.toCheckPointAndTime() }
+                        val liveResult = participant.group.route.calculateLiveResult(
+                            checkpointsToTimes = checkpointToTimePairs,
+                            startingTime = startingTime,
+                        )
+                        ParticipantWithLiveResult(
                             participant,
-                            timestamps.size,
-                            timeUsed
+                            liveResult,
                         )
                     }
             subresults
         }.toMutableMap()
+
     state.participantsList.list.groupBy { it.group }
         .forEach { (group, participants) ->
             if (!byGroups.containsKey(group))
                 byGroups[group] = participants.map {
-                    ParticipantIntermediateResult(it, 0, Time(0))
+                    ParticipantWithLiveResult(it, LiveParticipantResult.InProcess(0, Time(0)))
                 }
             else {
                 val participantsWithAtLeastOneTimestamp =
@@ -62,11 +60,7 @@ fun DisplayResults(
                 for (participant in participants) {
                     if (participantsWithAtLeastOneTimestamp.firstOrNull { it.participant === participant } == null) {
                         participantsWithAtLeastOneTimestamp.add(
-                            ParticipantIntermediateResult(
-                                participant,
-                                0,
-                                Time(0)
-                            )
+                            ParticipantWithLiveResult(participant, LiveParticipantResult.InProcess(0, Time(0)))
                         )
                     }
                 }
@@ -79,20 +73,20 @@ fun DisplayResults(
         @Composable { (group, participants) ->
             val participantField = FieldComparableBySelector(
                 "Участник",
-                { it: ParticipantIntermediateResult -> it.participant.toString() },
+                { it: ParticipantWithLiveResult -> it.participant.toString() },
                 { it.participant.toString() },
                 200f
             )
             val checkpointNumberField = FieldComparableBySelector(
                 "Пройдено кп",
-                { it: ParticipantIntermediateResult -> it.checkpointsPassed.toString() },
-                { -it.checkpointsPassed },
+                { it: ParticipantWithLiveResult -> it.completedCheckpointsOrNegativeINF.toString() },
+                { -it.completedCheckpointsOrNegativeINF },
                 200f
             )
             val timeField = FieldComparableBySelector(
                 "Время прохождения",
-                { it: ParticipantIntermediateResult -> it.time.toString() },
-                { it.time ?: Time(Int.MAX_VALUE) },
+                { it: ParticipantWithLiveResult -> it.liveResult.timeOrINF.toString() },
+                { it.liveResult.timeOrINF },
                 250f
             )
             // TODO : sort in result order
