@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.gui.frontend
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,6 +10,7 @@ import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.application
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.gui.frontend.modes.CompetitionConfiguration
+import ru.emkn.kotlin.sms.gui.frontend.modes.FormingStartingProtocols
 import ru.emkn.kotlin.sms.gui.programState.*
 
 
@@ -34,7 +34,7 @@ fun gui() {
                     content = { CompetitionConfiguration(programState) })
             is FormingStartingProtocolsProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
-                    content = { Text("Joke") })
+                    content = { FormingStartingProtocols(programState) })
             is OnGoingCompetitionProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
                     content = { TODO() })
@@ -46,3 +46,4 @@ fun gui() {
         //Logger.debug { "Program successfully finished." }
     }
 }
+
