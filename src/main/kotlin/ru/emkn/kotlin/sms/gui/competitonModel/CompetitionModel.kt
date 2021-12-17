@@ -13,7 +13,7 @@ import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
  */
 class CompetitionModel {
     // actual list of ParticipantCheckpointTime triples
-    private val timestamps: MutableList<ParticipantCheckpointTime> = mutableListOf()
+    val timestamps: MutableList<ParticipantCheckpointTime> = mutableListOf()
 
     private val listeners: MutableList<CompetitionModelListener> = mutableListOf()
     fun addListener(listener: CompetitionModelListener) {
