@@ -19,9 +19,9 @@ val sampleCompetition = Competition(
 val p1 = Participant(0, 9, "A", "A", m10, "t1", "")
 val p2 = Participant(1, 9, "B", "B", m10, "t1", "")
 val p3 = Participant(2, 9, "C", "C", m10, "t1", "")
-val q1 = Participant(0, 9, "D", "D", f10, "t1", "")
-val q2 = Participant(1, 9, "E", "E", f10, "t1", "")
-val q3 = Participant(2, 9, "F", "F", f10, "t1", "")
+val q1 = Participant(3, 9, "D", "D", f10, "t1", "")
+val q2 = Participant(4, 9, "E", "E", f10, "t1", "")
+val q3 = Participant(5, 9, "F", "F", f10, "t1", "")
 val sampleParticipants = listOf(p1, p2, p3, q1, q2, q3)
 val sampleOngoingCompetition = OnGoingCompetitionProgramState(
     sampleCompetition,
@@ -38,53 +38,25 @@ val sampleOngoingCompetition = OnGoingCompetitionProgramState(
     )
 ).also {
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p1,
-            "1",
-            Time(1)
-        )
+        ParticipantCheckpointTime(p1, "1", Time(1))
     )
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p1,
-            "1",
-            Time(81)
-        )
+        ParticipantCheckpointTime(p1, "1", Time(81))
     )
     // p1 disqualified
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p2,
-            "1",
-            Time(40)
-        )
+        ParticipantCheckpointTime(p2, "1", Time(40))
     )
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p2,
-            "2",
-            Time(53)
-        )
+        ParticipantCheckpointTime(p2, "2", Time(53))
     )
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p2,
-            "3",
-            Time(106)
-        )
+        ParticipantCheckpointTime(p2, "3", Time(106))
     )
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            p3,
-            "1",
-            Time(36)
-        )
+        ParticipantCheckpointTime(p3, "1", Time(36))
     )
     it.competitionModelController.addTimestamp(
-        ParticipantCheckpointTime(
-            q2,
-            "1",
-            Time(39)
-        )
+        ParticipantCheckpointTime(q2, "1", Time(39))
     )
 }
