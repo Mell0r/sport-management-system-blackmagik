@@ -1,5 +1,7 @@
 package ru.emkn.kotlin.sms.gui.competitonModel
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import ru.emkn.kotlin.sms.LiveGroupResultProtocol
 import ru.emkn.kotlin.sms.LiveParticipantResult
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
@@ -10,7 +12,8 @@ import ru.emkn.kotlin.sms.time.Time
 class LiveGroupResultProtocolsView(
     private val state: ProgramState,
 ) : CompetitionModelListener {
-    var protocols: MutableList<LiveGroupResultProtocol> = mutableListOf()
+    var protocols: MutableState<List<LiveGroupResultProtocol>> =
+        mutableStateOf(listOf())
 
     override fun modelChanged(timestamps: List<ParticipantCheckpointTime>) {
         val byGroups = timestamps.groupBy { it.participant.group }
@@ -54,8 +57,8 @@ class LiveGroupResultProtocolsView(
                 }
             }
 
-        protocols = byGroups.map { (group, participantsWithLiveResults) ->
+        protocols.value = byGroups.map { (group, participantsWithLiveResults) ->
             LiveGroupResultProtocol(group, participantsWithLiveResults)
-        }.toMutableList()
+        }
     }
 }
