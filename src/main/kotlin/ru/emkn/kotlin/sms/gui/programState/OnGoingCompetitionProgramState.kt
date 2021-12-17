@@ -25,7 +25,7 @@ class OnGoingCompetitionProgramState(
     override val participantsList: ParticipantsList,
     override val startingTimes: FixedStartingTimes,
 ) : ProgramState() {
-    override val competitionModel = CompetitionModel()
+    override val competitionModel = CompetitionModel(this)
     val competitionModelController = competitionModel.Controller()
 
     init {

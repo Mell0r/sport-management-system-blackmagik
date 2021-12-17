@@ -4,16 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import ru.emkn.kotlin.sms.LiveParticipantResult
-import ru.emkn.kotlin.sms.Participant
-import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.ParticipantWithLiveResult
 import ru.emkn.kotlin.sms.gui.frontend.FieldComparableBySelector
 import ru.emkn.kotlin.sms.gui.frontend.ImmutableFoldingList
 import ru.emkn.kotlin.sms.gui.frontend.SortableTable
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import ru.emkn.kotlin.sms.time.Time
 
 @Composable
 fun OnGoingCompetition(programState: MutableState<ProgramState>) {

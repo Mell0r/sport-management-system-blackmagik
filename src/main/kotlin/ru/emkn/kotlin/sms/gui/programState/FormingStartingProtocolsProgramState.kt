@@ -16,9 +16,6 @@ import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
  * [startingTimes] is an instance of [MutableStartingTimes],
  * which means the starting times can be changed.
  * [competitionModel] is empty and cannot be changed.
- *
- * Views of [participantsList] can become a listener via [ParticipantsListBuilder.addListener] method.
- * Views of [startingTimes] can become a listener via [MutableStartingTimes.addListener] method.
  */
 class FormingStartingProtocolsProgramState(override val competition: Competition) : ProgramState() {
     val participantsListBuilder = ParticipantsListBuilder()
@@ -27,7 +24,7 @@ class FormingStartingProtocolsProgramState(override val competition: Competition
 
     override val startingTimes = MutableStartingTimes()
 
-    override val competitionModel = CompetitionModel()
+    override val competitionModel = CompetitionModel(this)
 
     init {
         Logger.info {"Initialized FormingStartingProtocolsProgramState."}
