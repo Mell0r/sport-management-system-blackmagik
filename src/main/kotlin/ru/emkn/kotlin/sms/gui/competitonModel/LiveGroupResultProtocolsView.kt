@@ -39,4 +39,7 @@ class LiveGroupResultProtocolsView(
                 LiveGroupResultProtocol(group, participantsWithLiveResults)
             }
     }
+
+    fun getGroupResultProtocols(): List<GroupResultProtocol> =
+        protocols.value.map { it.toGroupResultProtocol() }
 }
