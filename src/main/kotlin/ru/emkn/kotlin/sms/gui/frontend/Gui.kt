@@ -31,10 +31,12 @@ fun launchGUI(
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
                     onCloseRequest = ::exitApplication,
                     content = { CompetitionConfiguration(programState) })
-            is FormingStartingProtocolsProgramState ->
-                Dialog(onCloseRequest = ::exitApplication,
+            is FormingStartingProtocolsProgramState -> Dialog(
+                    title = "Обработка заявок. Формирование стартовых протоколов",
+                    onCloseRequest = ::exitApplication,
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
-                    content = { FormingStartingProtocols(programState) })
+                    content = { FormingStartingProtocols(programState) }
+                )
             is OnGoingCompetitionProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
