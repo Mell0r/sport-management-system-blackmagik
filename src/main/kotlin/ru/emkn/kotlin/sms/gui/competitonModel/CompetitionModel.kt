@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.gui.competitonModel
 
-import org.tinylog.kotlin.Logger
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapEither
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.ReadFailException
@@ -22,9 +23,12 @@ class CompetitionModel(
 ) {
     // actual list of ParticipantCheckpointTime triples
     // private because any modification MUST notify all listeners
-    private val timestamps: MutableList<ParticipantCheckpointTime> = mutableListOf()
+    private val timestamps: MutableList<ParticipantCheckpointTime> =
+        mutableListOf()
 
-    private val listeners: MutableList<CompetitionModelListener> = mutableListOf()
+    private val listeners: MutableList<CompetitionModelListener> =
+        mutableListOf()
+
     fun addListener(listener: CompetitionModelListener) {
         listeners.add(listener)
     }
@@ -80,44 +84,52 @@ class CompetitionModel(
             notifyAllListeners()
         }
 
-        // TODO remove use exceptions as a control flow
-        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>) {
-            val protocolsByParticipant = try {
-                readAndParseAllFiles(
-                    files = filePaths.map { File(it) },
-                    competition = state.competition,
-                    parser = ParticipantTimestampsProtocol::readFromFileContentAndCompetition,
+        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>): Result<Unit, String?> {
+            val protocolsByParticipantOrError =
+                com.github.michaelbull.result.runCatching {
+                    readAndParseAllFiles(
+                        files = filePaths.map { File(it) },
+                        competition = state.competition,
+                        parser = ParticipantTimestampsProtocol::readFromFileContentAndCompetition,
+                    )
+                }
+            return protocolsByParticipantOrError
+                .mapEither(
+                    success = { protocols ->
+                        addTimestampsFromProtocolsByParticipant(protocols)
+                    },
+                    failure = { exception ->
+                        when (exception) {
+                            is ReadFailException -> exception.message
+                            is WrongFormatException -> exception.message
+                            else -> throw exception // propagate the exception if we cannot handle it here
+                        }
+                    }
                 )
-            } catch (e: ReadFailException) {
-                Logger.error { e.message.toString() }
-                // If something happened we don't do anything.
-                return
-            } catch (e: WrongFormatException) {
-                Logger.error { e.message.toString() }
-                // If something happened we don't do anything.
-                return
-            }
-            addTimestampsFromProtocolsByParticipant(protocolsByParticipant)
         }
 
-        // TODO remove use exceptions as a control flow
-        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>) {
-            val protocolsByCheckpoint = try {
-                readAndParseAllFiles(
-                    files = filePaths.map { File(it) },
-                    competition = state.competition,
-                    parser = CheckpointTimestampsProtocol::readFromFileContentAndCompetition,
+        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>): Result<Unit, String?> {
+            val protocolsByCheckpointOrError =
+                com.github.michaelbull.result.runCatching {
+                    readAndParseAllFiles(
+                        files = filePaths.map { File(it) },
+                        competition = state.competition,
+                        parser = CheckpointTimestampsProtocol::readFromFileContentAndCompetition,
+                    )
+                }
+            return protocolsByCheckpointOrError
+                .mapEither(
+                    success = { protocols ->
+                        addTimestampsFromProtocolsByCheckpoint(protocols)
+                    },
+                    failure = { exception ->
+                        when (exception) {
+                            is ReadFailException -> exception.message
+                            is WrongFormatException -> exception.message
+                            else -> throw exception // propagate the exception if we cannot handle it here
+                        }
+                    }
                 )
-            } catch (e: ReadFailException) {
-                Logger.error { e.message.toString() }
-                // If something happened we don't do anything.
-                return
-            } catch (e: WrongFormatException) {
-                Logger.error { e.message.toString() }
-                // If something happened we don't do anything.
-                return
-            }
-            addTimestampsFromProtocolsByCheckpoint(protocolsByCheckpoint)
         }
 
         fun clearAllTimestamps() {

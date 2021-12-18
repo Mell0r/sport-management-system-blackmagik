@@ -12,7 +12,10 @@ sealed class Route(val name: String) : CsvStringDumpable {
     fun calculateFinalResult(
         checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
-    ): FinalParticipantResult = calculateLiveResult(checkpointsToTimes, startingTime).toFinalParticipantResult()
+    ): FinalParticipantResult = calculateLiveResult(
+        checkpointsToTimes,
+        startingTime
+    ).toFinalParticipantResult()
 
     abstract fun calculateLiveResult(
         checkpointsToTimes: List<CheckpointAndTime>,
@@ -84,10 +87,7 @@ class OrderedCheckpointsRoute(
         val checkpointsToTimesChronological = checkpointsToTimes
             .sortedBy { it.time }
             .dropLast(
-                max(
-                    0,
-                    checkpointsToTimes.size - orderedCheckpoints.size
-                )
+                max(0, checkpointsToTimes.size - orderedCheckpoints.size)
             ) // remove checkpoints after the last one
         val chronologicalCheckpoints =
             checkpointsToTimesChronological.map { it.checkpointLabel }
