@@ -46,7 +46,7 @@ class Application(
             if (application.size < 2)
                 throw IllegalArgumentException("Application can not be empty!")
             if (application.any { it.size != SIZE_OF_APPLICATION_ROW })
-                throw IllegalArgumentException("Some line contains the wrong number of commas! Must be exactly $SIZE_OF_APPLICATION_ROW.")
+                throw IllegalArgumentException("Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}.")
             if (application[0][0] == "")
                 throw IllegalArgumentException("Application can not have empty team name!")
 

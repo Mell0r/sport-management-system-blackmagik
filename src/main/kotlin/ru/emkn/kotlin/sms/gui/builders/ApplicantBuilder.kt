@@ -11,6 +11,16 @@ class ApplicantBuilder(
     val birthYear: MutableState<String> = mutableStateOf(""),
     val sportsCategory: MutableState<String> = mutableStateOf(""),
 ) {
+    companion object {
+        fun fromApplicant(applicant: Applicant) = ApplicantBuilder(
+            supposedGroupLabel = mutableStateOf(applicant.supposedGroupLabel),
+            lastName = mutableStateOf(applicant.lastName),
+            name = mutableStateOf(applicant.name),
+            birthYear = mutableStateOf(applicant.birthYear.toString()),
+            sportsCategory = mutableStateOf(applicant.sportsCategory),
+        )
+    }
+
     /**
      * @throws [IllegalArgumentException] if [birthYear] is not a number
      */
