@@ -31,7 +31,6 @@ class OnGoingCompetitionProgramState(
     init {
         Logger.info{"Initialized OnGoingCompetitionProgramState."}
         competitionModel.addListener(super.liveGroupResultProtocolsView)
-        competitionModel.addListener(super.teamResultsProtocolView)
     }
 
     override fun nextProgramState() = FinishedCompetitionProgramState(
