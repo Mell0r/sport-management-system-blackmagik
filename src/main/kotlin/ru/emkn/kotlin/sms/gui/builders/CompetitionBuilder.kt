@@ -41,8 +41,8 @@ class CompetitionBuilder(
                     AgeGroupBuilder(
                         mutableStateOf(it.label),
                         mutableStateOf(it.route),
-                        mutableStateOf(it.ageFrom),
-                        mutableStateOf(it.ageTo)
+                        mutableStateOf(it.ageFrom.toString()),
+                        mutableStateOf(it.ageTo.toString())
                     )
             }.toMutableStateList(),
             routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
@@ -77,14 +77,7 @@ class CompetitionBuilder(
             name = name.value,
             year = year.value,
             date = date.value,
-            groups = groups.map {
-                AgeGroup(
-                    it.label.value,
-                    it.route.value,
-                    it.ageFrom.value,
-                    it.ageTo.value
-                )
-            }.toList(),
+            groups = groups.map { it.toAgeGroup() }.toList(),
             routes = routes.map { it.toOrderedCheckpointsRoute() }.toList()
         )
     }

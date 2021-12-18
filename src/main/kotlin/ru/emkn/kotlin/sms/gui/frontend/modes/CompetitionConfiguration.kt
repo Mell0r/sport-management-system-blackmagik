@@ -93,6 +93,7 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DisplayGroup(group: AgeGroupBuilder) {
+    val ages = (0..99).map { it.toString() }.toMutableStateList()
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
@@ -102,17 +103,11 @@ fun DisplayGroup(group: AgeGroupBuilder) {
 
             Spacer(Modifier.width(16.dp))
 
-            val ages = (0..99).map { it.toString() }.toMutableStateList()
-            val agesFrom = remember { mutableStateOf("0") }
-            val agesTo = remember { mutableStateOf("0") }
-            group.ageFrom = mutableStateOf(agesFrom.value.toInt())
-            group.ageTo = mutableStateOf(agesTo.value.toInt())
-
-            LabeledDropdownMenu("Возраст от", ages, agesFrom, 150.dp)
+            LabeledDropdownMenu("Возраст от", ages, group.ageFrom, 150.dp)
 
             Spacer(Modifier.width(16.dp))
 
-            LabeledDropdownMenu("Возраст до", ages, agesTo, 150.dp)
+            LabeledDropdownMenu("Возраст до", ages, group.ageTo, 150.dp)
         }
         AnimatedVisibility(group.ageFrom.value > group.ageTo.value) {
             Text("'Возраст от' не должен превышать 'Возраст до'!", color = Color.Red)

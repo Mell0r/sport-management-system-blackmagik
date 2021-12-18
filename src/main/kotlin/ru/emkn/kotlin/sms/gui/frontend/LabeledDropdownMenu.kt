@@ -28,7 +28,6 @@ fun LabeledDropdownMenu(
     selectedText: MutableState<String>,
     width: Dp
 ) {
-    var sText = remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
     val icon = if (expanded)
@@ -38,8 +37,8 @@ fun LabeledDropdownMenu(
 
     Column {
         OutlinedTextField(
-            value = sText.value,
-            onValueChange = { sText.value = it; selectedText.value = it },
+            value = selectedText.value,
+            onValueChange = { selectedText.value = it },
             readOnly = true,
             modifier = Modifier.width(width).border(3.dp, MaterialTheme.colors.primary, RoundedCornerShape(6.dp)),
             label = { Text(name) },
@@ -56,7 +55,6 @@ fun LabeledDropdownMenu(
             suggestions.forEach { label ->
                 DropdownMenuItem(onClick = {
                     selectedText.value = label
-                    sText.value = label
                     expanded = false
                 }) {
                     Text(text = label)
