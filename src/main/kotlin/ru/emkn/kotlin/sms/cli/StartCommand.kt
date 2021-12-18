@@ -4,8 +4,6 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Application
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.getStartConfigurationByApplications
-import ru.emkn.kotlin.sms.io.getFileNameOfParticipantsList
-import ru.emkn.kotlin.sms.io.getFileNameOfStartingProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import java.io.File
@@ -47,8 +45,7 @@ class StartCommand(
         }
 
         val participantsListContent = participantsList.dumpToCsv()
-        val participantsListFileName =
-            getFileNameOfParticipantsList(participantsList)
+        val participantsListFileName = participantsList.defaultCsvFileName()
         val participantsListOutputFolder = File(outputDirectory, "participant-list")
         participantsListOutputFolder.mkdirs()
         safeWriteContentToFile(
@@ -61,7 +58,7 @@ class StartCommand(
         startingProtocolsOutputFolder.mkdirs()
         startingProtocols.forEach { startingProtocol ->
             val content = startingProtocol.dumpToCsv()
-            val fileName = getFileNameOfStartingProtocol(startingProtocol)
+            val fileName = startingProtocol.defaultCsvFileName()
             safeWriteContentToFile(
                 content,
                 startingProtocolsOutputFolder,

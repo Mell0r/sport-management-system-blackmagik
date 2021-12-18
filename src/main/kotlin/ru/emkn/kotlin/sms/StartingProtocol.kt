@@ -64,4 +64,6 @@ data class StartingProtocol(
 
     override fun dumpToCsv() =
         listOf("${group.label},") + entries.map { "${it.id},${it.startTime}" }
+
+    override fun defaultCsvFileName() = "starting-protocol-of-group-${group}.csv"
 }

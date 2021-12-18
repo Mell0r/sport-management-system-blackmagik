@@ -20,6 +20,11 @@ class GroupResultProtocol(
     val entries: List<IdWithFinalResult>
     // sorted by placeInGroup
 ) : CsvDumpable {
+
+    init {
+        require(entries == entries.sortedBy { it.result })
+    }
+
     companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
         override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
@@ -91,6 +96,8 @@ class GroupResultProtocol(
 
     }
 
+    override fun defaultCsvFileName() = "result-of-group-${group.label}.csv"
+
     private fun generatePlaces(): List<Int> {
         val places = (1..entries.size).toMutableList()
         for (i in 0 until entries.lastIndex) {
@@ -106,6 +113,10 @@ class LiveGroupResultProtocol(
     val entries: List<ParticipantWithLiveResult>,
     // sorted by placeInGroup
 ) {
+    init {
+        require(entries == entries.sortedBy { it.liveResult })
+    }
+
     fun toGroupResultProtocol() = GroupResultProtocol(
         group = group,
         entries = entries.map { it.toIdWithFinalResult() }

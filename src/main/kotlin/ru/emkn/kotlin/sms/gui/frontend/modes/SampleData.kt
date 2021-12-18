@@ -60,3 +60,4 @@ val sampleOngoingCompetition = OnGoingCompetitionProgramState(
         ParticipantCheckpointTime(q2, "1", Time(39))
     )
 }
+val sampleFinishedCompetitionState = sampleOngoingCompetition.nextProgramState()
