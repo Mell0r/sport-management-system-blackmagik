@@ -20,6 +20,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Finished(totalTime)
+        override val timeOrINF: Time
+            get() = totalTime
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -35,6 +37,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
         override fun hashCode(): Int {
             return totalTime.hashCode()
         }
+
+        override fun toString() = "Финишировал за $totalTime"
     }
 
     /**
@@ -56,6 +60,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override val timeOrINF: Time
+            get() = lastCheckpointTime
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -74,6 +80,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             result = 31 * result + lastCheckpointTime.hashCode()
             return result
         }
+
+        override fun toString() = "Прошел $completedCheckpoints к.п, последний пройдён в $lastCheckpointTime"
     }
 
     /**
@@ -89,6 +97,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             }
 
         override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override val timeOrINF: Time
+            get() = Time(Int.MAX_VALUE)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -99,7 +109,10 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
         override fun hashCode(): Int {
             return javaClass.hashCode()
         }
+
+        override fun toString() = "Снят"
     }
 
     abstract fun toFinalParticipantResult(): FinalParticipantResult
+    abstract val timeOrINF: Time
 }

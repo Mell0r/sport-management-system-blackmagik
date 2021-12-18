@@ -7,6 +7,6 @@ class TeamResultsProtocolView : CompetitionModelListener  {
     var protocol: TeamResultsProtocol = TeamResultsProtocol(listOf())
 
     override fun modelChanged(timestamps: List<ParticipantCheckpointTime>) {
-        TODO()
+        //TODO()
     }
 }
