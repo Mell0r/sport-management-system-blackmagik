@@ -31,6 +31,7 @@ class CompetitionModel(
 
     fun addListener(listener: CompetitionModelListener) {
         listeners.add(listener)
+        listener.modelChanged(timestamps) // initial change
     }
 
     private fun notifyAllListeners() {
