@@ -24,7 +24,7 @@ import java.io.File
 
 @Composable
 fun OnGoingCompetition(programState: MutableState<ProgramState>) {
-    val state = programState.value as OnGoingCompetitionProgramState
+    val state = programState.value as? OnGoingCompetitionProgramState ?: return
     Column {
         DisplayResults(state)
 

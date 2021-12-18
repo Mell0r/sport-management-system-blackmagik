@@ -21,7 +21,7 @@ fun gui() {
     application {
         Logger.debug { "Program started." }
         val programState: MutableState<ProgramState> =
-            remember { mutableStateOf(sampleOngoingCompetition) }
+            remember { mutableStateOf(ConfiguringCompetitionProgramState()) }
         when (programState.value) {
             is ConfiguringCompetitionProgramState ->
                 Dialog(
