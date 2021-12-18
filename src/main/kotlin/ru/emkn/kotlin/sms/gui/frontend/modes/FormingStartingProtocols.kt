@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
 import ru.emkn.kotlin.sms.gui.frontend.FoldingList
+import ru.emkn.kotlin.sms.gui.frontend.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 
@@ -36,14 +37,17 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
             )
         },
         applications,
-        { applicationBuilder -> DisplayApplication(applicationBuilder) },
+        { applicationBuilder -> DisplayApplication(state, applicationBuilder) },
         { ApplicationBuilder() },
         majorListsFontSize
     )
 }
 
 @Composable
-fun DisplayApplication(applicationBuilder: ApplicationBuilder) {
+fun DisplayApplication(
+    state: FormingStartingProtocolsProgramState,
+    applicationBuilder: ApplicationBuilder
+) {
     Card(backgroundColor = Color.LightGray) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(modifier = Modifier.padding(10.dp)) {
@@ -60,13 +64,13 @@ fun DisplayApplication(applicationBuilder: ApplicationBuilder) {
                 {
                     Text(
                         "Участники",
-                        modifier = Modifier.width(200.dp),
+                        modifier = Modifier.width(250.dp),
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp
                     )
                 },
                 applicationBuilder.applicants,
-                { applicationBuilder -> ShowApplicantBuilder(applicationBuilder) },
+                { applicationBuilder -> ShowApplicantBuilder(state, applicationBuilder) },
                 { ApplicantBuilder() }
             )
         }
@@ -74,7 +78,12 @@ fun DisplayApplication(applicationBuilder: ApplicationBuilder) {
 }
 
 @Composable
-fun ShowApplicantBuilder(applicantBuilder: ApplicantBuilder) {
+fun ShowApplicantBuilder(
+    state: FormingStartingProtocolsProgramState,
+    applicantBuilder: ApplicantBuilder
+) {
+    val groups = state.competition.groups.map { it.label }.toMutableStateList()
+
     @Composable
     fun BindableTextField(
         name: String,
@@ -88,7 +97,20 @@ fun ShowApplicantBuilder(applicantBuilder: ApplicantBuilder) {
             label = { Text(name) }
         )
     }
-    BindableTextField("Фамилия", applicantBuilder.lastName, 100f)
-    BindableTextField("Имя", applicantBuilder.name, 100f)
-    BindableTextField("Год рождения", applicantBuilder.birthYear, 100f)
+
+    Column {
+        Row {
+            BindableTextField("Фамилия", applicantBuilder.lastName, 100f)
+            BindableTextField("Имя", applicantBuilder.name, 100f)
+            BindableTextField("Год рождения", applicantBuilder.birthYear, 150f)
+            LabeledDropdownMenu(
+                name = "Группа",
+                suggestions = groups,
+                selectedText = applicantBuilder.supposedGroupLabel,
+                width = 100.dp,
+            )
+        }
+        if (applicantBuilder.birthYear.value.toIntOrNull() == null)
+            Text(text = "Год рождения должен быть числом!", color = Color.Red)
+    }
 }
