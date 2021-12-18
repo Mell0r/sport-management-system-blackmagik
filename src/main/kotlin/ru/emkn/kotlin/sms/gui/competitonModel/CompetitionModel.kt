@@ -51,10 +51,10 @@ class CompetitionModel(
         }
 
         fun addTimestampsFromProtocolsByParticipant(protocols: List<ParticipantTimestampsProtocol>) {
-            timestamps.addAll(
-                protocols.flatMap { (participantID, checkpointAndTimePairs) ->
+            val timestampsToAdd = protocols
+                .flatMap { (participantID, checkpointAndTimePairs) ->
                     val participant = state.participantsList.getParticipantById(participantID)
-                    requireNotNull(participant)
+                        ?: return
                     checkpointAndTimePairs.map { checkpointAndTime ->
                         ParticipantCheckpointTime(
                             participant = participant,
@@ -63,16 +63,16 @@ class CompetitionModel(
                         )
                     }
                 }
-            )
+            timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }
 
         fun addTimestampsFromProtocolsByCheckpoint(protocols: List<CheckpointTimestampsProtocol>) {
-            timestamps.addAll(
-                protocols.flatMap { (checkpoint, participantIDAndTimePairs) ->
+            val timestampsToAdd = protocols
+                .flatMap { (checkpoint, participantIDAndTimePairs) ->
                     participantIDAndTimePairs.map { (participantID, time) ->
                         val participant = state.participantsList.getParticipantById(participantID)
-                        requireNotNull(participant)
+                            ?: return
                         ParticipantCheckpointTime(
                             participant = participant,
                             checkpoint = checkpoint,
@@ -80,7 +80,7 @@ class CompetitionModel(
                         )
                     }
                 }
-            )
+            timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }
 
