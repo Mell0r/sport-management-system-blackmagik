@@ -14,36 +14,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
+import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
 import ru.emkn.kotlin.sms.gui.frontend.FoldingList
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 
-class ApplicationBuilder(
-    var team: String = "",
-    val applicants: SnapshotStateList<ApplicantBuilder> = mutableStateListOf()
-)
-
-class ApplicantBuilder(
-    val supposedGroupLabel: MutableState<String> = mutableStateOf(""),
-    val lastName: MutableState<String> = mutableStateOf(""),
-    val name: MutableState<String> = mutableStateOf(""),
-    val birthYear: MutableState<String> = mutableStateOf(""),
-    val sportsCategory: MutableState<String> = mutableStateOf(""),
-)
-
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
-    val state = programState.value as FormingStartingProtocolsProgramState
+    val state = programState.value as? FormingStartingProtocolsProgramState ?: return
     val applications = remember { mutableStateListOf<ApplicationBuilder>() }
 
     val majorListsFontSize = 25.sp
     FoldingList(
         {
             Text(
-                "Маршруты",
+                text = "Заявки",
                 modifier = Modifier.width(150.dp),
                 textAlign = TextAlign.Center,
-                fontSize = majorListsFontSize
+                fontSize = majorListsFontSize,
             )
         },
         applications,
