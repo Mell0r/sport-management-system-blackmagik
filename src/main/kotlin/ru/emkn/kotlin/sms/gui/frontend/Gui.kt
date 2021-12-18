@@ -25,8 +25,7 @@ fun launchGUI(
         val programState: MutableState<ProgramState> =
             remember { mutableStateOf(initialProgramState) }
         when (programState.value) {
-            is ConfiguringCompetitionProgramState ->
-                Dialog(
+            is ConfiguringCompetitionProgramState -> Dialog(
                     title = "Настройка соревнования",
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
                     onCloseRequest = ::exitApplication,
@@ -37,16 +36,22 @@ fun launchGUI(
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
                     content = { FormingStartingProtocols(programState) }
                 )
-            is OnGoingCompetitionProgramState ->
-                Dialog(onCloseRequest = ::exitApplication,
-                    state = DialogState(size = DpSize(800.dp, 800.dp)),
-                    content = { OnGoingCompetition(programState) })
-            is FinishedCompetitionProgramState ->
-                Dialog(onCloseRequest = ::exitApplication,
-                    content = { FinishedCompetition(programState) })
+            is FormingStartingProtocolsProgramState -> Dialog(
+                onCloseRequest = ::exitApplication,
+                content = { FormingStartingProtocols(programState) },
+            )
+            is OnGoingCompetitionProgramState -> Dialog(
+                onCloseRequest = ::exitApplication,
+                state = DialogState(size = DpSize(800.dp, 800.dp)),
+                content = { OnGoingCompetition(programState) },
+            )
+            is FinishedCompetitionProgramState -> Dialog(
+                title = "Соревнование завершено",
+                onCloseRequest = ::exitApplication,
+                state = DialogState(size = DpSize(600.dp, 200.dp)),
+                content = { FinishedCompetition(programState) },
+            )
         }
-
-        //Logger.debug { "Program successfully finished." }
     }
 }
 

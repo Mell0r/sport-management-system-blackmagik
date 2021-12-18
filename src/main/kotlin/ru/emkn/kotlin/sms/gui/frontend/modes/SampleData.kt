@@ -66,3 +66,5 @@ val sampleFormingStartingProtocolProgramState =
     FormingStartingProtocolsProgramState(
         sampleCompetition
     )
+
+val sampleFinishedCompetitionState = sampleOngoingCompetition.nextProgramState()

@@ -5,7 +5,6 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.GroupResultProtocol
 import ru.emkn.kotlin.sms.RouteProtocolType
 import ru.emkn.kotlin.sms.StartingProtocol
-import ru.emkn.kotlin.sms.io.getFileNameOfGroupResultProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
@@ -64,7 +63,7 @@ class ResultCommand(
         fun saveGroupResultProtocols(protocols: List<GroupResultProtocol>) {
             protocols.forEach { protocol ->
                 val content = protocol.dumpToCsv()
-                val fileName = getFileNameOfGroupResultProtocol(protocol)
+                val fileName = protocol.defaultCsvFileName()
                 safeWriteContentToFile(content, outputDirectory, fileName)
             }
         }
