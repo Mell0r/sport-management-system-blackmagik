@@ -12,11 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
+import ru.emkn.kotlin.sms.Application
 import ru.emkn.kotlin.sms.getStartConfigurationByApplications
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
@@ -24,11 +24,14 @@ import ru.emkn.kotlin.sms.gui.frontend.FoldingList
 import ru.emkn.kotlin.sms.gui.frontend.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.io.ReadFailException
+import ru.emkn.kotlin.sms.io.WrongFormatException
+import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
     val state = programState.value as? FormingStartingProtocolsProgramState ?: return
-    val applications = remember { mutableStateListOf<ApplicationBuilder>() }
+    val applicationBuilders = remember { mutableStateListOf<ApplicationBuilder>() }
 
     val majorListsFontSize = 25.sp
     Column {
@@ -41,44 +44,93 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
                     fontSize = majorListsFontSize,
                 )
             },
-            applications,
+            applicationBuilders,
             { applicationBuilder -> DisplayApplication(state, applicationBuilder) },
             { ApplicationBuilder() },
             majorListsFontSize
         )
+        val errorMessage = remember { mutableStateOf<String?>(null) }
 
-        Button(
-            onClick = {
-                // form applications
-                // if something went wrong, do not succeed to the next mode
-                val applicationBuilders = applications.toList()
-                val actualApplications = try {
-                    applicationBuilders.map { it.build() }
-                } catch (e: IllegalArgumentException) {
-                    Logger.error {"Could not form applications, following exception occurred:\n${e.message}"}
-                    return@Button
-                }
-                val (participantsList, startingProtocols) = try {
-                    getStartConfigurationByApplications(
-                        applications = actualApplications,
-                        competition = state.competition,
-                    )
-                } catch (e: IllegalArgumentException) {
-                    Logger.error {"Could not form starting configuration, following exception occurred:\n${e.message}"}
-                    return@Button
-                }
-                // form participant list and starting times
-                state.participantsListBuilder.replaceFromParticipantsList(participantsList)
-                state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
-                state.startingTimes.startingTimesMapping.forEach { participant, time ->
-                    Logger.trace {"$participant $time"}
-                }
-                programState.value = state.nextProgramState()
-            },
-            content = { Text(text = "Сохранить и далее") },
-        )
+        LoadApplicationsFromCSVButton(state, applicationBuilders, errorMessage)
+        SaveAndNextButton(programState, state, applicationBuilders)
+
+        val errorMessageFrozen = errorMessage.value
+        if (errorMessageFrozen != null) {
+            Text(errorMessageFrozen, fontSize = 15.sp, color = Color.Red)
+        }
     }
 
+}
+
+@Composable
+private fun LoadApplicationsFromCSVButton(
+    state: FormingStartingProtocolsProgramState,
+    applicationBuilders: SnapshotStateList<ApplicationBuilder>,
+    errorMessage: MutableState<String?>,
+) {
+    Button(
+        onClick = {
+            val files = openFileDialog(title = "Загрузить заявки из CSV", allowMultiSelection = true).toList()
+            val applications = try {
+                readAndParseAllFiles(
+                    files = files,
+                    competition = state.competition,
+                    parser = Application::readFromFileContentAndCompetition,
+                )
+            } catch (e: ReadFailException) {
+                errorMessage.value = e.message
+                return@Button
+            } catch (e: WrongFormatException) {
+                errorMessage.value = e.message
+                return@Button
+            }
+            // add all applications
+            applicationBuilders.addAll(
+                applications.map { application ->
+                    ApplicationBuilder.fromApplication(application)
+                }
+            )
+        },
+        content = { Text(text = "Загрузить заявки из CSV") },
+    )
+}
+
+@Composable
+private fun SaveAndNextButton(
+    programState: MutableState<ProgramState>,
+    state: FormingStartingProtocolsProgramState,
+    applications: SnapshotStateList<ApplicationBuilder>,
+) {
+    Button(
+        onClick = {
+            // form applications
+            // if something went wrong, do not succeed to the next mode
+            val applicationBuilders = applications.toList()
+            val actualApplications = try {
+                applicationBuilders.map { it.build() }
+            } catch (e: IllegalArgumentException) {
+                Logger.error {"Could not form applications, following exception occurred:\n${e.message}"}
+                return@Button
+            }
+            val (participantsList, startingProtocols) = try {
+                getStartConfigurationByApplications(
+                    applications = actualApplications,
+                    competition = state.competition,
+                )
+            } catch (e: IllegalArgumentException) {
+                Logger.error {"Could not form starting configuration, following exception occurred:\n${e.message}"}
+                return@Button
+            }
+            // form participant list and starting times
+            state.participantsListBuilder.replaceFromParticipantsList(participantsList)
+            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
+            state.startingTimes.startingTimesMapping.forEach { participant, time ->
+                Logger.trace {"$participant $time"}
+            }
+            programState.value = state.nextProgramState()
+        },
+        content = { Text(text = "Сохранить и далее") },
+    )
 }
 
 @Composable
