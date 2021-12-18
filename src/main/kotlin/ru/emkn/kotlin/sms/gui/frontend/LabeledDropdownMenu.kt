@@ -40,17 +40,16 @@ fun LabeledDropdownMenu(
             value = selectedText.value,
             onValueChange = { selectedText.value = it },
             readOnly = true,
-            modifier = Modifier.width(width).border(3.dp, MaterialTheme.colors.primary, RoundedCornerShape(6.dp)),
+            modifier = Modifier.width(width),
             label = { Text(name) },
             trailingIcon = {
-                Icon(icon,"Arrow to open and close menu", Modifier.clickable { expanded = !expanded })
+                Icon(icon,"Arrow to open and close menu", Modifier.clickable { expanded = true })
             }
         )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(width).padding(top = 5.dp)
-                .border(3.dp, MaterialTheme.colors.primary, RoundedCornerShape(3.dp))
         ) {
             suggestions.forEach { label ->
                 DropdownMenuItem(onClick = {

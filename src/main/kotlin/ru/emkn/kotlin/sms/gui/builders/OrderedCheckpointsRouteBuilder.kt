@@ -7,8 +7,8 @@ import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
 import ru.emkn.kotlin.sms.Route
 
 class OrderedCheckpointsRouteBuilder(
-    var name: String,
+    var name: MutableState<String>,
     val orderedCheckpoints: SnapshotStateList<MutableState<CheckpointLabelT>>
 ) {
-    fun toOrderedCheckpointsRoute() = OrderedCheckpointsRoute(name, orderedCheckpoints.map { it.value }.toMutableList())
+    fun toOrderedCheckpointsRoute() = OrderedCheckpointsRoute(name.value, orderedCheckpoints.map { it.value }.toMutableList())
 }

@@ -48,9 +48,8 @@ class CompetitionBuilder(
             routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
                 .map {
                     OrderedCheckpointsRouteBuilder(
-                        it.name,
-                        it.orderedCheckpoints.map { mutableStateOf(it) }
-                            .toMutableStateList()
+                        mutableStateOf(it.name),
+                        it.orderedCheckpoints.map { mutableStateOf(it) }.toMutableStateList()
                     )
                 }.toMutableStateList(),
         )

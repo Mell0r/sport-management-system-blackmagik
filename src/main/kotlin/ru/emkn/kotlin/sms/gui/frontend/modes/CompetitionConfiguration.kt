@@ -72,10 +72,9 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
 
     Column(modifier = Modifier.padding(10.dp)) {
         Row(modifier = Modifier.padding(10.dp)) {
-            var nameState by remember { mutableStateOf(route.name) }
             OutlinedTextField(
-                nameState,
-                onValueChange = { nameState = it; route.name = it },
+                route.name.value,
+                onValueChange = { route.name.value = it },
                 label = { Text("Название маршрута") }
             )
         }
@@ -99,16 +98,20 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
 @Composable
 fun DisplayGroup(
     group: AgeGroupBuilder,
-    availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>,
-    chosenRouteName: MutableState<String>
+    availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>
 ) {
-    val routes by remember { mutableStateOf(availableRoutes.map { it.name }.toMutableStateList()) }
-    group.route = mutableStateOf(availableRoutes.find { it.name == chosenRouteName.value }?.toOrderedCheckpointsRoute()
-        ?: OrderedCheckpointsRoute("", mutableListOf()))
+    @Composable
+    fun checkAge(a: String, b: String): Boolean {
+        return (a.toIntOrNull() ?: 0) > (b.toIntOrNull() ?: -1)
+    }
+
+    @Composable
+    fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
+        availableRoutes.map { it.name.value }.toMutableStateList()
+
+    group.route = mutableStateOf(availableRoutes.find { it.name.value == group.routeName.value }
+        ?.toOrderedCheckpointsRoute() ?: OrderedCheckpointsRoute("", mutableListOf()))
     Column {
-        Button(onClick = { availableRoutes.forEach {
-            println(it.name)
-        }}, content = { Text("Debug") })
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 group.label.value,
@@ -125,9 +128,9 @@ fun DisplayGroup(
 
             Spacer(Modifier.width(16.dp))
 
-            LabeledDropdownMenu("Маршрут", routes, chosenRouteName, 250.dp)
+            LabeledDropdownMenu("Маршрут", routesToStrings(availableRoutes), group.routeName, 250.dp)
         }
-        AnimatedVisibility(group.ageFrom.value > group.ageTo.value) {
+        AnimatedVisibility(checkAge(group.ageFrom.value, group.ageTo.value)) {
             Text("'Возраст от' не должен превышать 'Возраст до'!", color = Color.Red)
         }
     }
@@ -164,18 +167,17 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>, dialogSiz
                 fontSize = majorListsFontSize) },
             competitionBuilder.routes,
             { route -> DisplayRoute(route) },
-            { OrderedCheckpointsRouteBuilder("", mutableStateListOf()) },
+            { OrderedCheckpointsRouteBuilder(mutableStateOf(""), mutableStateListOf()) },
             majorListsFontSize
         )
 
-        val chosenRouteName = mutableStateOf("")
         FoldingList(
             { Text("Группы",
                 modifier = Modifier.width(150.dp),
                 textAlign = TextAlign.Center,
                 fontSize = majorListsFontSize) },
             competitionBuilder.groups,
-            { group -> DisplayGroup(group, competitionBuilder.routes, chosenRouteName) },
+            { group -> DisplayGroup(group, competitionBuilder.routes) },
             { AgeGroupBuilder() },
             majorListsFontSize
         )
