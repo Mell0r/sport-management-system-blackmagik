@@ -7,12 +7,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import ru.emkn.kotlin.sms.CheckpointLabelT
+import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
+import ru.emkn.kotlin.sms.Route
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
@@ -21,6 +24,8 @@ import ru.emkn.kotlin.sms.gui.frontend.FoldingList
 import ru.emkn.kotlin.sms.gui.frontend.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+
+val ages = (0..99).map { it.toString() }.toMutableStateList()
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -92,9 +97,18 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun DisplayGroup(group: AgeGroupBuilder) {
-    val ages = (0..99).map { it.toString() }.toMutableStateList()
+fun DisplayGroup(
+    group: AgeGroupBuilder,
+    availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>,
+    chosenRouteName: MutableState<String>
+) {
+    val routes by remember { mutableStateOf(availableRoutes.map { it.name }.toMutableStateList()) }
+    group.route = mutableStateOf(availableRoutes.find { it.name == chosenRouteName.value }?.toOrderedCheckpointsRoute()
+        ?: OrderedCheckpointsRoute("", mutableListOf()))
     Column {
+        Button(onClick = { availableRoutes.forEach {
+            println(it.name)
+        }}, content = { Text("Debug") })
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 group.label.value,
@@ -108,6 +122,10 @@ fun DisplayGroup(group: AgeGroupBuilder) {
             Spacer(Modifier.width(16.dp))
 
             LabeledDropdownMenu("Возраст до", ages, group.ageTo, 150.dp)
+
+            Spacer(Modifier.width(16.dp))
+
+            LabeledDropdownMenu("Маршрут", routes, chosenRouteName, 250.dp)
         }
         AnimatedVisibility(group.ageFrom.value > group.ageTo.value) {
             Text("'Возраст от' не должен превышать 'Возраст до'!", color = Color.Red)
@@ -150,13 +168,14 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>, dialogSiz
             majorListsFontSize
         )
 
+        val chosenRouteName = mutableStateOf("")
         FoldingList(
             { Text("Группы",
                 modifier = Modifier.width(150.dp),
                 textAlign = TextAlign.Center,
                 fontSize = majorListsFontSize) },
             competitionBuilder.groups,
-            { group -> DisplayGroup(group) },
+            { group -> DisplayGroup(group, competitionBuilder.routes, chosenRouteName) },
             { AgeGroupBuilder() },
             majorListsFontSize
         )
