@@ -91,6 +91,8 @@ class GroupResultProtocol(
 
     }
 
+    override fun defaultCsvFileName() = "result-of-group-${group.label}.csv"
+
     private fun generatePlaces(): List<Int> {
         val places = (1..entries.size).toMutableList()
         for (i in 0 until entries.lastIndex) {

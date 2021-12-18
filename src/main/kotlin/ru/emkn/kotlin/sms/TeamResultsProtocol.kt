@@ -22,4 +22,6 @@ class TeamResultsProtocol(scores: List<TeamToScore>) : CsvDumpable {
             scores.zip(places) { (team, score), place -> "$place,$team,$score" }
         return header + rest
     }
+
+    override fun defaultCsvFileName() = "results-teams.csv"
 }
