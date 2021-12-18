@@ -29,12 +29,24 @@ fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean
 }
 
 /**
- * Tries to write content of [dumpable] of to file at [filePath].
+ * Tries to write content of [dumpable] to file at [filePath].
  * Creates all necessary parent directories.
  * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
  *
  * @return true if it successfully wrote, false if some exception occurred
  */
-fun safeCSVDumpbaleToFile(dumpable: CsvDumpable, filePath: String) : Boolean {
+fun safeCSVDumpableToFile(dumpable: CsvDumpable, filePath: String) : Boolean {
     return safeWriteFileContentToFile(dumpable.dumpToCsv(), filePath)
+}
+
+/**
+ * Tries to write content of [dumpables] to files with corrsponding default filenames in [outputDirectory].
+ * Creates all necessary parent directories.
+ * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
+ */
+fun writeCSVDumpablesToDirectory(dumpables: List<CsvDumpable>, outputDirectory: File) {
+    dumpables.forEach { dumpable ->
+        val fileName = dumpable.defaultCsvFileName()
+        safeCSVDumpableToFile(dumpable, outputDirectory.absolutePath + fileName)
+    }
 }
