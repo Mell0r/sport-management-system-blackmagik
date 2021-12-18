@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.cli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.GroupResultProtocol
-import ru.emkn.kotlin.sms.io.getFileNameOfTeamResultsProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.generateTeamResultsProtocol
@@ -50,7 +49,7 @@ class ResultTeamsCommand(
 
         // TeamResultProtocol is CsvDumpable - thus, can trivially be saved as file
         val content = teamResultProtocol.dumpToCsv()
-        val fileName = getFileNameOfTeamResultsProtocol(teamResultProtocol)
+        val fileName = teamResultProtocol.defaultCsvFileName()
         safeWriteContentToFile(content, outputDirectory, fileName)
     }
 }

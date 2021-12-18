@@ -59,7 +59,6 @@ private fun DisplayCompetitionTextFields(competitionBuilder: CompetitionBuilder,
         AnimatedVisibility(isYearIncorrect) {
             Text("Год проведения соревнования должен быть числом", color = Color.Red)
         }
-
         BindableTextField("Дата", competitionBuilder.date)
     }
 }

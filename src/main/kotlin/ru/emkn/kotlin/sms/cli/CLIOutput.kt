@@ -10,25 +10,6 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 /**
- * getFileNameOf* functions
- *
- * They generate a somewhat pretty output file names
- * based on data to dump.
- */
-fun getFileNameOfParticipantsList(participantsList: ParticipantsList): String =
-    "participants-list.csv"
-
-fun getFileNameOfStartingProtocol(startingProtocol: StartingProtocol): String =
-    "starting-protocol-of-group-${startingProtocol.group}.csv"
-
-fun getFileNameOfGroupResultProtocol(groupResultProtocol: GroupResultProtocol): String =
-    "result-of-group-${groupResultProtocol.group.label}.csv"
-
-fun getFileNameOfTeamResultsProtocol(teamResultsProtocol: TeamResultsProtocol): String =
-    "results-teams.csv"
-
-
-/**
  * Following two functions implement a (yes/no) answer console interface.
  */
 

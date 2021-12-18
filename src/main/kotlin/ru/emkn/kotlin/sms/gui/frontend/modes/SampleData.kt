@@ -2,16 +2,17 @@ package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
+import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.time.Time
 
 val mainRoute = OrderedCheckpointsRoute("main", mutableListOf("1", "2", "3"))
-val m10 = AgeGroup("M10", mainRoute, 8, 10)
-val f10 = AgeGroup("F10", mainRoute, 8, 10)
+val m10 = AgeGroup("M10", mainRoute, 8, 48)
+val f10 = AgeGroup("F10", mainRoute, 8, 50)
 val sampleCompetition = Competition(
     "",
     "name",
-    0,
+    2021,
     "",
     listOf(m10, f10),
     listOf(mainRoute)
@@ -60,3 +61,10 @@ val sampleOngoingCompetition = OnGoingCompetitionProgramState(
         ParticipantCheckpointTime(q2, "1", Time(39))
     )
 }
+
+val sampleFormingStartingProtocolProgramState =
+    FormingStartingProtocolsProgramState(
+        sampleCompetition
+    )
+
+val sampleFinishedCompetitionState = sampleOngoingCompetition.nextProgramState()

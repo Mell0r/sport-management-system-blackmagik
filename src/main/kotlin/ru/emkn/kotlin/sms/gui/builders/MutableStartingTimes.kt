@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Participant
+import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
@@ -17,8 +18,18 @@ class MutableStartingTimes (
      *
      * @throws [IllegalArgumentException] if something went wrong.
      */
-    fun replaceFromStartingProtocols(startingProtocols: List<StartingProtocol>) : Boolean {
-        TODO()
+    fun replaceFromStartingProtocolsAndParticipantsList(
+        startingProtocols: List<StartingProtocol>,
+        participantsList: ParticipantsList,
+    ) {
+        startingTimesMapping.clear()
+        startingProtocols.forEach { startingProtocol ->
+            startingProtocol.entries.forEach { (participantID, startingTime) ->
+                val participant = participantsList.getParticipantById(participantID)
+                requireNotNull(participant)
+                startingTimesMapping[participant] = startingTime
+            }
+        }
     }
 
     /**

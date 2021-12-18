@@ -91,8 +91,8 @@ fun <T> readAndParseFile(
     file: File,
     competition: Competition,
     parser: (FileContent, Competition) -> T,
-    strategyOnReadFail: (File) -> Nothing,
-    strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing,
+    strategyOnReadFail: (File) -> Nothing = ::throwReadFailOnFile,
+    strategyOnWrongFormat: (File, IllegalArgumentException) -> Nothing = ::throwWrongFormatOnFile,
 ): T {
     val content = readFileContentOrNull(file) ?: strategyOnReadFail(file)
     return try {
