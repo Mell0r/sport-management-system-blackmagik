@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.gui.frontend.openFileDialog
 import ru.emkn.kotlin.sms.gui.frontend.pickFolderDialog
@@ -19,8 +21,15 @@ fun FinishedCompetition(programState: MutableState<ProgramState>) {
     val state = programState.value as? FinishedCompetitionProgramState ?: return
     Column {
         val errorMessage = remember { mutableStateOf<String?>(null) }
+
         SaveGroupResultProtocolsToCSVButton(state, errorMessage)
-        //SaveTeamResultProtocolToCSVButton(state, errorMessage)
+
+        SaveTeamResultProtocolToCSVButton(state, errorMessage)
+
+        val errorMessageFrozen = errorMessage.value
+        if (errorMessageFrozen != null) {
+            Text(errorMessageFrozen, fontSize = 15.sp, color = Color.Red)
+        }
     }
 }
 
@@ -41,6 +50,31 @@ private fun SaveGroupResultProtocolsToCSVButton(
             errorMessage.value = null
         }
     ) {
-        Text("Сохранить протокoлы резльтатов по группам в CSV")
+        Text("Сохранить протокoлы результатов по группам в CSV")
+    }
+}
+
+@Composable
+private fun SaveTeamResultProtocolToCSVButton(
+    state: FinishedCompetitionProgramState,
+    errorMessage: MutableState<String?>,
+) {
+    Button(
+        onClick = {
+            val files = saveFileDialog(
+                title = "Выберите файл протокола результатов для команд",
+                allowMultiSelection = false,
+            )
+            if (files.size != 1) {
+                errorMessage.value = "Выберите ровно один файл!"
+                return@Button
+            }
+            val file = files.single()
+            Logger.debug {"Output file for team result protocol: \"${file.absolutePath}\"."}
+            state.writeTeamResultsProtocolToCSV(file)
+            errorMessage.value = null
+        }
+    ) {
+        Text("Сохранить протокoл результатов по командам в CSV")
     }
 }

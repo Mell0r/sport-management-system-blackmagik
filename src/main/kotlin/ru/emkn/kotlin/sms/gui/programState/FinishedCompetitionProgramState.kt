@@ -52,10 +52,10 @@ class FinishedCompetitionProgramState(
     /**
      * Returns true if it successfully wrote, false otherwise.
      */
-    fun writeTeamResultsProtocolToCSV(outputDirectory: File) : Boolean {
+    fun writeTeamResultsProtocolToCSV(outputFile: File) : Boolean {
         return safeCSVDumpableToFile(
             dumpable = teamResultsProtocol,
-            filePath = getDefaultCSVDumpablePathInDir(teamResultsProtocol, outputDirectory)
+            filePath = outputFile.absolutePath,
         )
     }
 }

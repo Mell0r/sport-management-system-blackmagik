@@ -41,7 +41,7 @@ fun gui() {
             is FinishedCompetitionProgramState -> Dialog(
                 title = "Соревнование завершено",
                 onCloseRequest = ::exitApplication,
-                state = DialogState(size = DpSize(400.dp, 400.dp)),
+                state = DialogState(size = DpSize(600.dp, 200.dp)),
                 content = { FinishedCompetition(programState) },
             )
         }
