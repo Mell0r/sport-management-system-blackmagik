@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.onFailure
@@ -16,10 +15,9 @@ import ru.emkn.kotlin.sms.ParticipantWithLiveResult
 import ru.emkn.kotlin.sms.gui.frontend.FieldComparableBySelector
 import ru.emkn.kotlin.sms.gui.frontend.ImmutableFoldingList
 import ru.emkn.kotlin.sms.gui.frontend.SortableTable
+import ru.emkn.kotlin.sms.gui.frontend.openFileDialog
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import java.awt.FileDialog
-import java.io.File
 
 
 @Composable
@@ -75,16 +73,6 @@ private fun LoadCheckpointsTimestampsButton(
             .onSuccess { errorMessage.value = null }
             .onFailure { errorMessage.value = it }
     }) { Text("Load checkpoint timestamps protocols") }
-}
-
-fun openFileDialog(
-    title: String,
-    allowMultiSelection: Boolean = true
-): Set<File> {
-    return FileDialog(ComposeWindow(), title, FileDialog.LOAD).apply {
-        isMultipleMode = allowMultiSelection
-        isVisible = true
-    }.files.toSet()
 }
 
 @Composable

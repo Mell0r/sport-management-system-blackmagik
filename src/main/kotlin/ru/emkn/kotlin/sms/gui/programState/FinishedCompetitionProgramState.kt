@@ -44,6 +44,8 @@ class FinishedCompetitionProgramState(
         )
 
     fun writeGroupResultProtocolsToCSV(outputDirectory: File) {
+        Logger.trace {"liveGroupResultProtocols: ${super.liveGroupResultProtocolsView.protocols}"}
+        Logger.trace {"groupResultProtocols: $groupResultProtocols"}
         writeCSVDumpablesToDirectory(groupResultProtocols, outputDirectory)
     }
 
