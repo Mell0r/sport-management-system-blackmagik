@@ -27,7 +27,8 @@ import ru.emkn.kotlin.sms.gui.programState.ProgramState
 
 @Composable
 fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
-    val competitionBuilder = (programState.value as ConfiguringCompetitionProgramState).competitionBuilder
+    val state = programState.value as? ConfiguringCompetitionProgramState ?: return
+    val competitionBuilder = state.competitionBuilder
     val dialogSize = DpSize(800.dp, 800.dp)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState(0))) {
@@ -40,7 +41,9 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>) {
             DisplayCompetitionTextFields(competitionBuilder, dialogSize.width / 2)
 
             Button(
-                onClick = { programState.value = programState.value.nextProgramState() },
+                onClick = {
+                    programState.value = programState.value.nextProgramState()
+                },
                 content = { Text("Сохранить и далее") },
                 modifier = Modifier.padding(dialogSize.width / 8).size(dialogSize.width / 4, dialogSize.height / 4)
             )

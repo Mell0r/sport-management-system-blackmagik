@@ -8,7 +8,7 @@ import ru.emkn.kotlin.sms.gui.programState.ProgramState
 
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
-    val state = programState.value as FormingStartingProtocolsProgramState
+    val state = programState.value as? FormingStartingProtocolsProgramState ?: return
     state.participantsListBuilder
     TextField("", onValueChange = {}, isError = true, )
 }
