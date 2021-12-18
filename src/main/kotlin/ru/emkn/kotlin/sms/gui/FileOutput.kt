@@ -39,14 +39,19 @@ fun safeCSVDumpableToFile(dumpable: CsvDumpable, filePath: String) : Boolean {
     return safeWriteFileContentToFile(dumpable.dumpToCsv(), filePath)
 }
 
+fun getDefaultCSVDumpablePathInDir(dumpable: CsvDumpable, outputDirectory: File) =
+    "${outputDirectory.absolutePath}/${dumpable.defaultCsvFileName()}"
+
 /**
- * Tries to write content of [dumpables] to files with corrsponding default filenames in [outputDirectory].
+ * Tries to write content of [dumpables] to files with corresponding default filenames in [outputDirectory].
  * Creates all necessary parent directories.
  * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
  */
 fun writeCSVDumpablesToDirectory(dumpables: List<CsvDumpable>, outputDirectory: File) {
     dumpables.forEach { dumpable ->
-        val fileName = dumpable.defaultCsvFileName()
-        safeCSVDumpableToFile(dumpable, outputDirectory.absolutePath + fileName)
+        safeCSVDumpableToFile(
+            dumpable = dumpable,
+            filePath = getDefaultCSVDumpablePathInDir(dumpable, outputDirectory),
+        )
     }
 }
