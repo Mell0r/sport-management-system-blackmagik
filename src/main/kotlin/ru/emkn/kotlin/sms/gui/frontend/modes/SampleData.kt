@@ -2,6 +2,7 @@ package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
+import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.time.Time
 
@@ -60,3 +61,8 @@ val sampleOngoingCompetition = OnGoingCompetitionProgramState(
         ParticipantCheckpointTime(q2, "1", Time(39))
     )
 }
+
+val sampleFormingStartingProtocolProgramState =
+    FormingStartingProtocolsProgramState(
+        sampleCompetition
+    )

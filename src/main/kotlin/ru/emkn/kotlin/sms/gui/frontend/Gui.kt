@@ -21,7 +21,7 @@ fun gui() {
     application {
         Logger.debug { "Program started." }
         val programState: MutableState<ProgramState> =
-            remember { mutableStateOf(sampleOngoingCompetition) }
+            remember { mutableStateOf(sampleFormingStartingProtocolProgramState) }
         when (programState.value) {
             is ConfiguringCompetitionProgramState ->
                 Dialog(
@@ -31,6 +31,7 @@ fun gui() {
                     content = { CompetitionConfiguration(programState) })
             is FormingStartingProtocolsProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
+                    state = DialogState(size = DpSize(800.dp, 800.dp)),
                     content = { FormingStartingProtocols(programState) })
             is OnGoingCompetitionProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
