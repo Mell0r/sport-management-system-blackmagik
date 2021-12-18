@@ -34,7 +34,7 @@ fun OnGoingCompetition(programState: MutableState<ProgramState>) {
 
         Button(
             onClick = {
-                programState.value = programState.value.nextProgramState()
+                programState.value = state.nextProgramState()
             },
             content = { Text("Сохранить и далее") },
         )

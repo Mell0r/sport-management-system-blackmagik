@@ -17,6 +17,11 @@ import java.io.File
 class ParticipantsListBuilder(
     val list: SnapshotStateList<Participant> = mutableStateListOf(),
 ) {
+    fun replaceFromParticipantsList(participantsList: ParticipantsList) {
+        list.clear()
+        list.addAll(participantsList.list)
+    }
+
     companion object {
         fun fromParticipantsList(participantsList: ParticipantsList) = ParticipantsListBuilder(
             list = participantsList.list.toMutableStateList(),

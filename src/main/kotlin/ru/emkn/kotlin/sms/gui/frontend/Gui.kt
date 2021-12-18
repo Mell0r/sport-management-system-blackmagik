@@ -17,17 +17,24 @@ fun getEmojiByUnicode(unicode: Int): String {
     return String(Character.toChars(unicode))
 }
 
-fun gui() {
+fun launchGUI(
+    initialProgramState: ProgramState = ConfiguringCompetitionProgramState(),
+) {
     application {
         Logger.debug { "Program started." }
         val programState: MutableState<ProgramState> =
-            remember { mutableStateOf(sampleFinishedCompetitionState) }
+            remember { mutableStateOf(initialProgramState) }
         when (programState.value) {
             is ConfiguringCompetitionProgramState -> Dialog(
                     title = "Настройка соревнования",
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
                     onCloseRequest = ::exitApplication,
-                    content = { CompetitionConfiguration(programState) },
+                    content = { CompetitionConfiguration(programState) })
+            is FormingStartingProtocolsProgramState -> Dialog(
+                    title = "Обработка заявок. Формирование стартовых протоколов",
+                    onCloseRequest = ::exitApplication,
+                    state = DialogState(size = DpSize(800.dp, 800.dp)),
+                    content = { FormingStartingProtocols(programState) }
                 )
             is FormingStartingProtocolsProgramState -> Dialog(
                 onCloseRequest = ::exitApplication,

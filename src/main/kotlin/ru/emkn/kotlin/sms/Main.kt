@@ -1,6 +1,6 @@
 package ru.emkn.kotlin.sms
 
-import ru.emkn.kotlin.sms.gui.frontend.gui
+import ru.emkn.kotlin.sms.gui.frontend.launchGUI
 
-fun main() = gui()
+fun main() = launchGUI()
 
