@@ -20,6 +20,11 @@ class GroupResultProtocol(
     val entries: List<IdWithFinalResult>
     // sorted by placeInGroup
 ) : CsvDumpable {
+
+    init {
+        require(entries == entries.sortedBy { it.result })
+    }
+
     companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
         override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
@@ -108,6 +113,10 @@ class LiveGroupResultProtocol(
     val entries: List<ParticipantWithLiveResult>,
     // sorted by placeInGroup
 ) {
+    init {
+        require(entries == entries.sortedBy { it.liveResult })
+    }
+
     fun toGroupResultProtocol() = GroupResultProtocol(
         group = group,
         entries = entries.map { it.toIdWithFinalResult() }
