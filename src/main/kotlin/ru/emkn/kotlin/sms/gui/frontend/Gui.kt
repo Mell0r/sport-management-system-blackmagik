@@ -9,7 +9,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.application
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.gui.frontend.modes.*
+import ru.emkn.kotlin.sms.gui.frontend.modes.CompetitionConfiguration
+import ru.emkn.kotlin.sms.gui.frontend.modes.FinishedCompetition
+import ru.emkn.kotlin.sms.gui.frontend.modes.FormingStartingProtocols
+import ru.emkn.kotlin.sms.gui.frontend.modes.OnGoingCompetition
 import ru.emkn.kotlin.sms.gui.programState.*
 
 
@@ -36,10 +39,6 @@ fun launchGUI(
                     state = DialogState(size = DpSize(800.dp, 800.dp)),
                     content = { FormingStartingProtocols(programState) }
                 )
-            is FormingStartingProtocolsProgramState -> Dialog(
-                onCloseRequest = ::exitApplication,
-                content = { FormingStartingProtocols(programState) },
-            )
             is OnGoingCompetitionProgramState -> Dialog(
                 onCloseRequest = ::exitApplication,
                 state = DialogState(size = DpSize(800.dp, 800.dp)),
