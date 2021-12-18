@@ -15,7 +15,7 @@ import java.io.File
 fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean {
     return try {
         val file = File(filePath)
-        file.mkdirs()
+        File(file.parent).mkdirs()
         file.createNewFile()
         file.writeText(content.joinToString("\n"))
         true
