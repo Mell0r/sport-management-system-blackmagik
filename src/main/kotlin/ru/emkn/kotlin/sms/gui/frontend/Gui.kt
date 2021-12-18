@@ -14,6 +14,7 @@ import ru.emkn.kotlin.sms.gui.frontend.modes.FinishedCompetition
 import ru.emkn.kotlin.sms.gui.frontend.modes.FormingStartingProtocols
 import ru.emkn.kotlin.sms.gui.frontend.modes.OnGoingCompetition
 import ru.emkn.kotlin.sms.gui.programState.*
+import javax.lang.model.element.Modifier
 
 
 fun getEmojiByUnicode(unicode: Int): String {
@@ -31,9 +32,9 @@ fun gui() {
             is ConfiguringCompetitionProgramState ->
                 Dialog(
                     title = "Настройка соревнования",
-                    state = DialogState(size = DpSize(800.dp, 800.dp)),
+                    state = DialogState(size = DpSize(1000.dp, 600.dp)),
                     onCloseRequest = ::exitApplication,
-                    content = { CompetitionConfiguration(programState) })
+                    content = { CompetitionConfiguration(programState, DpSize(1000.dp, 600.dp)) })
             is FormingStartingProtocolsProgramState ->
                 Dialog(onCloseRequest = ::exitApplication,
                     content = { FormingStartingProtocols(programState) })
