@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Application
+import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.getStartConfigurationByApplications
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
@@ -27,6 +29,7 @@ import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.ReadFailException
 import ru.emkn.kotlin.sms.io.WrongFormatException
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
+import ru.emkn.kotlin.sms.io.readAndParseFile
 
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
@@ -52,7 +55,8 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
         val errorMessage = remember { mutableStateOf<String?>(null) }
 
         LoadApplicationsFromCSVButton(state, applicationBuilders, errorMessage)
-        SaveAndNextButton(programState, state, applicationBuilders)
+        LoadReadyStartingConfigurationButton(programState, state, errorMessage)
+        SaveAndNextButton(programState, state, applicationBuilders, errorMessage)
 
         val errorMessageFrozen = errorMessage.value
         if (errorMessageFrozen != null) {
@@ -60,6 +64,72 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
         }
     }
 
+}
+
+@Composable
+private fun LoadReadyStartingConfigurationButton(
+    programState: MutableState<ProgramState>,
+    state: FormingStartingProtocolsProgramState,
+    errorMessage: MutableState<String?>,
+) {
+    Button(
+        onClick = {
+            Logger.debug {"User pressed load ready start configuration."}
+
+            val rawParticipantsListFile = openFileDialog(
+                title = "Выберите список участников (participants-list.csv)",
+                allowMultiSelection = false,
+            )
+            if (rawParticipantsListFile.size != 1) {
+                Logger.error {"User did not select exactly one participants list file."}
+                return@Button
+            }
+            val participantsListFile = rawParticipantsListFile.single()
+
+            val startingProtocolFiles = openFileDialog(
+                title = "Выберите файлы стартовых протоколов",
+                allowMultiSelection = true,
+            ).toList()
+
+            val participantsList = try {
+                readAndParseFile(
+                    file = participantsListFile,
+                    competition = state.competition,
+                    parser = ParticipantsList::readFromFileContentAndCompetition,
+                )
+            } catch (e: ReadFailException) {
+                Logger.error {"Could not read participants list. Following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
+                return@Button
+            } catch (e: WrongFormatException) {
+                Logger.error {"Participants list had wrong format. Following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
+                return@Button
+            }
+
+            val startingProtocols = try {
+                readAndParseAllFiles(
+                    files = startingProtocolFiles,
+                    competition = state.competition,
+                    parser = StartingProtocol::readFromFileContentAndCompetition,
+                )
+            } catch (e: ReadFailException) {
+                Logger.error {"Could not read some starting protocol. Following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
+                return@Button
+            } catch (e: WrongFormatException) {
+                Logger.error {"Some starting protocol had wrong format. Following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
+                return@Button
+            }
+
+            // successfully read participants list and starting protocols
+            state.participantsListBuilder.replaceFromParticipantsList(participantsList)
+            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
+            programState.value = state.nextProgramState()
+        },
+        content = { Text(text = "Загрузить готовые список учасников и стартовые протоколы из CSV и перейти далее.") },
+    )
 }
 
 @Composable
@@ -78,9 +148,11 @@ private fun LoadApplicationsFromCSVButton(
                     parser = Application::readFromFileContentAndCompetition,
                 )
             } catch (e: ReadFailException) {
+                Logger.error {"Could not read applications. Following exception occurred:\n${e.message}"}
                 errorMessage.value = e.message
                 return@Button
             } catch (e: WrongFormatException) {
+                Logger.error {"Some application had wrong format. Following exception occurred:\n${e.message}"}
                 errorMessage.value = e.message
                 return@Button
             }
@@ -100,6 +172,7 @@ private fun SaveAndNextButton(
     programState: MutableState<ProgramState>,
     state: FormingStartingProtocolsProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
+    errorMessage: MutableState<String?>,
 ) {
     Button(
         onClick = {
@@ -110,6 +183,7 @@ private fun SaveAndNextButton(
                 applicationBuilders.map { it.build() }
             } catch (e: IllegalArgumentException) {
                 Logger.error {"Could not form applications, following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
                 return@Button
             }
             val (participantsList, startingProtocols) = try {
@@ -119,14 +193,12 @@ private fun SaveAndNextButton(
                 )
             } catch (e: IllegalArgumentException) {
                 Logger.error {"Could not form starting configuration, following exception occurred:\n${e.message}"}
+                errorMessage.value = e.message
                 return@Button
             }
             // form participant list and starting times
             state.participantsListBuilder.replaceFromParticipantsList(participantsList)
             state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
-            state.startingTimes.startingTimesMapping.forEach { participant, time ->
-                Logger.trace {"$participant $time"}
-            }
             programState.value = state.nextProgramState()
         },
         content = { Text(text = "Сохранить и далее") },
