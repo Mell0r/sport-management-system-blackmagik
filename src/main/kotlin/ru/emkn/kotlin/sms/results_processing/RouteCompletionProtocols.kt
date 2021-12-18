@@ -1,21 +1,13 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.CheckpointLabelT
-import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.CreatableFromFileContentAndCompetition
-import ru.emkn.kotlin.sms.logErrorAndThrow
+import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.time.Time
 
 typealias FileContent = List<String>
 
-data class CheckpointLabelAndTime(
-    val checkpointLabel: CheckpointLabelT,
-    val time: Time
-)
-
 data class ParticipantTimestampsProtocol(
     val id: Int,
-    val checkpointTimes: List<CheckpointLabelAndTime>
+    val checkpointTimes: List<CheckpointAndTime>
 ) {
     companion object : CreatableFromFileContentAndCompetition<ParticipantTimestampsProtocol> {
         override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): ParticipantTimestampsProtocol {
@@ -33,7 +25,7 @@ data class ParticipantTimestampsProtocol(
 
                         val checkpointLabel = parts[0]
                         val time = Time.fromString(parts[1])
-                        CheckpointLabelAndTime(checkpointLabel, time)
+                        CheckpointAndTime(checkpointLabel, time)
                     }
             return ParticipantTimestampsProtocol(id, entries)
         }

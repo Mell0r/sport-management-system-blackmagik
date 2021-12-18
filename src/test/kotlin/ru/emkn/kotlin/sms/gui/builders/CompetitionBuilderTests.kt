@@ -3,6 +3,10 @@ package ru.emkn.kotlin.sms.gui.builders
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.*
 import kotlin.test.Test
+import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.TestDataSetCompetition1
+import ru.emkn.kotlin.sms.TestDataSetCompetition1WithoutAtLeastKRoutes
+import ru.emkn.kotlin.sms.competitionEquals
 import kotlin.test.assertTrue
 
 internal class CompetitionBuilderTests {

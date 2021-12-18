@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms
 
-import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,9 +10,9 @@ class RouteResultCalculationTest {
         val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("2", Time(7)),
-                CheckpointLabelAndTime("3", Time(9)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("2", Time(7)),
+                CheckpointAndTime("3", Time(9)),
             ), Time(1)
         )
         assertEquals(FinalParticipantResult.Finished(Time(8)), passTime)
@@ -24,9 +23,9 @@ class RouteResultCalculationTest {
         val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("2", Time(11)),
-                CheckpointLabelAndTime("3", Time(9)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("2", Time(11)),
+                CheckpointAndTime("3", Time(9)),
             ), Time(1)
         )
         assertEquals(FinalParticipantResult.Disqualified(), passTime)
@@ -37,9 +36,9 @@ class RouteResultCalculationTest {
         val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3"))
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("2", Time(11)),
-                CheckpointLabelAndTime("3", Time(9)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("2", Time(11)),
+                CheckpointAndTime("3", Time(9)),
             ), Time(100)
         )
         assertEquals(FinalParticipantResult.Disqualified(), passTime)
@@ -50,10 +49,10 @@ class RouteResultCalculationTest {
         val route = OrderedCheckpointsRoute("", mutableListOf("1", "2", "3", "1"))
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("2", Time(7)),
-                CheckpointLabelAndTime("3", Time(9)),
-                CheckpointLabelAndTime("1", Time(11)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("2", Time(7)),
+                CheckpointAndTime("3", Time(9)),
+                CheckpointAndTime("1", Time(11)),
             ), Time(1)
         )
         assertEquals(FinalParticipantResult.Finished(Time(10)), passTime)
@@ -64,8 +63,8 @@ class RouteResultCalculationTest {
         val route = AtLeastKCheckpointsRoute("", mutableSetOf("1", "2", "3", "4"), 2)
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("3", Time(7)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("3", Time(7)),
             ), Time(1)
         )
         assertEquals(FinalParticipantResult.Finished(Time(6)), passTime)
@@ -78,10 +77,10 @@ class RouteResultCalculationTest {
         val route = AtLeastKCheckpointsRoute("", mutableSetOf("1", "2", "3", "4"), 2)
         val passTime = route.calculateFinalResult(
             listOf(
-                CheckpointLabelAndTime("1", Time(5)),
-                CheckpointLabelAndTime("3", Time(7)),
-                CheckpointLabelAndTime("4", Time(8)),
-                CheckpointLabelAndTime("5", Time(11)),
+                CheckpointAndTime("1", Time(5)),
+                CheckpointAndTime("3", Time(7)),
+                CheckpointAndTime("4", Time(8)),
+                CheckpointAndTime("5", Time(11)),
             ), Time(1)
         )
         assertEquals(FinalParticipantResult.Finished(Time(6)), passTime)
