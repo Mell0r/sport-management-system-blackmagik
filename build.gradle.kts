@@ -20,6 +20,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>()
         kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.cli.ExperimentalCli"
         kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.ExperimentalStdlibApi"
         kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 
 dependencies {
