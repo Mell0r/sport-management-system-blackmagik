@@ -25,6 +25,8 @@ import ru.emkn.kotlin.sms.gui.builders.ParticipantsListBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
+import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
 import ru.emkn.kotlin.sms.io.*
 import java.io.File
 
@@ -59,11 +61,8 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
 
         LoadApplicationsFromCSVButton(state, applicationBuilders)
         LoadReadyStartingConfigurationButton(programState, state)
-        SaveAndNextButton(
-            programState,
-            state,
-            applicationBuilders,
-        )
+        SaveAndNextButton(programState, state, applicationBuilders)
+        SaveAndExportToCSVAndNextButton(programState, state, applicationBuilders)
 
         SuccessDialog(successDialogMessage)
         ErrorDialog(errorDialogMessage)
@@ -181,6 +180,7 @@ private fun saveAndNext(
     programState: MutableState<ProgramState>,
     state: FormingStartingProtocolsProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
+    exportToCSV: Boolean = false,
 ) {
     // form applications
     // if something went wrong, do not succeed to the next mode
@@ -212,6 +212,26 @@ private fun saveAndNext(
         startingProtocols,
         participantsList
     )
+
+    if (exportToCSV) {
+        Logger.debug {"Saving participants list and starting protocols to CSV."}
+
+        val participantsListFile = safeOpenSingleFileOrNull("Выберите файл для сохранения списка участников (participants-list.csv)")
+        if (participantsListFile == null) {
+            // No failure window is required because user probably just selected cancel
+            Logger.warn("Participants list was not selected. Aborting.")
+            return
+        }
+        val folder: File? = pickFolderDialog()
+        if (folder == null) {
+            Logger.warn("No folder was selected. Aborting")
+            return
+        }
+
+        safeCSVDumpableToFile(participantsList, participantsListFile.absolutePath)
+        writeCSVDumpablesToDirectory(startingProtocols, folder)
+    }
+
     programState.value = state.nextProgramState()
 }
 
@@ -222,8 +242,20 @@ private fun SaveAndNextButton(
     applications: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
-        onClick = { saveAndNext(programState, state, applications) },
+        onClick = { saveAndNext(programState, state, applications, false) },
         content = { Text(text = "Сохранить и далее") },
+    )
+}
+
+@Composable
+private fun SaveAndExportToCSVAndNextButton(
+    programState: MutableState<ProgramState>,
+    state: FormingStartingProtocolsProgramState,
+    applications: SnapshotStateList<ApplicationBuilder>,
+) {
+    Button(
+        onClick = { saveAndNext(programState, state, applications, true) },
+        content = { Text(text = "Сохранить, экспортировать в CSV и далее") },
     )
 }
 
