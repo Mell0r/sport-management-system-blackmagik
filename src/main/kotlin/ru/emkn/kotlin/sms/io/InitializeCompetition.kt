@@ -22,15 +22,12 @@ fun checkAndReadFileInFolder(
 
 fun initializeCompetition(configFolderPath: String): ResultOrMessage<Competition> {
     return runCatching {
-        _initializeCompetition(configFolderPath)
-    }.mapEither(
-        success = { it },
-        failure = ::catchIllegalArgumentExceptionToString,
-    )
+        throwingInitializeCompetition(configFolderPath)
+    }.mapError(::catchIllegalArgumentExceptionToString)
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun _initializeCompetition(configFolderPath: String): Competition {
+private fun throwingInitializeCompetition(configFolderPath: String): Competition {
     Logger.debug { "Start initializing competition" }
     require(!(!File(configFolderPath).exists() || !File(configFolderPath).isDirectory)) { "Config path is not correct!" }
 

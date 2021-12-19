@@ -9,8 +9,6 @@ import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.io.initializeCompetition
 
-const val INCORRECT_YEAR = -6666
-
 /**
  * aka "Mutable competition": a class which allows to
  * configure a desired competition,
@@ -24,6 +22,10 @@ class CompetitionBuilder(
     val groups: SnapshotStateList<AgeGroupBuilder> = mutableStateListOf(),
     val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
 ) {
+
+    companion object {
+        const val INCORRECT_YEAR = -6666
+    }
 
     /**
      * Replaces all the data in the builder with data from [competition].
@@ -67,10 +69,9 @@ class CompetitionBuilder(
      * @throws [IllegalArgumentException] if something went wrong.
      */
     fun replaceFromFilesInFolder(configFolderPath: String): UnitOrMessage {
-        return initializeCompetition(configFolderPath).mapEither(
-            success = { competition -> replaceFromCompetition(competition) },
-            failure = { it }
-        )
+        return initializeCompetition(configFolderPath).map { competition ->
+            replaceFromCompetition(competition)
+        }
     }
 
     /**
