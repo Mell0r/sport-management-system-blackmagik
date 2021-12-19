@@ -19,7 +19,7 @@ val greenCheckMark = getEmojiByUnicode(9989)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SuccessDialog() {
+fun SavingSuccessDialog() {
     val width = 300.dp
     val height = 100.dp
     val visible = remember { mutableStateOf(true) }
