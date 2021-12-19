@@ -161,8 +161,7 @@ fun CompetitionConfiguration(
     programState: MutableState<ProgramState>,
     dialogSize: DpSize
 ) {
-    val state =
-        programState.value as? ConfiguringCompetitionProgramState ?: return
+    val state = programState.value as? ConfiguringCompetitionProgramState ?: return
     val competitionBuilder = state.competitionBuilder
 
     Column(
@@ -177,14 +176,14 @@ fun CompetitionConfiguration(
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             DisplayCompetitionTextFields(
-                competitionBuilder.value,
+                competitionBuilder,
                 dialogSize.width / 2
             )
             Column {
                 Button(
                     onClick = {
                         programState.value =
-                            programState.value.nextProgramState()
+                            state.nextProgramState()
                     },
                     content = { Text("Сохранить и далее") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
@@ -193,7 +192,7 @@ fun CompetitionConfiguration(
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
                 LoadCompetitionButton(competitionBuilder, dialogSize)
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                ExportCompetitionButton(dialogSize)
+                ExportCompetitionButton(competitionBuilder, dialogSize)
             }
         }
 
@@ -207,7 +206,7 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.value.routes,
+            competitionBuilder.routes,
             { DisplayRoute(it) },
             {
                 OrderedCheckpointsRouteBuilder(
@@ -227,8 +226,8 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.value.groups,
-            { group -> DisplayGroup(group, competitionBuilder.value.routes) },
+            competitionBuilder.groups,
+            { group -> DisplayGroup(group, competitionBuilder.routes) },
             ::AgeGroupBuilder,
             majorListsFontSize
         )
@@ -236,9 +235,14 @@ fun CompetitionConfiguration(
 }
 
 @Composable
-private fun ExportCompetitionButton(dialogSize: DpSize) {
+private fun ExportCompetitionButton(
+    competitionBuilder: CompetitionBuilder,
+    dialogSize: DpSize,
+) {
     Button(
-        onClick = { Logger.info("Sorry, not implemented") },
+        onClick = {
+            TODO()
+        },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
     ) { Text("Сохранить соревнование") }
@@ -246,7 +250,7 @@ private fun ExportCompetitionButton(dialogSize: DpSize) {
 
 @Composable
 private fun LoadCompetitionButton(
-    competitionBuilder: MutableState<CompetitionBuilder>,
+    competitionBuilder: CompetitionBuilder,
     dialogSize: DpSize
 ) {
     Button(
@@ -257,8 +261,7 @@ private fun LoadCompetitionButton(
                 return@onClick
             }
             try {
-                competitionBuilder.value =
-                    CompetitionBuilder.fromFilesInFolder(file.absolutePath)
+                competitionBuilder.replaceFromFilesInFolder(file.absolutePath)
             } catch (e: Exception) {
                 Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
             }

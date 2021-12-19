@@ -15,9 +15,9 @@ import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
  * All other properties are fixed and empty.
  */
 class ConfiguringCompetitionProgramState : ProgramState() {
-    val competitionBuilder = mutableStateOf(CompetitionBuilder())
+    val competitionBuilder = CompetitionBuilder()
     override val competition: Competition
-        get() = competitionBuilder.value.build()
+        get() = competitionBuilder.build()
 
     // following properties are always empty in this program mode
     override val participantsList = ParticipantsList(listOf())

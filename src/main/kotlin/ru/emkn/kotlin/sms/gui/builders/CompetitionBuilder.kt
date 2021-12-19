@@ -25,17 +25,19 @@ class CompetitionBuilder(
     val groups: SnapshotStateList<AgeGroupBuilder> = mutableStateListOf(),
     val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
 ) {
-    companion object {
-        /**
-         * Creates a new [CompetitionBuilder] with data from Competition.
-         * Useful for loading competition and then modifying it in GUI.
-         */
-        fun fromCompetition(competition: Competition) = CompetitionBuilder(
-            discipline = mutableStateOf(competition.discipline),
-            name = mutableStateOf(competition.name),
-            year = mutableStateOf(competition.year),
-            date = mutableStateOf(competition.date),
-            groups = competition.groups.filterIsInstance<AgeGroup>()
+
+    /**
+     * Replaces all the data in the builder with data from [competition].
+     * Useful for loading competition and then modifying it in GUI.
+     */
+    fun replaceFromCompetition(competition: Competition) {
+        discipline.value = competition.discipline
+        name.value = competition.name
+        year.value = competition.year
+        date.value = competition.date
+        groups.clear()
+        groups.addAll(
+            competition.groups.filterIsInstance<AgeGroup>()
                 .map {
                     AgeGroupBuilder(
                         mutableStateOf(it.label),
@@ -44,7 +46,10 @@ class CompetitionBuilder(
                         mutableStateOf(it.ageTo.toString())
                     )
                 }.toMutableStateList(),
-            routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
+        )
+        routes.clear()
+        routes.addAll(
+            competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
                 .map { route ->
                     OrderedCheckpointsRouteBuilder(
                         mutableStateOf(route.name),
@@ -53,18 +58,18 @@ class CompetitionBuilder(
                     )
                 }.toMutableStateList(),
         )
+    }
 
-        /**
-         * Creates a new [CompetitionBuilder] with data
-         * from files in directory [configFolderPath]
-         * in format consistent with [initializeCompetition].
-         *
-         * @throws [IllegalArgumentException] if something went wrong.
-         */
-        fun fromFilesInFolder(configFolderPath: String): CompetitionBuilder {
-            val competition = initializeCompetition(configFolderPath)
-            return fromCompetition(competition)
-        }
+    /**
+     * Replaces all the data in the builder with data
+     * from files in directory [configFolderPath]
+     * in format consistent with [initializeCompetition].
+     *
+     * @throws [IllegalArgumentException] if something went wrong.
+     */
+    fun replaceFromFilesInFolder(configFolderPath: String) {
+        val competition = initializeCompetition(configFolderPath)
+        return replaceFromCompetition(competition)
     }
 
     /**

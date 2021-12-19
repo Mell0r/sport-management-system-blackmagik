@@ -15,7 +15,8 @@ internal class CompetitionBuilderTests {
     @Test
     fun `CompetitionBuilder dot build() tests`() {
         fun singleTest(competition: Competition) {
-            val builder = CompetitionBuilder.fromCompetition(competition)
+            val builder = CompetitionBuilder()
+            builder.replaceFromCompetition(competition)
             val builtCompetition = builder.build()
             Logger.debug { "competition = ${competitionToString(competition)}" }
             Logger.debug { "buildCompetition = ${competitionToString(builtCompetition)}" }
