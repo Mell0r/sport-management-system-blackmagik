@@ -27,7 +27,7 @@ fun SuccessDialog() {
         AlertDialog(
             onDismissRequest = { visible.value = false },
             title = { Text(greenCheckMark) },
-            text = { Text("Всё успошно сохранено!") },
+            text = { Text("Всё успешно сохранено!") },
             modifier = Modifier.size(width, height).border(3.dp, Color.Green, shape = RoundedCornerShape(3.dp)),
             buttons = {})
     }
