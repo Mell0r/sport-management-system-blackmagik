@@ -23,67 +23,56 @@ import ru.emkn.kotlin.sms.gui.programState.ProgramState
 fun FinishedCompetition(programState: MutableState<ProgramState>) {
     val state = programState.value as? FinishedCompetitionProgramState ?: return
     Column {
-        val errorMessage = remember { mutableStateOf<String?>(null) }
-
-        SaveGroupResultProtocolsToCSVButton(state, errorMessage)
+        ExportGroupResultProtocolsToCSVButton(state)
         Spacer(Modifier.width(16.dp))
-        SaveTeamResultProtocolToCSVButton(state, errorMessage)
-
-        val errorMessageFrozen = errorMessage.value
-        if (errorMessageFrozen != null) {
-            Text(errorMessageFrozen, fontSize = 15.sp, color = Color.Red)
-        }
+        ExportTeamResultProtocolToCSVButton(state)
     }
 }
 
-@Composable
-private fun SaveGroupResultProtocolsToCSVButton(
+private fun exportGroupResultProtocolsToCSV(
     state: FinishedCompetitionProgramState,
-    errorMessage: MutableState<String?>,
 ) {
-    Button(
-        onClick = onClick@{
-            val outputDirectory = pickFolderDialog()
-            if (outputDirectory == null) {
-                errorMessage.value = "Выберите ровно одну папку!"
-                return@onClick
-            }
-            Logger.debug {
-                "Output folder for group result protocols: " +
-                        "\"${outputDirectory.absolutePath}\"."
-            }
-            state.writeGroupResultProtocolsToCSV(outputDirectory)
-            errorMessage.value = null
-        }
-    ) {
+    val outputDirectory = pickFolderDialog() ?: return
+    Logger.debug {
+        "Output folder for group result protocols: " +
+                "\"${outputDirectory.absolutePath}\"."
+    }
+    state.writeGroupResultProtocolsToCSV(outputDirectory)
+}
+
+@Composable
+private fun ExportGroupResultProtocolsToCSVButton(
+    state: FinishedCompetitionProgramState,
+) {
+    Button(onClick = { exportGroupResultProtocolsToCSV(state) }) {
         Text("Сохранить протокoлы результатов по группам в CSV")
     }
 }
 
-@Composable
-private fun SaveTeamResultProtocolToCSVButton(
+private fun exportTeamResultsProtocolToCSV(
     state: FinishedCompetitionProgramState,
-    errorMessage: MutableState<String?>,
 ) {
-    Button(
-        onClick = onClick@{
-            val files = saveFileDialog(
-                title = "Выберите файл протокола результатов для команд",
-                allowMultiSelection = false,
-            )
-            if (files.size != 1) {
-                errorMessage.value = "Выберите ровно один файл!"
-                return@onClick
-            }
-            val file = files.single()
-            Logger.debug {
-                "Output file for team result protocol: " +
-                        "\"${file.absolutePath}\"."
-            }
-            state.writeTeamResultsProtocolToCSV(file)
-            errorMessage.value = null
-        }
-    ) {
+    val files = saveFileDialog(
+        title = "Выберите файл протокола результатов для команд",
+        allowMultiSelection = false,
+    )
+    if (files.size != 1) {
+        return
+    }
+    val file = files.single()
+
+    Logger.debug {
+        "Output file for team result protocol: " +
+                "\"${file.absolutePath}\"."
+    }
+    state.writeTeamResultsProtocolToCSV(file)
+}
+
+@Composable
+private fun ExportTeamResultProtocolToCSVButton(
+    state: FinishedCompetitionProgramState,
+) {
+    Button(onClick = { exportTeamResultsProtocolToCSV(state) }) {
         Text("Сохранить протокoл результатов по командам в CSV")
     }
 }
