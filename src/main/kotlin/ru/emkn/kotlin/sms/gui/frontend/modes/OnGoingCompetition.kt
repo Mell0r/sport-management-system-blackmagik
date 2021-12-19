@@ -12,68 +12,77 @@ import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import ru.emkn.kotlin.sms.ParticipantWithLiveResult
-import ru.emkn.kotlin.sms.gui.frontend.elements.FieldComparableBySelector
-import ru.emkn.kotlin.sms.gui.frontend.elements.ImmutableFoldingList
-import ru.emkn.kotlin.sms.gui.frontend.elements.SortableTable
-import ru.emkn.kotlin.sms.gui.frontend.elements.openFileDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 
+private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
+private val successDialogMessage: MutableState<String?> = mutableStateOf(null)
 
 @Composable
 fun OnGoingCompetition(programState: MutableState<ProgramState>) {
     val state = programState.value as? OnGoingCompetitionProgramState ?: return
     Column {
         DisplayResults(state)
-
-        val errorMessage = remember { mutableStateOf<String?>(null) }
-
-        LoadParticipantsTimestampsButton(state, errorMessage)
-
-        LoadCheckpointsTimestampsButton(state, errorMessage)
-
+        LoadParticipantsTimestampsButton(state)
+        LoadCheckpointsTimestampsButton(state)
         Button(
             onClick = {
                 programState.value = state.nextProgramState()
             },
             content = { Text("Сохранить и далее") },
         )
-        val errorMessageFrozen = errorMessage.value
-        if (errorMessageFrozen != null) {
-            Text(errorMessageFrozen, fontSize = 15.sp, color = Color.Red)
-        }
     }
+    SuccessDialog(successDialogMessage)
+    ErrorDialog(errorDialogMessage)
+}
+
+private fun loadParticipantsTimestamps(
+    state: OnGoingCompetitionProgramState,
+) {
+    val files = openFileDialog("Загрузить протоколы прохождения участников") .map { it.path }
+    state.competitionModelController
+        .addTimestampsFromProtocolFilesByParticipant(files)
+        .onSuccess {
+            successDialogMessage.value = "Протоколы прохождения дистанции были успешно загружены!"
+        }
+        .onFailure { message ->
+            errorDialogMessage.value = "Протоколы прохождения дистанции не были загружены! Произошла следующая ошибка.\n" +
+                    message
+        }
 }
 
 @Composable
 private fun LoadParticipantsTimestampsButton(
     state: OnGoingCompetitionProgramState,
-    errorMessage: MutableState<String?>
 ) {
-    Button(onClick = {
-        val files = openFileDialog("Загрузить протоколы прохождения участников")
-            .map { it.path }
-        state.competitionModelController
-            .addTimestampsFromProtocolFilesByParticipant(files)
-            .onSuccess { errorMessage.value = null }
-            .onFailure { errorMessage.value = it }
-    }) { Text("Загрузить протоколы прохождения участников") }
+    Button(onClick = { loadParticipantsTimestamps(state) }) {
+        Text("Загрузить протоколы прохождения участников")
+    }
+}
+
+private fun loadCheckpointTimestampsButton(
+    state: OnGoingCompetitionProgramState,
+) {
+    val files = openFileDialog("Загрузить протоколы отметок на контрольных точках") .map { it.path }
+    state.competitionModelController
+        .addTimestampsFromProtocolFilesByCheckpoint(files)
+        .onSuccess {
+            successDialogMessage.value = "Протоколы прохождения дистанции были успешно загружены!"
+        }
+        .onFailure { message ->
+            errorDialogMessage.value = "Протоколы прохождения дистанции не были загружены! Произошла следующая ошибка.\n" +
+                    message
+        }
 }
 
 @Composable
 private fun LoadCheckpointsTimestampsButton(
     state: OnGoingCompetitionProgramState,
-    errorMessage: MutableState<String?>
 ) {
-    Button(onClick = {
-        val files =
-            openFileDialog("Загрузить протоколы отметок на контрольных точках")
-                .map { it.path }
-        state.competitionModelController
-            .addTimestampsFromProtocolFilesByCheckpoint(files)
-            .onSuccess { errorMessage.value = null }
-            .onFailure { errorMessage.value = it }
-    }) { Text("Загрузить протоколы отметок на контрольных точках") }
+    Button(onClick = { loadCheckpointTimestampsButton(state) }) {
+        Text("Загрузить протоколы отметок на контрольных точках")
+    }
 }
 
 @Composable
