@@ -45,10 +45,10 @@ class CompetitionBuilder(
                     )
                 }.toMutableStateList(),
             routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
-                .map {
+                .map { route ->
                     OrderedCheckpointsRouteBuilder(
-                        mutableStateOf(it.name),
-                        it.orderedCheckpoints.map { mutableStateOf(it) }
+                        mutableStateOf(route.name),
+                        route.orderedCheckpoints.map { mutableStateOf(it) }
                             .toMutableStateList()
                     )
                 }.toMutableStateList(),
@@ -71,13 +71,23 @@ class CompetitionBuilder(
      * Returns built instance of [Competition] class.
      */
     fun build(): Competition {
+        val routes = routes.map { it.toOrderedCheckpointsRoute() }.toList()
+        val groups = groups.map { ageGroupBuilder ->
+            val route = routes.single { it.name == ageGroupBuilder.routeName.value }
+            AgeGroup(
+                label = ageGroupBuilder.label.value,
+                route = route,
+                ageFrom = ageGroupBuilder.ageFrom.value.toInt(),
+                ageTo = ageGroupBuilder.ageTo.value.toInt(),
+            )
+        }
         return Competition(
             discipline = discipline.value,
             name = name.value,
             year = year.value,
             date = date.value,
-            groups = groups.map { it.toAgeGroup() }.toList(),
-            routes = routes.map { it.toOrderedCheckpointsRoute() }.toList()
+            groups = groups,
+            routes = routes,
         )
     }
 }

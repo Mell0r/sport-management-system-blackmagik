@@ -125,12 +125,6 @@ fun DisplayGroup(
     fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
         availableRoutes.map { it.name.value }.toMutableStateList()
 
-    group.route =
-        mutableStateOf(availableRoutes
-            .find { it.name.value == group.routeName.value }
-            ?.toOrderedCheckpointsRoute()
-            ?: OrderedCheckpointsRoute("", mutableListOf())
-        )
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
