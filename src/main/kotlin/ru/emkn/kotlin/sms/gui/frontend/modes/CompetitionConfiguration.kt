@@ -24,7 +24,6 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
-import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
 import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
 import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
@@ -64,7 +63,7 @@ private fun DisplayCompetitionTextFields(
             onValueChange = { newValue ->
                 isYearIncorrect = newValue.toIntOrNull() == null
                 competitionBuilder.year.value =
-                    newValue.toIntOrNull() ?: INCORRECT_YEAR
+                    newValue.toIntOrNull() ?: CompetitionBuilder.INCORRECT_YEAR
             },
             modifier = Modifier.width(width),
             label = { Text("Год проведения") }
