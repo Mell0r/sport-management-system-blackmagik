@@ -3,6 +3,8 @@ package ru.emkn.kotlin.sms.gui.competitionModel
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapEither
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
+import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.UnitOrMessage
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.ReadFailException
 import ru.emkn.kotlin.sms.io.WrongFormatException
@@ -84,7 +86,7 @@ class CompetitionModel(
             notifyAllListeners()
         }
 
-        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>): Result<Unit, String?> {
+        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>): UnitOrMessage {
             val protocolsByParticipantOrError =
                 com.github.michaelbull.result.runCatching {
                     readAndParseAllFiles(
@@ -108,7 +110,7 @@ class CompetitionModel(
                 )
         }
 
-        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>): Result<Unit, String?> {
+        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>): UnitOrMessage {
             val protocolsByCheckpointOrError =
                 com.github.michaelbull.result.runCatching {
                     readAndParseAllFiles(

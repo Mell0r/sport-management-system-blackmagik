@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
@@ -30,6 +31,7 @@ import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.io.saveCompetition
 import java.io.File
 
 val ages = (0..99).map { "$it" }.toMutableStateList()
@@ -161,8 +163,7 @@ fun CompetitionConfiguration(
     programState: MutableState<ProgramState>,
     dialogSize: DpSize
 ) {
-    val state =
-        programState.value as? ConfiguringCompetitionProgramState ?: return
+    val state = programState.value as? ConfiguringCompetitionProgramState ?: return
     val competitionBuilder = state.competitionBuilder
 
     Column(
@@ -177,14 +178,13 @@ fun CompetitionConfiguration(
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             DisplayCompetitionTextFields(
-                competitionBuilder.value,
+                competitionBuilder,
                 dialogSize.width / 2
             )
             Column {
                 Button(
                     onClick = {
-                        programState.value =
-                            programState.value.nextProgramState()
+                        programState.value = state.nextProgramState()
                     },
                     content = { Text("Сохранить и далее") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
@@ -193,7 +193,7 @@ fun CompetitionConfiguration(
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
                 LoadCompetitionButton(competitionBuilder, dialogSize)
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                ExportCompetitionButton(dialogSize)
+                ExportCompetitionButton(competitionBuilder, dialogSize)
             }
         }
 
@@ -207,7 +207,7 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.value.routes,
+            competitionBuilder.routes,
             { DisplayRoute(it) },
             {
                 OrderedCheckpointsRouteBuilder(
@@ -227,8 +227,8 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.value.groups,
-            { group -> DisplayGroup(group, competitionBuilder.value.routes) },
+            competitionBuilder.groups,
+            { group -> DisplayGroup(group, competitionBuilder.routes) },
             ::AgeGroupBuilder,
             majorListsFontSize
         )
@@ -236,34 +236,51 @@ fun CompetitionConfiguration(
 }
 
 @Composable
-private fun ExportCompetitionButton(dialogSize: DpSize) {
+private fun ExportCompetitionButton(
+    competitionBuilder: CompetitionBuilder,
+    dialogSize: DpSize,
+) {
     Button(
-        onClick = { Logger.info("Sorry, not implemented") },
+        onClick = onClick@{
+            val folder: File? = pickFolderDialog()
+            if (folder == null) {
+                // No failure window is required because user probably just selected cancel
+                Logger.warn("No folder was selected; Aborting")
+                return@onClick
+            }
+            saveCompetition(competitionBuilder.build(), folder.absolutePath)
+                .onSuccess { /* TODO success window */ }
+                .onFailure { message ->
+                    Logger.warn("Failed to save competition.\n$message\nAborting.")
+                    /* TODO failure window */
+                }
+        },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
-    ) { Text("Сохранить соревнование") }
+    ) { Text("Сохранить соревнование в папку (CSV)") }
 }
 
 @Composable
 private fun LoadCompetitionButton(
-    competitionBuilder: MutableState<CompetitionBuilder>,
+    competitionBuilder: CompetitionBuilder,
     dialogSize: DpSize
 ) {
     Button(
         onClick = onClick@{
-            val file: File? = pickFolderDialog()
-            if (file == null) {
+            val folder: File? = pickFolderDialog()
+            if (folder == null) {
+                // No failure window is required because user probably just selected cancel
                 Logger.warn("No folder was selected; Aborting")
                 return@onClick
             }
-            try {
-                competitionBuilder.value =
-                    CompetitionBuilder.fromFilesInFolder(file.absolutePath)
-            } catch (e: Exception) {
-                Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
-            }
+            competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
+                .onSuccess { /* TODO success window */ }
+                .onFailure { message ->
+                    Logger.warn("Failed to initialize competition.\n$message\nAborting.")
+                    /* TODO failure window */
+                }
         },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
-    ) { Text("Загрузить соревнование из папки") }
+    ) { Text("Загрузить соревнование из папки (CSV)") }
 }

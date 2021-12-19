@@ -1,7 +1,10 @@
 package ru.emkn.kotlin.sms.io
 
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.UnitOrMessage
 import java.io.File
 
 /**
@@ -11,20 +14,34 @@ import java.io.File
  *
  * @throws [IllegalArgumentException] if an IO exception happened.
  */
-fun saveCompetition(competition: Competition, configFolderPath: String) {
+fun saveCompetition(competition: Competition, configFolderPath: String): UnitOrMessage {
     Logger.debug { "Beginning to save competition to directory \"$configFolderPath\"." }
-    val directory = File(configFolderPath)
-    require(!directory.isDirectory) {
-        "Config folder \"$configFolderPath\" is not a directory!"
+    val result = runCatching {
+        val directory = File(configFolderPath)
+        if (directory.exists()) {
+            require(directory.isDirectory) {
+                "Config folder exists and is not \"$configFolderPath\" is not a directory!"
+            }
+        } else {
+            directory.mkdirs()
+        }
+        saveNameAndDate(competition, directory)
+        saveRouteOfGroups(competition, directory)
+        saveRouteDescription(competition, directory)
+        saveGroupsRequirement(competition, directory)
     }
-    require(directory.mkdirs()) {
-        "Could not create all necessary directories for directory \"$configFolderPath\"."
-    }
-    saveNameAndDate(competition, directory)
-    saveRouteOfGroups(competition, directory)
-    saveRouteDescription(competition, directory)
-    saveGroupsRequirement(competition, directory)
-    Logger.debug { "Successfully finished saving competition to directory \"$configFolderPath\"." }
+    return result.mapEither(
+        success = {
+            Logger.debug("Successfully finished saving competition to directory \"$configFolderPath\".")
+        },
+        failure = {
+            Logger.debug {
+                "Some error happened while saving competition to to directory \"$configFolderPath\".\n" +
+                        it.message
+            }
+            it.message
+        },
+    )
 }
 
 private fun saveNameAndDate(competition: Competition, directory: File) {

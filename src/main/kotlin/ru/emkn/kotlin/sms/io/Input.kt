@@ -1,7 +1,9 @@
 package ru.emkn.kotlin.sms.io
 
+import com.github.michaelbull.result.*
 import org.tinylog.Logger
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 import java.nio.file.Files
@@ -85,6 +87,27 @@ fun <T> readAndParseFile(
     }
 }
 
+/**
+ * Tries to read content of specified [java.io.File] and parse the content with [parser].
+ *
+ * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
+ * when the file format is incorrect.
+ *
+ * If the is some trouble reading and/or parsing the file, the exception is printed in the string in the result.
+ */
+fun <T> readAndParseFileOrErrorMessage(
+    file: File,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
+): ResultOrMessage<T> {
+    val resultOrError = runCatching {
+        readAndParseFile(file, competition, parser)
+    }
+    return resultOrError.mapEither(
+        success = { it },
+        failure = ::catchReadAndParseExceptionsToString,
+    )
+}
 
 /**
  * Tries to read content of all specified [java.io.File]'s and parse the content of each file with [parser].
@@ -114,6 +137,28 @@ fun <T> readAndParseAllFiles(
     }
 }
 
+/**
+ * Tries to read content of all specified [java.io.File]'s and parse the content of each file with [parser].
+ *
+ * [parser] must throw [IllegalArgumentException] with corresponding message in the case,
+ * when the file format is incorrect.
+ *
+ * If the is some trouble reading and/or parsing the file, the exception is printed in the string in the result.
+ */
+fun <T> readAndParseAllFilesOrErrorMessage(
+    files: List<File>,
+    competition: Competition,
+    parser: (FileContent, Competition) -> T,
+): ResultOrMessage<List<T>> {
+    val resultOrError = runCatching {
+        readAndParseAllFiles(files, competition, parser)
+    }
+    return resultOrError.mapEither(
+        success = { it },
+        failure = ::catchReadAndParseExceptionsToString,
+    )
+}
+
 internal class ReadFailException(val file: File) : Exception(
     "Could not read file at \"${file.absolutePath}\"!"
 )
@@ -135,4 +180,12 @@ private fun throwWrongFormatOnFile(
     illegalArgumentException: IllegalArgumentException
 ): Nothing {
     throw WrongFormatException(file, illegalArgumentException)
+}
+
+fun catchReadAndParseExceptionsToString(throwable: Throwable): String? {
+    return when (throwable) {
+        is ReadFailException -> throwable.message
+        is WrongFormatException -> throwable.message
+        else -> throw throwable // propagate the exception if we cannot handle it here
+    }
 }

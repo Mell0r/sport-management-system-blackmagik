@@ -2,61 +2,67 @@ package ru.emkn.kotlin.sms.gui.builders
 
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.Participant
-import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.StartingProtocol
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.andThen
+import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.io.readAndParseAllFilesOrErrorMessage
 import ru.emkn.kotlin.sms.time.Time
+import java.io.File
+import kotlin.collections.set
 
 class MutableStartingTimes(
     val startingTimesMapping: SnapshotStateMap<Participant, Time> = mutableStateMapOf(),
 ) : StartingTimes(startingTimesMapping) {
 
     /**
-     * Replaces all starting times with data from [startingProtocols].
+     * Replaces all starting times with data from [startingProtocols]
+     * with the help of [participantsList].
      *
-     * @throws [IllegalArgumentException] if something went wrong.
+     * If the data is not correct, the corresponding error message is put in the result.
      */
     fun replaceFromStartingProtocolsAndParticipantsList(
         startingProtocols: List<StartingProtocol>,
         participantsList: ParticipantsList,
-    ) {
+    ): UnitOrMessage {
         startingTimesMapping.clear()
         startingProtocols.forEach { startingProtocol ->
             startingProtocol.entries.forEach { (participantID, startingTime) ->
                 val participant =
                     participantsList.getParticipantById(participantID)
-                requireNotNull(participant)
+                        ?: return Err("There is participant with ID=$participantID in participants list.")
                 startingTimesMapping[participant] = startingTime
             }
         }
+        participantsList.list.forEach { participant ->
+            if (participant !in startingTimesMapping) {
+                return Err("There is no starting time for participant $participant")
+            }
+        }
+        return Ok(Unit)
     }
 
     /**
-     * Replaces all starting times with data from starting protocol [fileContents],
+     * Replaces all starting times with data from starting protocol files at [files],
      * consistent with [StartingProtocol.readFromFileContentAndCompetition].
      *
-     * @return true if the replacement was successful, false some file content had invalid format.
+     * If some error happens, the message is printed in the message.
      */
-    fun replaceFromStartingProtocolFileContents(
-        fileContents: List<FileContent>,
-        competition: Competition
-    ): Boolean {
-        TODO()
-    }
-
-    /**
-     * Replaces all starting times with data from starting protocol files at [filePaths],
-     * consistent with [StartingProtocol.readFromFileContentAndCompetition].
-     *
-     * @return true if the replacement was successful, false some file was not exist or had invalid format.
-     */
-    fun replaceFromStartingProtocolFiles(
-        filePaths: List<String>,
+    fun replaceFromStartingProtocolFilesAndParticipantsList(
+        files: List<File>,
         competition: Competition,
-    ): Boolean {
-        TODO()
+        participantsList: ParticipantsList,
+    ): UnitOrMessage {
+        return readAndParseAllFilesOrErrorMessage(
+            files = files,
+            competition = competition,
+            parser = StartingProtocol::readFromFileContentAndCompetition,
+        ).andThen { startingProtocols ->
+            replaceFromStartingProtocolsAndParticipantsList(
+                startingProtocols,
+                participantsList
+            )
+        }
     }
 
     /**
