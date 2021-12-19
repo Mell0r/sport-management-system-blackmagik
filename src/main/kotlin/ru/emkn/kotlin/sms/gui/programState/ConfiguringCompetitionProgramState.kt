@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.gui.programState
 
+import androidx.compose.runtime.mutableStateOf
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
@@ -14,9 +15,9 @@ import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
  * All other properties are fixed and empty.
  */
 class ConfiguringCompetitionProgramState : ProgramState() {
-    val competitionBuilder = CompetitionBuilder()
+    val competitionBuilder = mutableStateOf(CompetitionBuilder())
     override val competition: Competition
-        get() = competitionBuilder.build()
+        get() = competitionBuilder.value.build()
 
     // following properties are always empty in this program mode
     override val participantsList = ParticipantsList(listOf())

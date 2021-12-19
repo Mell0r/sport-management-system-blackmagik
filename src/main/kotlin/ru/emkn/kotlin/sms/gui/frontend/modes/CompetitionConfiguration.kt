@@ -27,8 +27,10 @@ import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
 import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
 import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
+import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import java.io.File
 
 val ages = (0..99).map { it.toString() }.toMutableStateList()
 
@@ -183,18 +185,39 @@ fun CompetitionConfiguration(
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             DisplayCompetitionTextFields(
-                competitionBuilder,
+                competitionBuilder.value,
                 dialogSize.width / 2
             )
-
-            Button(
-                onClick = {
-                    programState.value = programState.value.nextProgramState()
-                },
-                content = { Text("Сохранить и далее") },
-                modifier = Modifier.padding(start = dialogSize.width / 8)
-                    .size(dialogSize.width / 4, dialogSize.height / 4)
-            )
+            Column {
+                Button(
+                    onClick = {
+                        programState.value =
+                            programState.value.nextProgramState()
+                    },
+                    content = { Text("Сохранить и далее") },
+                    modifier = Modifier.padding(start = dialogSize.width / 8)
+                        .size(dialogSize.width / 4, dialogSize.height / 4)
+                )
+                Spacer(modifier = Modifier.height(dialogSize.height / 20))
+                Button(
+                    onClick = {
+                        val file: File = pickFolderDialog()!!
+                        try {
+                            competitionBuilder.value =
+                                CompetitionBuilder.fromFilesInFolder(file.absolutePath)
+                        } catch (e: Exception) {
+                        }
+                    },
+                    modifier = Modifier.padding(start = dialogSize.width / 8)
+                        .size(dialogSize.width / 4, dialogSize.height / 10)
+                ) { Text("Bitch") }
+                Spacer(modifier = Modifier.height(dialogSize.height / 20))
+                Button(
+                    onClick = {},
+                    modifier = Modifier.padding(start = dialogSize.width / 8)
+                        .size(dialogSize.width / 4, dialogSize.height / 10)
+                ) { Text("Bitch") }
+            }
         }
 
         val majorListsFontSize = 25.sp
@@ -207,7 +230,7 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.routes,
+            competitionBuilder.value.routes,
             { route -> DisplayRoute(route) },
             {
                 OrderedCheckpointsRouteBuilder(
@@ -227,8 +250,8 @@ fun CompetitionConfiguration(
                     fontSize = majorListsFontSize
                 )
             },
-            competitionBuilder.groups,
-            { group -> DisplayGroup(group, competitionBuilder.routes) },
+            competitionBuilder.value.groups,
+            { group -> DisplayGroup(group, competitionBuilder.value.routes) },
             { AgeGroupBuilder() },
             majorListsFontSize
         )

@@ -8,13 +8,14 @@ import ru.emkn.kotlin.sms.Route
 
 class AgeGroupBuilder(
     var label: MutableState<String> = mutableStateOf(""),
-    var route: MutableState<Route> = mutableStateOf(
-        OrderedCheckpointsRoute("", mutableListOf())
-    ),
     var routeName: MutableState<String> = mutableStateOf(""),
     var ageFrom: MutableState<String> = mutableStateOf(""),
     var ageTo: MutableState<String> = mutableStateOf("")
 ) {
+    var route: MutableState<Route> = mutableStateOf(
+        OrderedCheckpointsRoute("", mutableListOf())
+    )
+
     fun toAgeGroup() = AgeGroup(
         label.value,
         route.value,

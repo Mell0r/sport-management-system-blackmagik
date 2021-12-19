@@ -39,7 +39,7 @@ class CompetitionBuilder(
                 .map {
                     AgeGroupBuilder(
                         mutableStateOf(it.label),
-                        mutableStateOf(it.route),
+                        mutableStateOf(it.route.name),
                         mutableStateOf(it.ageFrom.toString()),
                         mutableStateOf(it.ageTo.toString())
                     )
