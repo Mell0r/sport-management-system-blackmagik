@@ -1,8 +1,11 @@
 package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.io.*
+import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.io.ensureDirectory
+import ru.emkn.kotlin.sms.io.initializeCompetition
+import ru.emkn.kotlin.sms.io.readAndParseFile
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -53,7 +56,10 @@ private fun ensureOutputDirectory(outputDirectoryPath: String): File {
     }
 }
 
-fun loadParticipantsList(participantListFile: File, competition: Competition): ParticipantsList =
+fun loadParticipantsList(
+    participantListFile: File,
+    competition: Competition
+): ParticipantsList =
     readAndParseFile(
         file = participantListFile,
         competition = competition,

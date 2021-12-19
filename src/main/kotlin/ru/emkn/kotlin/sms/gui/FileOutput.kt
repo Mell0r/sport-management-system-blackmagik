@@ -12,7 +12,10 @@ import java.io.File
  *
  * @return true if it successfully wrote, false if some exception occurred
  */
-fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean {
+fun safeWriteFileContentToFile(
+    content: FileContent,
+    filePath: String
+): Boolean {
     return try {
         val file = File(filePath)
         File(file.parent).mkdirs()
@@ -22,7 +25,7 @@ fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean
     } catch (e: Exception) {
         Logger.error {
             "Could not write to file at \"$filePath\". Following exception occured:\n" +
-            "${e.message}"
+                    "${e.message}"
         }
         false
     }
@@ -35,11 +38,14 @@ fun safeWriteFileContentToFile(content: FileContent, filePath: String) : Boolean
  *
  * @return true if it successfully wrote, false if some exception occurred
  */
-fun safeCSVDumpableToFile(dumpable: CsvDumpable, filePath: String) : Boolean {
+fun safeCSVDumpableToFile(dumpable: CsvDumpable, filePath: String): Boolean {
     return safeWriteFileContentToFile(dumpable.dumpToCsv(), filePath)
 }
 
-fun getDefaultCSVDumpablePathInDir(dumpable: CsvDumpable, outputDirectory: File) =
+fun getDefaultCSVDumpablePathInDir(
+    dumpable: CsvDumpable,
+    outputDirectory: File
+) =
     "${outputDirectory.absolutePath}/${dumpable.defaultCsvFileName()}"
 
 /**
@@ -47,11 +53,17 @@ fun getDefaultCSVDumpablePathInDir(dumpable: CsvDumpable, outputDirectory: File)
  * Creates all necessary parent directories.
  * Overwrites file if it already existed. Caller MUST confirm that user definitely wants to overwrite.
  */
-fun writeCSVDumpablesToDirectory(dumpables: List<CsvDumpable>, outputDirectory: File) {
+fun writeCSVDumpablesToDirectory(
+    dumpables: List<CsvDumpable>,
+    outputDirectory: File
+) {
     dumpables.forEach { dumpable ->
         safeCSVDumpableToFile(
             dumpable = dumpable,
-            filePath = getDefaultCSVDumpablePathInDir(dumpable, outputDirectory),
+            filePath = getDefaultCSVDumpablePathInDir(
+                dumpable,
+                outputDirectory
+            ),
         )
     }
 }

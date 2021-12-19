@@ -16,10 +16,12 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
         override operator fun compareTo(other: LiveParticipantResult): Int =
             when (other) {
                 is Finished -> totalTime.compareTo(other.totalTime)
-                is InProcess, is Disqualified-> -1
+                is InProcess, is Disqualified -> -1
             }
 
-        override fun toFinalParticipantResult() = FinalParticipantResult.Finished(totalTime)
+        override fun toFinalParticipantResult() =
+            FinalParticipantResult.Finished(totalTime)
+
         override val timeOrINF: Time
             get() = totalTime
 
@@ -47,19 +49,24 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
      * He goes before all disqualified participants.
      * Two participants in process are first compared by [completedCheckpoints], then by [lastCheckpointTime].
      */
-    data class InProcess(val completedCheckpoints: Int, val lastCheckpointTime: Time) : LiveParticipantResult() {
+    data class InProcess(
+        val completedCheckpoints: Int,
+        val lastCheckpointTime: Time
+    ) : LiveParticipantResult() {
         override operator fun compareTo(other: LiveParticipantResult): Int =
             when (other) {
                 is Finished -> 1
                 is InProcess -> if (completedCheckpoints != other.completedCheckpoints) {
-                    - completedCheckpoints + other.completedCheckpoints
+                    -completedCheckpoints + other.completedCheckpoints
                 } else {
                     lastCheckpointTime.compareTo(other.lastCheckpointTime)
                 }
                 is Disqualified -> -1
             }
 
-        override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override fun toFinalParticipantResult() =
+            FinalParticipantResult.Disqualified()
+
         override val timeOrINF: Time
             get() = lastCheckpointTime
 
@@ -81,7 +88,8 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
             return result
         }
 
-        override fun toString() = "Прошел $completedCheckpoints к.п, последний пройдён в $lastCheckpointTime"
+        override fun toString() =
+            "Прошел $completedCheckpoints к.п, последний пройдён в $lastCheckpointTime"
     }
 
     /**
@@ -89,14 +97,16 @@ sealed class LiveParticipantResult : Comparable<LiveParticipantResult> {
      * He goes after all non-disqualified participants.
      * Two disqualified participants are always equal.
      */
-    class Disqualified: LiveParticipantResult() {
+    class Disqualified : LiveParticipantResult() {
         override operator fun compareTo(other: LiveParticipantResult): Int =
             when (other) {
                 is Finished, is InProcess -> 1
                 is Disqualified -> 0
             }
 
-        override fun toFinalParticipantResult() = FinalParticipantResult.Disqualified()
+        override fun toFinalParticipantResult() =
+            FinalParticipantResult.Disqualified()
+
         override val timeOrINF: Time
             get() = Time(Int.MAX_VALUE)
 

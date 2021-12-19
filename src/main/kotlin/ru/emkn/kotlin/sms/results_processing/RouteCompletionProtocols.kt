@@ -9,8 +9,12 @@ data class ParticipantTimestampsProtocol(
     val id: Int,
     val checkpointTimes: List<CheckpointAndTime>
 ) {
-    companion object : CreatableFromFileContentAndCompetition<ParticipantTimestampsProtocol> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): ParticipantTimestampsProtocol {
+    companion object :
+        CreatableFromFileContentAndCompetition<ParticipantTimestampsProtocol> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): ParticipantTimestampsProtocol {
             val id =
                 fileContent.first().split(",").first().toIntOrNull()
                     ?: logErrorAndThrow(
@@ -41,8 +45,12 @@ data class CheckpointTimestampsProtocol(
     val checkpointLabel: CheckpointLabelT,
     val participantTimes: List<IdAndTime>
 ) {
-    companion object : CreatableFromFileContentAndCompetition<CheckpointTimestampsProtocol> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): CheckpointTimestampsProtocol {
+    companion object :
+        CreatableFromFileContentAndCompetition<CheckpointTimestampsProtocol> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): CheckpointTimestampsProtocol {
             val checkPointLabel = fileContent.first().split(",").first()
             val entries =
                 fileContent.zip(1..fileContent.size).drop(1)

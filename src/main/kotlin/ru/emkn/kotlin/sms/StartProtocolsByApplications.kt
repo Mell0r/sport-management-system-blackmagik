@@ -26,9 +26,10 @@ fun getParticipantsListFromApplications(
 
     val applicationsWithParticipants = applications.map { application ->
         application.applicantsList.map { applicant ->
-            val group = competition.getGroupByLabelOrNull(applicant.supposedGroupLabel)
+            val group =
+                competition.getGroupByLabelOrNull(applicant.supposedGroupLabel)
             if (group == null) {
-                Logger.warn {"Applicant ${applicant.name} ${applicant.lastName} in team ${applicant.teamName} has invalid group label. Skipping."}
+                Logger.warn { "Applicant ${applicant.name} ${applicant.lastName} in team ${applicant.teamName} has invalid group label. Skipping." }
                 null
             } else {
                 Participant(

@@ -1,10 +1,6 @@
 package ru.emkn.kotlin.sms.io
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.GroupResultProtocol
-import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.StartingProtocol
-import ru.emkn.kotlin.sms.TeamResultsProtocol
 import ru.emkn.kotlin.sms.cli.exitWithInfoLog
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File

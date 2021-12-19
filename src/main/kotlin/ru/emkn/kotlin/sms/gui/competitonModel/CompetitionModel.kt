@@ -54,8 +54,9 @@ class CompetitionModel(
         fun addTimestampsFromProtocolsByParticipant(protocols: List<ParticipantTimestampsProtocol>) {
             val timestampsToAdd = protocols
                 .flatMap { (participantID, checkpointAndTimePairs) ->
-                    val participant = state.participantsList.getParticipantById(participantID)
-                        ?: return
+                    val participant =
+                        state.participantsList.getParticipantById(participantID)
+                            ?: return
                     checkpointAndTimePairs.map { checkpointAndTime ->
                         ParticipantCheckpointTime(
                             participant = participant,
@@ -72,8 +73,11 @@ class CompetitionModel(
             val timestampsToAdd = protocols
                 .flatMap { (checkpoint, participantIDAndTimePairs) ->
                     participantIDAndTimePairs.map { (participantID, time) ->
-                        val participant = state.participantsList.getParticipantById(participantID)
-                            ?: return
+                        val participant =
+                            state.participantsList.getParticipantById(
+                                participantID
+                            )
+                                ?: return
                         ParticipantCheckpointTime(
                             participant = participant,
                             checkpoint = checkpoint,

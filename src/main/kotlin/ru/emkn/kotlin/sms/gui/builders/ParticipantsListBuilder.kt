@@ -1,10 +1,10 @@
 package ru.emkn.kotlin.sms.gui.builders
 
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.mapEither
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapEither
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ParticipantsList
@@ -23,9 +23,10 @@ class ParticipantsListBuilder(
     }
 
     companion object {
-        fun fromParticipantsList(participantsList: ParticipantsList) = ParticipantsListBuilder(
-            list = participantsList.list.toMutableStateList(),
-        )
+        fun fromParticipantsList(participantsList: ParticipantsList) =
+            ParticipantsListBuilder(
+                list = participantsList.list.toMutableStateList(),
+            )
 
         /**
          * Creates a new [ParticipantsListBuilder]
@@ -35,10 +36,14 @@ class ParticipantsListBuilder(
         fun fromFileContentAndCompetition(
             fileContent: FileContent,
             competition: Competition,
-        ) : Result<ParticipantsListBuilder, String?> {
-            val participantsListOrError = com.github.michaelbull.result.runCatching {
-                ParticipantsList.readFromFileContentAndCompetition(fileContent, competition)
-            }
+        ): Result<ParticipantsListBuilder, String?> {
+            val participantsListOrError =
+                com.github.michaelbull.result.runCatching {
+                    ParticipantsList.readFromFileContentAndCompetition(
+                        fileContent,
+                        competition
+                    )
+                }
             return participantsListOrError.mapEither(
                 success = {
                     fromParticipantsList(it)
@@ -60,7 +65,7 @@ class ParticipantsListBuilder(
         fun fromFileAndCompetition(
             filePath: String,
             competition: Competition,
-        ) : Result<ParticipantsListBuilder, String?> {
+        ): Result<ParticipantsListBuilder, String?> {
             val fileContentOrError = com.github.michaelbull.result.runCatching {
                 readAndParseFile(
                     file = File(filePath),

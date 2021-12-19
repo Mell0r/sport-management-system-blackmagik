@@ -8,7 +8,8 @@ import ru.emkn.kotlin.sms.gui.programState.ProgramState
 class LiveGroupResultProtocolsView(
     private val state: ProgramState,
 ) : CompetitionModelListener {
-    var protocols: MutableState<List<LiveGroupResultProtocol>> = mutableStateOf(listOf())
+    var protocols: MutableState<List<LiveGroupResultProtocol>> =
+        mutableStateOf(listOf())
 
     override fun modelChanged(timestamps: List<ParticipantCheckpointTime>) {
         val participantsByGroups =

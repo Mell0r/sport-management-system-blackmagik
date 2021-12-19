@@ -34,8 +34,10 @@ import ru.emkn.kotlin.sms.io.readAndParseFile
 
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
-    val state = programState.value as? FormingStartingProtocolsProgramState ?: return
-    val applicationBuilders = remember { mutableStateListOf<ApplicationBuilder>() }
+    val state =
+        programState.value as? FormingStartingProtocolsProgramState ?: return
+    val applicationBuilders =
+        remember { mutableStateListOf<ApplicationBuilder>() }
 
     val majorListsFontSize = 25.sp
     Column {
@@ -49,7 +51,9 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
                 )
             },
             applicationBuilders,
-            { applicationBuilder -> DisplayApplication(state, applicationBuilder) },
+            { applicationBuilder ->
+                DisplayApplication(state, applicationBuilder)
+            },
             { ApplicationBuilder() },
             majorListsFontSize
         )
@@ -57,7 +61,12 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
 
         LoadApplicationsFromCSVButton(state, applicationBuilders, errorMessage)
         LoadReadyStartingConfigurationButton(programState, state, errorMessage)
-        SaveAndNextButton(programState, state, applicationBuilders, errorMessage)
+        SaveAndNextButton(
+            programState,
+            state,
+            applicationBuilders,
+            errorMessage
+        )
 
         val errorMessageFrozen = errorMessage.value
         if (errorMessageFrozen != null) {
@@ -75,14 +84,14 @@ private fun LoadReadyStartingConfigurationButton(
 ) {
     Button(
         onClick = {
-            Logger.debug {"User pressed load ready start configuration."}
+            Logger.debug { "User pressed load ready start configuration." }
 
             val rawParticipantsListFile = openFileDialog(
                 title = "Выберите список участников (participants-list.csv)",
                 allowMultiSelection = false,
             )
             if (rawParticipantsListFile.size != 1) {
-                Logger.error {"User did not select exactly one participants list file."}
+                Logger.error { "User did not select exactly one participants list file." }
                 return@Button
             }
             val participantsListFile = rawParticipantsListFile.single()
@@ -99,11 +108,11 @@ private fun LoadReadyStartingConfigurationButton(
                     parser = ParticipantsList::readFromFileContentAndCompetition,
                 )
             } catch (e: ReadFailException) {
-                Logger.error {"Could not read participants list. Following exception occurred:\n${e.message}"}
+                Logger.error { "Could not read participants list. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             } catch (e: WrongFormatException) {
-                Logger.error {"Participants list had wrong format. Following exception occurred:\n${e.message}"}
+                Logger.error { "Participants list had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             }
@@ -115,18 +124,23 @@ private fun LoadReadyStartingConfigurationButton(
                     parser = StartingProtocol::readFromFileContentAndCompetition,
                 )
             } catch (e: ReadFailException) {
-                Logger.error {"Could not read some starting protocol. Following exception occurred:\n${e.message}"}
+                Logger.error { "Could not read some starting protocol. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             } catch (e: WrongFormatException) {
-                Logger.error {"Some starting protocol had wrong format. Following exception occurred:\n${e.message}"}
+                Logger.error { "Some starting protocol had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             }
 
             // successfully read participants list and starting protocols
-            state.participantsListBuilder.replaceFromParticipantsList(participantsList)
-            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
+            state.participantsListBuilder.replaceFromParticipantsList(
+                participantsList
+            )
+            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(
+                startingProtocols,
+                participantsList
+            )
             programState.value = state.nextProgramState()
         },
         content = { Text(text = "Загрузить готовые список учасников и стартовые протоколы из CSV и перейти далее.") },
@@ -141,7 +155,10 @@ private fun LoadApplicationsFromCSVButton(
 ) {
     Button(
         onClick = {
-            val files = openFileDialog(title = "Загрузить заявки из CSV", allowMultiSelection = true).toList()
+            val files = openFileDialog(
+                title = "Загрузить заявки из CSV",
+                allowMultiSelection = true
+            ).toList()
             val applications = try {
                 readAndParseAllFiles(
                     files = files,
@@ -149,11 +166,11 @@ private fun LoadApplicationsFromCSVButton(
                     parser = Application::readFromFileContentAndCompetition,
                 )
             } catch (e: ReadFailException) {
-                Logger.error {"Could not read applications. Following exception occurred:\n${e.message}"}
+                Logger.error { "Could not read applications. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             } catch (e: WrongFormatException) {
-                Logger.error {"Some application had wrong format. Following exception occurred:\n${e.message}"}
+                Logger.error { "Some application had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             }
@@ -183,7 +200,7 @@ private fun SaveAndNextButton(
             val actualApplications = try {
                 applicationBuilders.map { it.build() }
             } catch (e: IllegalArgumentException) {
-                Logger.error {"Could not form applications, following exception occurred:\n${e.message}"}
+                Logger.error { "Could not form applications, following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             }
@@ -193,13 +210,18 @@ private fun SaveAndNextButton(
                     competition = state.competition,
                 )
             } catch (e: IllegalArgumentException) {
-                Logger.error {"Could not form starting configuration, following exception occurred:\n${e.message}"}
+                Logger.error { "Could not form starting configuration, following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
                 return@Button
             }
             // form participant list and starting times
-            state.participantsListBuilder.replaceFromParticipantsList(participantsList)
-            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
+            state.participantsListBuilder.replaceFromParticipantsList(
+                participantsList
+            )
+            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(
+                startingProtocols,
+                participantsList
+            )
             programState.value = state.nextProgramState()
         },
         content = { Text(text = "Сохранить и далее") },
@@ -232,7 +254,12 @@ fun DisplayApplication(
                     )
                 },
                 applicationBuilder.applicants,
-                { applicationBuilder -> ShowApplicantBuilder(state, applicationBuilder) },
+                { applicationBuilder ->
+                    ShowApplicantBuilder(
+                        state,
+                        applicationBuilder
+                    )
+                },
                 { ApplicantBuilder() }
             )
         }

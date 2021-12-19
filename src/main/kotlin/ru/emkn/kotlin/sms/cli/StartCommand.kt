@@ -46,7 +46,8 @@ class StartCommand(
 
         val participantsListContent = participantsList.dumpToCsv()
         val participantsListFileName = participantsList.defaultCsvFileName()
-        val participantsListOutputFolder = File(outputDirectory, "participant-list")
+        val participantsListOutputFolder =
+            File(outputDirectory, "participant-list")
         participantsListOutputFolder.mkdirs()
         safeWriteContentToFile(
             participantsListContent,

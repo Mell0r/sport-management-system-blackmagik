@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.gui.frontend
 import androidx.compose.ui.awt.ComposeWindow
 import java.awt.FileDialog
 import java.io.File
-import java.lang.IllegalArgumentException
 import javax.swing.JFileChooser
 
 fun openFileDialog(

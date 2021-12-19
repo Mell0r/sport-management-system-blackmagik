@@ -10,7 +10,7 @@ import ru.emkn.kotlin.sms.time.Time
 abstract class StartingTimes(
     internal val mapping: Map<Participant, Time> = mapOf(),
 ) {
-    fun getStartingTimeOfOrNull(participant: Participant) : Time? {
+    fun getStartingTimeOfOrNull(participant: Participant): Time? {
         return mapping[participant]
     }
 
@@ -18,7 +18,7 @@ abstract class StartingTimes(
      * Creates a list of [StartingProtocol]s based on data in [StartingTimes].
      * Then, starting protocols can be dumped to CSV, etc.
      */
-    fun toStartingProtocols() : List<StartingProtocol> {
+    fun toStartingProtocols(): List<StartingProtocol> {
         TODO()
     }
 }

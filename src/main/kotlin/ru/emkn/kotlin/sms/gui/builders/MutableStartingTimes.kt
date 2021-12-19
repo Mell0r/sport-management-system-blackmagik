@@ -9,7 +9,7 @@ import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
-class MutableStartingTimes (
+class MutableStartingTimes(
     val startingTimesMapping: SnapshotStateMap<Participant, Time> = mutableStateMapOf(),
 ) : StartingTimes(startingTimesMapping) {
 
@@ -25,7 +25,8 @@ class MutableStartingTimes (
         startingTimesMapping.clear()
         startingProtocols.forEach { startingProtocol ->
             startingProtocol.entries.forEach { (participantID, startingTime) ->
-                val participant = participantsList.getParticipantById(participantID)
+                val participant =
+                    participantsList.getParticipantById(participantID)
                 requireNotNull(participant)
                 startingTimesMapping[participant] = startingTime
             }
@@ -41,7 +42,7 @@ class MutableStartingTimes (
     fun replaceFromStartingProtocolFileContents(
         fileContents: List<FileContent>,
         competition: Competition
-    ) : Boolean {
+    ): Boolean {
         TODO()
     }
 
@@ -54,7 +55,7 @@ class MutableStartingTimes (
     fun replaceFromStartingProtocolFiles(
         filePaths: List<String>,
         competition: Competition,
-    ) : Boolean {
+    ): Boolean {
         TODO()
     }
 

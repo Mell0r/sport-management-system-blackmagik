@@ -5,9 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import ru.emkn.kotlin.sms.Applicant
 import ru.emkn.kotlin.sms.Application
-import ru.emkn.kotlin.sms.checkApplicant
 
 class ApplicationBuilder(
     var team: MutableState<String> = mutableStateOf(""),
@@ -17,10 +15,13 @@ class ApplicationBuilder(
         fun fromApplication(application: Application) = ApplicationBuilder(
             team = mutableStateOf(application.teamName),
             applicants = application
-                .applicantsList.map { applicant -> ApplicantBuilder.fromApplicant(applicant) }
+                .applicantsList.map { applicant ->
+                    ApplicantBuilder.fromApplicant(applicant)
+                }
                 .toMutableStateList()
         )
     }
+
     /**
      * @throws [IllegalArgumentException] if it could not create some applicant.
      */

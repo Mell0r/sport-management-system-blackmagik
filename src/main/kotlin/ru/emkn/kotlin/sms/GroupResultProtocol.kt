@@ -12,7 +12,8 @@ data class IdWithLiveResult(
     val id: Int,
     val result: LiveParticipantResult,
 ) {
-    fun toIdWithFinalResult() = IdWithFinalResult(id, result.toFinalParticipantResult())
+    fun toIdWithFinalResult() =
+        IdWithFinalResult(id, result.toFinalParticipantResult())
 }
 
 class GroupResultProtocol(
@@ -25,8 +26,12 @@ class GroupResultProtocol(
         require(entries == entries.sortedBy { it.result })
     }
 
-    companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
+    companion object :
+        CreatableFromFileContentAndCompetition<GroupResultProtocol> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
             val group = competition.getGroupByLabelOrNull(groupName)
                 ?: logErrorAndThrow("No group with name \"$groupName\" exist.")

@@ -8,7 +8,7 @@ class Competition(
     val groups: List<Group>,
     val routes: List<Route>,
 ) {
-    fun getGroupByLabelOrNull(label: String) : Group? {
+    fun getGroupByLabelOrNull(label: String): Group? {
         return groups.find { it.label == label }
     }
 

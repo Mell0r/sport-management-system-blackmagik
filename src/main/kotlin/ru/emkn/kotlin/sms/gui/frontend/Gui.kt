@@ -14,7 +14,6 @@ import ru.emkn.kotlin.sms.gui.frontend.modes.FinishedCompetition
 import ru.emkn.kotlin.sms.gui.frontend.modes.FormingStartingProtocols
 import ru.emkn.kotlin.sms.gui.frontend.modes.OnGoingCompetition
 import ru.emkn.kotlin.sms.gui.programState.*
-import javax.lang.model.element.Modifier
 
 
 fun getEmojiByUnicode(unicode: Int): String {
@@ -29,18 +28,23 @@ fun launchGUI(
         val programState: MutableState<ProgramState> =
             remember { mutableStateOf(initialProgramState) }
         when (programState.value) {
-            is ConfiguringCompetitionProgramState -> Dialog(
+            is ConfiguringCompetitionProgramState -> {
+                val windowSize = DpSize(1000.dp, 600.dp)
+                Dialog(
                     title = "Настройка соревнования",
-                    state = DialogState(size = DpSize(1000.dp, 600.dp)),
+                    state = DialogState(size = windowSize),
                     onCloseRequest = ::exitApplication,
-                    content = { CompetitionConfiguration(programState, DpSize(1000.dp, 600.dp)) }
-            )
-            is FormingStartingProtocolsProgramState -> Dialog(
-                    title = "Обработка заявок. Формирование стартовых протоколов",
-                    onCloseRequest = ::exitApplication,
-                    state = DialogState(size = DpSize(800.dp, 800.dp)),
-                    content = { FormingStartingProtocols(programState) }
+                    content = {
+                        CompetitionConfiguration(programState, windowSize)
+                    }
                 )
+            }
+            is FormingStartingProtocolsProgramState -> Dialog(
+                title = "Обработка заявок. Формирование стартовых протоколов",
+                onCloseRequest = ::exitApplication,
+                state = DialogState(size = DpSize(800.dp, 800.dp)),
+                content = { FormingStartingProtocols(programState) }
+            )
             is OnGoingCompetitionProgramState -> Dialog(
                 onCloseRequest = ::exitApplication,
                 state = DialogState(size = DpSize(800.dp, 800.dp)),

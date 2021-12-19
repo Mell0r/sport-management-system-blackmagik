@@ -5,17 +5,22 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
-import ru.emkn.kotlin.sms.Route
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
@@ -29,7 +34,10 @@ val ages = (0..99).map { it.toString() }.toMutableStateList()
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun DisplayCompetitionTextFields(competitionBuilder: CompetitionBuilder, width: Dp) {
+private fun DisplayCompetitionTextFields(
+    competitionBuilder: CompetitionBuilder,
+    width: Dp
+) {
     Column(horizontalAlignment = Alignment.Start) {
         var isYearIncorrect by remember { mutableStateOf(true) }
 
@@ -51,13 +59,18 @@ private fun DisplayCompetitionTextFields(competitionBuilder: CompetitionBuilder,
             if (!isYearIncorrect) competitionBuilder.year.value.toString() else "",
             onValueChange = { newValue ->
                 isYearIncorrect = newValue.toIntOrNull() == null
-                competitionBuilder.year.value = newValue.toIntOrNull() ?: INCORRECT_YEAR },
+                competitionBuilder.year.value =
+                    newValue.toIntOrNull() ?: INCORRECT_YEAR
+            },
             modifier = Modifier.width(width),
             label = { Text("Год проведения") }
         )
 
         AnimatedVisibility(isYearIncorrect) {
-            Text("Год проведения соревнования должен быть числом", color = Color.Red)
+            Text(
+                "Год проведения соревнования должен быть числом",
+                color = Color.Red
+            )
         }
         BindableTextField("Дата", competitionBuilder.date)
     }
@@ -65,9 +78,10 @@ private fun DisplayCompetitionTextFields(competitionBuilder: CompetitionBuilder,
 
 @Composable
 fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
-    fun ShowCheckpoint(): @Composable (MutableState<CheckpointLabelT>) -> Unit = { checkpoint ->
-        TextField(checkpoint.value, { checkpoint.value = it; })
-    }
+    fun ShowCheckpoint(): @Composable (MutableState<CheckpointLabelT>) -> Unit =
+        { checkpoint ->
+            TextField(checkpoint.value, { checkpoint.value = it; })
+        }
 
     Column(modifier = Modifier.padding(10.dp)) {
         Row(modifier = Modifier.padding(10.dp)) {
@@ -108,8 +122,12 @@ fun DisplayGroup(
     fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
         availableRoutes.map { it.name.value }.toMutableStateList()
 
-    group.route = mutableStateOf(availableRoutes.find { it.name.value == group.routeName.value }
-        ?.toOrderedCheckpointsRoute() ?: OrderedCheckpointsRoute("", mutableListOf()))
+    group.route =
+        mutableStateOf(availableRoutes
+            .find { it.name.value == group.routeName.value }
+            ?.toOrderedCheckpointsRoute()
+            ?: OrderedCheckpointsRoute("", mutableListOf())
+        )
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
@@ -127,31 +145,52 @@ fun DisplayGroup(
 
             Spacer(Modifier.width(16.dp))
 
-            LabeledDropdownMenu("Маршрут", routesToStrings(availableRoutes), group.routeName, 250.dp)
+            LabeledDropdownMenu(
+                "Маршрут",
+                routesToStrings(availableRoutes),
+                group.routeName,
+                250.dp
+            )
         }
         AnimatedVisibility(checkAge(group.ageFrom.value, group.ageTo.value)) {
-            Text("'Возраст от' не должен превышать 'Возраст до'!", color = Color.Red)
+            Text(
+                "'Возраст от' не должен превышать 'Возраст до'!",
+                color = Color.Red
+            )
         }
     }
 }
 
 @Composable
-fun CompetitionConfiguration(programState: MutableState<ProgramState>, dialogSize: DpSize) {
+fun CompetitionConfiguration(
+    programState: MutableState<ProgramState>,
+    dialogSize: DpSize
+) {
     if (programState.value !is ConfiguringCompetitionProgramState)
         return
-    val competitionBuilder = (programState.value as ConfiguringCompetitionProgramState).competitionBuilder
+    val competitionBuilder =
+        (programState.value as ConfiguringCompetitionProgramState).competitionBuilder
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState(0)).padding(16.dp)) {
-        Text("В этом окне вам нужно настроить ваше соревнование",
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState(0))
+            .padding(16.dp)
+    ) {
+        Text(
+            "В этом окне вам нужно настроить ваше соревнование",
             Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontSize = 35.sp
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            DisplayCompetitionTextFields(competitionBuilder, dialogSize.width / 2)
+            DisplayCompetitionTextFields(
+                competitionBuilder,
+                dialogSize.width / 2
+            )
 
             Button(
-                onClick = { programState.value = programState.value.nextProgramState() },
+                onClick = {
+                    programState.value = programState.value.nextProgramState()
+                },
                 content = { Text("Сохранить и далее") },
                 modifier = Modifier.padding(start = dialogSize.width / 8)
                     .size(dialogSize.width / 4, dialogSize.height / 4)
@@ -160,21 +199,34 @@ fun CompetitionConfiguration(programState: MutableState<ProgramState>, dialogSiz
 
         val majorListsFontSize = 25.sp
         FoldingList(
-            { Text("Маршруты",
-                modifier = Modifier.width(150.dp),
-                textAlign = TextAlign.Center,
-                fontSize = majorListsFontSize) },
+            {
+                Text(
+                    "Маршруты",
+                    modifier = Modifier.width(150.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = majorListsFontSize
+                )
+            },
             competitionBuilder.routes,
             { route -> DisplayRoute(route) },
-            { OrderedCheckpointsRouteBuilder(mutableStateOf(""), mutableStateListOf()) },
+            {
+                OrderedCheckpointsRouteBuilder(
+                    mutableStateOf(""),
+                    mutableStateListOf()
+                )
+            },
             majorListsFontSize
         )
 
         FoldingList(
-            { Text("Группы",
-                modifier = Modifier.width(150.dp),
-                textAlign = TextAlign.Center,
-                fontSize = majorListsFontSize) },
+            {
+                Text(
+                    "Группы",
+                    modifier = Modifier.width(150.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = majorListsFontSize
+                )
+            },
             competitionBuilder.groups,
             { group -> DisplayGroup(group, competitionBuilder.routes) },
             { AgeGroupBuilder() },

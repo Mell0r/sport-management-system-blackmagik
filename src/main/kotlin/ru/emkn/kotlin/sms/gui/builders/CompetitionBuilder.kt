@@ -7,7 +7,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
 import ru.emkn.kotlin.sms.io.initializeCompetition
 
@@ -44,12 +43,13 @@ class CompetitionBuilder(
                         mutableStateOf(it.ageFrom.toString()),
                         mutableStateOf(it.ageTo.toString())
                     )
-            }.toMutableStateList(),
+                }.toMutableStateList(),
             routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
                 .map {
                     OrderedCheckpointsRouteBuilder(
                         mutableStateOf(it.name),
-                        it.orderedCheckpoints.map { mutableStateOf(it) }.toMutableStateList()
+                        it.orderedCheckpoints.map { mutableStateOf(it) }
+                            .toMutableStateList()
                     )
                 }.toMutableStateList(),
         )

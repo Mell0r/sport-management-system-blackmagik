@@ -24,8 +24,9 @@ class ConfiguringCompetitionProgramState : ProgramState() {
     override val competitionModel = CompetitionModel(this)
 
     init {
-        Logger.info {"Initialized ConfiguredCompetitionProgramState."}
+        Logger.info { "Initialized ConfiguredCompetitionProgramState." }
     }
 
-    override fun nextProgramState() = FormingStartingProtocolsProgramState(competition)
+    override fun nextProgramState() =
+        FormingStartingProtocolsProgramState(competition)
 }

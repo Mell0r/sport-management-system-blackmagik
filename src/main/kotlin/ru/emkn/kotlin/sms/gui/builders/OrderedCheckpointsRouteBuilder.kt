@@ -4,11 +4,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
-import ru.emkn.kotlin.sms.Route
 
 class OrderedCheckpointsRouteBuilder(
     var name: MutableState<String>,
     val orderedCheckpoints: SnapshotStateList<MutableState<CheckpointLabelT>>
 ) {
-    fun toOrderedCheckpointsRoute() = OrderedCheckpointsRoute(name.value, orderedCheckpoints.map { it.value }.toMutableList())
+    fun toOrderedCheckpointsRoute() = OrderedCheckpointsRoute(
+        name.value,
+        orderedCheckpoints.map { it.value }.toMutableList()
+    )
 }

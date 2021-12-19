@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.gui.frontend.openFileDialog
 import ru.emkn.kotlin.sms.gui.frontend.pickFolderDialog
 import ru.emkn.kotlin.sms.gui.frontend.saveFileDialog
 import ru.emkn.kotlin.sms.gui.programState.FinishedCompetitionProgramState
@@ -49,7 +48,8 @@ private fun SaveGroupResultProtocolsToCSVButton(
                 errorMessage.value = "Выберите ровно одну папку!"
                 return@Button
             }
-            Logger.debug {"Output folder for group result protocols: \"${outputDirectory.absolutePath}\"."}
+            Logger.debug { "Output folder for group result protocols: " +
+                    "\"${outputDirectory.absolutePath}\"." }
             state.writeGroupResultProtocolsToCSV(outputDirectory)
             errorMessage.value = null
         }
@@ -74,7 +74,8 @@ private fun SaveTeamResultProtocolToCSVButton(
                 return@Button
             }
             val file = files.single()
-            Logger.debug {"Output file for team result protocol: \"${file.absolutePath}\"."}
+            Logger.debug { "Output file for team result protocol: " +
+                    "\"${file.absolutePath}\"." }
             state.writeTeamResultsProtocolToCSV(file)
             errorMessage.value = null
         }

@@ -139,11 +139,17 @@ private fun throwReadFailOnFile(file: File): Nothing {
     throw ReadFailException(file)
 }
 
-internal class WrongFormatException(val file: File, val illegalArgumentException: IllegalArgumentException) : Exception(
+internal class WrongFormatException(
+    val file: File,
+    val illegalArgumentException: IllegalArgumentException
+) : Exception(
     "File at \"${file.absolutePath}\" has invalid format:\n" +
             illegalArgumentException.message
 )
 
-private fun throwWrongFormatOnFile(file: File, illegalArgumentException: IllegalArgumentException): Nothing {
+private fun throwWrongFormatOnFile(
+    file: File,
+    illegalArgumentException: IllegalArgumentException
+): Nothing {
     throw WrongFormatException(file, illegalArgumentException)
 }

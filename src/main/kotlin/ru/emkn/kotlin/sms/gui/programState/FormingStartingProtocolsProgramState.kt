@@ -17,7 +17,9 @@ import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
  * which means the starting times can be changed.
  * [competitionModel] is empty and cannot be changed.
  */
-class FormingStartingProtocolsProgramState(override val competition: Competition) : ProgramState() {
+class FormingStartingProtocolsProgramState(
+    override val competition: Competition
+) : ProgramState() {
     val participantsListBuilder = ParticipantsListBuilder()
     override val participantsList: ParticipantsList
         get() = participantsListBuilder.build()
@@ -27,7 +29,7 @@ class FormingStartingProtocolsProgramState(override val competition: Competition
     override val competitionModel = CompetitionModel(this)
 
     init {
-        Logger.info {"Initialized FormingStartingProtocolsProgramState."}
+        Logger.info { "Initialized FormingStartingProtocolsProgramState." }
     }
 
     override fun nextProgramState() = OnGoingCompetitionProgramState(
