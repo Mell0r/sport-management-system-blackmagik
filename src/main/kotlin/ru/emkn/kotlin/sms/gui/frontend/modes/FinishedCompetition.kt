@@ -42,14 +42,16 @@ private fun SaveGroupResultProtocolsToCSVButton(
     errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = {
+        onClick = onClick@{
             val outputDirectory = pickFolderDialog()
             if (outputDirectory == null) {
                 errorMessage.value = "Выберите ровно одну папку!"
-                return@Button
+                return@onClick
             }
-            Logger.debug { "Output folder for group result protocols: " +
-                    "\"${outputDirectory.absolutePath}\"." }
+            Logger.debug {
+                "Output folder for group result protocols: " +
+                        "\"${outputDirectory.absolutePath}\"."
+            }
             state.writeGroupResultProtocolsToCSV(outputDirectory)
             errorMessage.value = null
         }
@@ -64,18 +66,20 @@ private fun SaveTeamResultProtocolToCSVButton(
     errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = {
+        onClick = onClick@{
             val files = saveFileDialog(
                 title = "Выберите файл протокола результатов для команд",
                 allowMultiSelection = false,
             )
             if (files.size != 1) {
                 errorMessage.value = "Выберите ровно один файл!"
-                return@Button
+                return@onClick
             }
             val file = files.single()
-            Logger.debug { "Output file for team result protocol: " +
-                    "\"${file.absolutePath}\"." }
+            Logger.debug {
+                "Output file for team result protocol: " +
+                        "\"${file.absolutePath}\"."
+            }
             state.writeTeamResultsProtocolToCSV(file)
             errorMessage.value = null
         }

@@ -163,10 +163,9 @@ fun CompetitionConfiguration(
     programState: MutableState<ProgramState>,
     dialogSize: DpSize
 ) {
-    if (programState.value !is ConfiguringCompetitionProgramState)
-        return
-    val competitionBuilder =
-        (programState.value as ConfiguringCompetitionProgramState).competitionBuilder
+    val state =
+        programState.value as? ConfiguringCompetitionProgramState ?: return
+    val competitionBuilder = state.competitionBuilder
 
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState(0))
@@ -194,25 +193,9 @@ fun CompetitionConfiguration(
                         .size(dialogSize.width / 4, dialogSize.height / 4)
                 )
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                Button(
-                    onClick = {
-                        val file: File = pickFolderDialog()!!
-                        try {
-                            competitionBuilder.value =
-                                CompetitionBuilder.fromFilesInFolder(file.absolutePath)
-                        } catch (e: Exception) {
-                            Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
-                        }
-                    },
-                    modifier = Modifier.padding(start = dialogSize.width / 8)
-                        .size(dialogSize.width / 4, dialogSize.height / 10)
-                ) { Text("Загрузить соревнование из папки") }
+                LoadCompetitionButton(competitionBuilder, dialogSize)
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                Button(
-                    onClick = { Logger.info("Sorry, not implemented") },
-                    modifier = Modifier.padding(start = dialogSize.width / 8)
-                        .size(dialogSize.width / 4, dialogSize.height / 10)
-                ) { Text("Сохранить соревнование") }
+                ExportCompetitionButton(dialogSize)
             }
         }
 
@@ -252,4 +235,37 @@ fun CompetitionConfiguration(
             majorListsFontSize
         )
     }
+}
+
+@Composable
+private fun ExportCompetitionButton(dialogSize: DpSize) {
+    Button(
+        onClick = { Logger.info("Sorry, not implemented") },
+        modifier = Modifier.padding(start = dialogSize.width / 8)
+            .size(dialogSize.width / 4, dialogSize.height / 10)
+    ) { Text("Сохранить соревнование") }
+}
+
+@Composable
+private fun LoadCompetitionButton(
+    competitionBuilder: MutableState<CompetitionBuilder>,
+    dialogSize: DpSize
+) {
+    Button(
+        onClick = onClick@{
+            val file: File? = pickFolderDialog()
+            if (file == null) {
+                Logger.warn("No folder was selected; Aborting")
+                return@onClick
+            }
+            try {
+                competitionBuilder.value =
+                    CompetitionBuilder.fromFilesInFolder(file.absolutePath)
+            } catch (e: Exception) {
+                Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
+            }
+        },
+        modifier = Modifier.padding(start = dialogSize.width / 8)
+            .size(dialogSize.width / 4, dialogSize.height / 10)
+    ) { Text("Загрузить соревнование из папки") }
 }
