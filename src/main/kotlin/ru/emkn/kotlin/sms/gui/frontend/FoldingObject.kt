@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.TextUnit
 
-
 val downArrow = getEmojiByUnicode(11167)
 val rightArrow = getEmojiByUnicode(11166)
 

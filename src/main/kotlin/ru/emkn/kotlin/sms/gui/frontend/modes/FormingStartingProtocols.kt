@@ -277,4 +277,3 @@ fun ShowApplicantBuilder(
             Text(text = "Год рождения должен быть числом!", color = Color.Red)
     }
 }
-

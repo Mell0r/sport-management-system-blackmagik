@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
@@ -22,7 +23,7 @@ class CompetitionBuilder(
     val name: MutableState<String> = mutableStateOf(""),
     val year: MutableState<Int> = mutableStateOf(INCORRECT_YEAR),
     val date: MutableState<String> = mutableStateOf(""),
-    val groups: SnapshotStateList<Group> = mutableStateListOf(),
+    val groups: SnapshotStateList<AgeGroupBuilder> = mutableStateListOf(),
     val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
 ) {
     companion object {
@@ -35,13 +36,20 @@ class CompetitionBuilder(
             name = mutableStateOf(competition.name),
             year = mutableStateOf(competition.year),
             date = mutableStateOf(competition.date),
-            groups = competition.groups.toMutableStateList(),
+            groups = competition.groups.filterIsInstance<AgeGroup>()
+                .map {
+                    AgeGroupBuilder(
+                        mutableStateOf(it.label),
+                        mutableStateOf(it.route),
+                        mutableStateOf(it.ageFrom.toString()),
+                        mutableStateOf(it.ageTo.toString())
+                    )
+            }.toMutableStateList(),
             routes = competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
                 .map {
                     OrderedCheckpointsRouteBuilder(
-                        it.name,
-                        it.orderedCheckpoints.map { mutableStateOf(it) }
-                            .toMutableStateList()
+                        mutableStateOf(it.name),
+                        it.orderedCheckpoints.map { mutableStateOf(it) }.toMutableStateList()
                     )
                 }.toMutableStateList(),
         )
@@ -68,13 +76,8 @@ class CompetitionBuilder(
             name = name.value,
             year = year.value,
             date = date.value,
-            groups = groups.toMutableList().toList(),
-            routes = routes.map {
-                OrderedCheckpointsRoute(
-                    it.name,
-                    it.orderedCheckpoints.map { it.value }.toMutableList()
-                )
-            }.toMutableList().toList(),
+            groups = groups.map { it.toAgeGroup() }.toList(),
+            routes = routes.map { it.toOrderedCheckpointsRoute() }.toList()
         )
     }
 }
