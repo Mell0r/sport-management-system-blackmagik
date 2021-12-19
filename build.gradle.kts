@@ -15,14 +15,11 @@ repositories {
     google()
 }
 
-kotlin {
-    sourceSets {
-        all {
-            languageSettings.useExperimentalAnnotation("kotlinx.cli.ExperimentalCli")
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-        }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>()
+    .configureEach {
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.cli.ExperimentalCli"
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.ExperimentalStdlibApi"
     }
-}
 
 dependencies {
     implementation(compose.desktop.currentOs)
