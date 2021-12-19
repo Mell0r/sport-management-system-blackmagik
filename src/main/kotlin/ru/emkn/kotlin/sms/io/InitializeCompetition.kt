@@ -22,6 +22,7 @@ fun checkAndReadFileInFolder(
     return file.readLines()
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 fun initializeCompetition(configFolderPath: String): Competition {
     Logger.debug { "Start initializing competition" }
     if (!File(configFolderPath).exists() || !File(configFolderPath).isDirectory)

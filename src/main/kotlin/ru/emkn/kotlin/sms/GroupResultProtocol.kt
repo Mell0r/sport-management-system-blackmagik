@@ -12,7 +12,8 @@ data class IdWithLiveResult(
     val id: Int,
     val result: LiveParticipantResult,
 ) {
-    fun toIdWithFinalResult() = IdWithFinalResult(id, result.toFinalParticipantResult())
+    fun toIdWithFinalResult() =
+        IdWithFinalResult(id, result.toFinalParticipantResult())
 }
 
 class GroupResultProtocol(
@@ -20,8 +21,17 @@ class GroupResultProtocol(
     val entries: List<IdWithFinalResult>
     // sorted by placeInGroup
 ) : CsvDumpable {
-    companion object : CreatableFromFileContentAndCompetition<GroupResultProtocol> {
-        override fun readFromFileContentAndCompetition(fileContent: FileContent, competition: Competition): GroupResultProtocol {
+
+    init {
+        require(entries == entries.sortedBy { it.result })
+    }
+
+    companion object :
+        CreatableFromFileContentAndCompetition<GroupResultProtocol> {
+        override fun readFromFileContentAndCompetition(
+            fileContent: FileContent,
+            competition: Competition
+        ): GroupResultProtocol {
             val groupName = fileContent[0].split(",").first()
             val group = competition.getGroupByLabelOrNull(groupName)
                 ?: logErrorAndThrow("No group with name \"$groupName\" exist.")
@@ -91,6 +101,8 @@ class GroupResultProtocol(
 
     }
 
+    override fun defaultCsvFileName() = "result-of-group-${group.label}.csv"
+
     private fun generatePlaces(): List<Int> {
         val places = (1..entries.size).toMutableList()
         for (i in 0 until entries.lastIndex) {
@@ -103,9 +115,13 @@ class GroupResultProtocol(
 
 class LiveGroupResultProtocol(
     val group: Group,
-    val entries: List<IdWithLiveResult>,
+    val entries: List<ParticipantWithLiveResult>,
     // sorted by placeInGroup
 ) {
+    init {
+        require(entries == entries.sortedBy { it.liveResult })
+    }
+
     fun toGroupResultProtocol() = GroupResultProtocol(
         group = group,
         entries = entries.map { it.toIdWithFinalResult() }

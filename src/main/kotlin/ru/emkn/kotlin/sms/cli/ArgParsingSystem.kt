@@ -140,7 +140,11 @@ class ArgParsingSystem {
     val resultTeamsSubcommand = ResultTeamsSubcommand()
 
     init {
-        argParser.subcommands(startSubcommand, resultSubcommand, resultTeamsSubcommand)
+        argParser.subcommands(
+            startSubcommand,
+            resultSubcommand,
+            resultTeamsSubcommand
+        )
     }
 
     fun parse(args: Array<String>) {

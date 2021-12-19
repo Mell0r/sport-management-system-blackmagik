@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms
 
 import org.junit.Test
-import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertTrue
 

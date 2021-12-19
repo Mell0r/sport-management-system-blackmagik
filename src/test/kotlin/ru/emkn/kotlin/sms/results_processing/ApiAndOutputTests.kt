@@ -58,9 +58,9 @@ internal class ApiTests {
         thirdTime: Int
     ) =
         listOf(
-            CheckpointLabelAndTime("1", firstTime.s()),
-            CheckpointLabelAndTime("2", secondTime.s()),
-            CheckpointLabelAndTime("3", thirdTime.s()),
+            CheckpointAndTime("1", firstTime.s()),
+            CheckpointAndTime("2", secondTime.s()),
+            CheckpointAndTime("3", thirdTime.s()),
         )
 
 

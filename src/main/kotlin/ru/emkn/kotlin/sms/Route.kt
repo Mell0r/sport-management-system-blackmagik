@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.results_processing.CheckpointLabelAndTime
 import ru.emkn.kotlin.sms.time.Time
 import java.lang.Integer.max
 
@@ -11,12 +10,15 @@ sealed class Route(val name: String) : CsvStringDumpable {
     abstract val checkpoints: Set<CheckpointLabelT>
 
     fun calculateFinalResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
-    ): FinalParticipantResult = calculateLiveResult(checkpointsToTimes, startingTime).toFinalParticipantResult()
+    ): FinalParticipantResult = calculateLiveResult(
+        checkpointsToTimes,
+        startingTime
+    ).toFinalParticipantResult()
 
     abstract fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult
 }
@@ -28,6 +30,7 @@ Example (ChP stands for checkpoint here):
 $0$orderedRouteName,firstChP, secondChP,thirdChP
 $1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
  */
+@kotlin.ExperimentalStdlibApi
 fun readRouteFromLine(line: String): Route {
     if (!line.startsWith("\$"))
         return readOrderedRouteCheckpoint(line)
@@ -71,10 +74,11 @@ class OrderedCheckpointsRoute(
         get() = orderedCheckpoints.toSet()
 
     override fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
-        if (checkpointsToTimes.minOf { it.time } < startingTime) {
+        val firstTimestamp = checkpointsToTimes.minOfOrNull { it.time }
+        if (firstTimestamp != null && firstTimestamp < startingTime) {
             // Finished earlier than started
             // Disqualifying
             return LiveParticipantResult.Disqualified()
@@ -82,27 +86,43 @@ class OrderedCheckpointsRoute(
 
         val checkpointsToTimesChronological = checkpointsToTimes
             .sortedBy { it.time }
-            .dropLast(max(0, checkpointsToTimes.size - orderedCheckpoints.size)) // remove checkpoints after the last one
+            .dropLast(
+                max(0, checkpointsToTimes.size - orderedCheckpoints.size)
+            ) // remove checkpoints after the last one
         val chronologicalCheckpoints =
             checkpointsToTimesChronological.map { it.checkpointLabel }
-        val lastCheckpointTime = checkpointsToTimesChronological.last().time
+        val lastCheckpointTime =
+            checkpointsToTimesChronological.lastOrNull()?.time
 
-        return if (chronologicalCheckpoints == orderedCheckpoints) {
-            // Finished
-            LiveParticipantResult.Finished(Time(lastCheckpointTime - startingTime))
-        } else if (chronologicalCheckpoints.size < orderedCheckpoints.size &&
-            chronologicalCheckpoints == orderedCheckpoints.dropLast(orderedCheckpoints.size - chronologicalCheckpoints.size)) {
-            // [chronologicalCheckpoints] is a strict prefix of [orderedCheckpoints]
-            // Participant is in process
-            LiveParticipantResult.InProcess(chronologicalCheckpoints.size, Time(lastCheckpointTime - startingTime))
-        } else {
-            // Passed checkpoints in wrong order
-            LiveParticipantResult.Disqualified()
+        return when {
+            lastCheckpointTime == null -> LiveParticipantResult.InProcess(
+                0,
+                Time(0)
+            )
+            chronologicalCheckpoints == orderedCheckpoints -> {
+                // Finished
+                LiveParticipantResult.Finished(Time(lastCheckpointTime - startingTime))
+            }
+            chronologicalCheckpoints.size < orderedCheckpoints.size &&
+                    chronologicalCheckpoints == orderedCheckpoints.dropLast(
+                orderedCheckpoints.size - chronologicalCheckpoints.size
+            ) -> {
+                // [chronologicalCheckpoints] is a strict prefix of [orderedCheckpoints]
+                // Participant is in process
+                LiveParticipantResult.InProcess(
+                    chronologicalCheckpoints.size,
+                    Time(lastCheckpointTime - startingTime)
+                )
+            }
+            else -> {
+                // Passed checkpoints in wrong order
+                LiveParticipantResult.Disqualified()
+            }
         }
     }
 
     private fun logFalseStartWarning(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ) {
         Logger.warn {
@@ -151,7 +171,7 @@ class AtLeastKCheckpointsRoute(
     }
 
     override fun calculateLiveResult(
-        checkpointsToTimes: List<CheckpointLabelAndTime>,
+        checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
         if (checkpointsToTimes.minOf { it.time } < startingTime) {

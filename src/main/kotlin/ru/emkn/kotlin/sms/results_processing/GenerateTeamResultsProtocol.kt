@@ -50,7 +50,8 @@ private fun moveCalculatedScoresIntoMap(
                 val score = when (result) {
                     is FinalParticipantResult.Disqualified -> 0
                     is FinalParticipantResult.Finished ->
-                        (100 * (2 - result.totalTime.asSeconds().toFloat() / bestResult.toFloat())).roundToInt()
+                        (100 * (2 - result.totalTime.asSeconds()
+                            .toFloat() / bestResult.toFloat())).roundToInt()
                 }
                 idToScore[id] = score
             }

@@ -5,7 +5,8 @@ import ru.emkn.kotlin.sms.time.Time
 /**
  * Participants' final result (after competition has been finished).
  */
-sealed class FinalParticipantResult : Comparable<FinalParticipantResult>, CsvStringDumpable {
+sealed class FinalParticipantResult : Comparable<FinalParticipantResult>,
+    CsvStringDumpable {
     /**
      *  1. Participant has finished the route with [totalTime].
      *  He goes before all participants that are disqualified.
@@ -27,7 +28,7 @@ sealed class FinalParticipantResult : Comparable<FinalParticipantResult>, CsvStr
      * Two disqualified participants are always equal.
      * TODO: differentiate Disqualified and Unfinished?
      */
-    class Disqualified: FinalParticipantResult() {
+    class Disqualified : FinalParticipantResult() {
         override operator fun compareTo(other: FinalParticipantResult): Int =
             when (other) {
                 is Finished -> 1
