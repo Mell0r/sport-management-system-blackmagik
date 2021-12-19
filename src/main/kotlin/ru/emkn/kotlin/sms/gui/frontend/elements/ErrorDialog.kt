@@ -8,6 +8,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,16 +18,18 @@ import ru.emkn.kotlin.sms.gui.frontend.getEmojiByUnicode
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ErrorDialog(message: String) {
-    val width = 300.dp
-    val height = 100.dp
-    val visible = remember { mutableStateOf(true) }
-    AnimatedVisibility (visible.value) {
+fun ErrorDialog(
+    message: MutableState<String?>,
+) {
+    val width = 500.dp
+    val height = 200.dp
+    AnimatedVisibility (message.value != null) {
         AlertDialog(
-            onDismissRequest = { visible.value = false },
-            title = { Text("$redCross Что-то пошло не так...") },
-            text = { Text(message) },
+            onDismissRequest = { message.value = null },
+            title = { Text("$redCross Ошибка.") },
+            text = { message.value?.let { Text(it) } },
             modifier = Modifier.size(width, height).border(3.dp, Color.Red, shape = RoundedCornerShape(3.dp)),
-            buttons = {})
+            buttons = {}
+        )
     }
 }
