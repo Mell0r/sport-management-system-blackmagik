@@ -92,8 +92,8 @@ class GroupResultProtocol(
         val places = generatePlaces()
         var index = -1
         return listOf(group.label) + PlayersPrinter(listOf(
-            FieldInfo("Место") { ++index; places[index].toString() },
-            FieldInfo("Индивидуальный номер") { id: Int -> id.toString() },
+            FieldInfo("Место") { ++index; "${places[index]}" },
+            FieldInfo("Индивидуальный номер") { id: Int -> "$id" },
             FieldInfo("Результат") { id ->
                 entries.first { it.id == id }.result.dumpToCsvString()
             }
@@ -105,10 +105,9 @@ class GroupResultProtocol(
 
     private fun generatePlaces(): List<Int> {
         val places = (1..entries.size).toMutableList()
-        for (i in 0 until entries.lastIndex) {
-            if (entries[i].result == entries[i + 1].result)
-                places[i + 1] = places[i]
-        }
+        (0 until entries.lastIndex)
+            .filter { entries[it].result == entries[it + 1].result }
+            .forEach { places[it + 1] = places[it] }
         return places
     }
 }

@@ -16,9 +16,7 @@ import ru.emkn.kotlin.sms.gui.frontend.modes.OnGoingCompetition
 import ru.emkn.kotlin.sms.gui.programState.*
 
 
-fun getEmojiByUnicode(unicode: Int): String {
-    return String(Character.toChars(unicode))
-}
+fun getEmojiByUnicode(unicode: Int): String = String(Character.toChars(unicode))
 
 fun launchGUI(
     initialProgramState: ProgramState = ConfiguringCompetitionProgramState(),

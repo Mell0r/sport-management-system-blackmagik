@@ -24,8 +24,7 @@ data class Participant(
         group,
         team,
         sportsCategory
-    ) {
-    }
+    )
 
     companion object {
         var counter: Int = 0

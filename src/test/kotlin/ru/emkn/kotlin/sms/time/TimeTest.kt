@@ -59,8 +59,8 @@ internal class TimeTest {
 
     @Test
     fun `test string representation`() {
-        assertEquals("15:00:00", Time(15, 0, 0).toString())
-        assertEquals("15:00:02", Time(15, 0, 2).toString())
-        assertEquals("15:12:02", Time(15, 12, 2).toString())
+        assertEquals("15:00:00", "${Time(15, 0, 0)}")
+        assertEquals("15:00:02", "${Time(15, 0, 2)}")
+        assertEquals("15:12:02", "${Time(15, 12, 2)}")
     }
 }

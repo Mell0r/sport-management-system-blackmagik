@@ -17,22 +17,19 @@ fun checkAndReadFileInFolder(
     fileName: String
 ): FileContent {
     val file = File("$folderPath/$fileName")
-    if (!file.exists())
-        throw IllegalArgumentException("!File '$fileName' is missed!")
+    require(file.exists()) { "!File '$fileName' is missed!" }
     return file.readLines()
 }
 
 @OptIn(ExperimentalStdlibApi::class)
 fun initializeCompetition(configFolderPath: String): Competition {
     Logger.debug { "Start initializing competition" }
-    if (!File(configFolderPath).exists() || !File(configFolderPath).isDirectory)
-        throw IllegalArgumentException("Config path is not correct!")
+    require(!(!File(configFolderPath).exists() || !File(configFolderPath).isDirectory)) { "Config path is not correct!" }
 
     // NAME_AND_DATE
     val nameAndDate =
         checkAndReadFileInFolder(configFolderPath, NAME_AND_DATE_FILENAME)
-    if (nameAndDate.size < 4)
-        throw IllegalArgumentException("$NAME_AND_DATE_FILENAME is not correct! Please, check Readme and fix.")
+    require(nameAndDate.size >= 4) { "$NAME_AND_DATE_FILENAME is not correct! Please, check Readme and fix." }
     val discipline = nameAndDate[0]
     val name = nameAndDate[1]
     requireNotNull(nameAndDate[2].toIntOrNull()) { "In third line of $NAME_AND_DATE_FILENAME must be a number." }
@@ -44,11 +41,10 @@ fun initializeCompetition(configFolderPath: String): Competition {
     val routeOfGroups =
         checkAndReadFileInFolder(configFolderPath, ROUTE_OF_GROUPS_FILENAME)
     val groups = routeOfGroups.mapIndexed { ind, row ->
-        if (row.count { it == ',' } != 1)
-            throw IllegalArgumentException(
-                "Wrong number of commas in file $ROUTE_OF_GROUPS_FILENAME in line $ind! " +
-                        "Should be only one."
-            )
+        require(row.count { it == ',' } == 1) {
+            "Wrong number of commas in file $ROUTE_OF_GROUPS_FILENAME in line $ind! " +
+                    "Should be only one."
+        }
         row.split(',')[0]
     }
     Logger.info { "Initialized $ROUTE_OF_GROUPS_FILENAME" }
@@ -57,8 +53,7 @@ fun initializeCompetition(configFolderPath: String): Competition {
     val routeDescription =
         checkAndReadFileInFolder(configFolderPath, ROUTE_DESCRIPTION_FILENAME)
     routeDescription.forEachIndexed { ind, row ->
-        if (row.count { c -> c == ',' } == 0)
-            throw IllegalArgumentException("Line $ind of $ROUTE_DESCRIPTION_FILENAME has no commas!")
+        require(row.count { c -> c == ',' } != 0) { "Line $ind of $ROUTE_DESCRIPTION_FILENAME has no commas!" }
     }
     val routes = routeDescription.mapIndexed { ind, row ->
         try {
@@ -73,7 +68,7 @@ fun initializeCompetition(configFolderPath: String): Competition {
         val tokens = row.split(',')
         val route = routes.find { it.name == tokens[1] }
             ?: throw IllegalArgumentException("Routes in $ROUTE_DESCRIPTION_FILENAME and in $ROUTE_OF_GROUPS_FILENAME don't match!")
-        Pair(tokens[0], route)
+        tokens[0] to route
     }
     Logger.info { "Mapped group to route" }
 
@@ -82,11 +77,10 @@ fun initializeCompetition(configFolderPath: String): Competition {
         checkAndReadFileInFolder(configFolderPath, GROUPS_REQUIREMENT_FILENAME)
     val requirementByGroup = groupRequirement.associate { row ->
         val tokens = row.split(',')
-        if (tokens.size != 3)
-            throw IllegalArgumentException(
-                "Number of commas in $row line in $GROUPS_REQUIREMENT_FILENAME incorrect! " +
-                        "Should be exactly three."
-            )
+        require(tokens.size == 3) {
+            "Number of commas in $row line in $GROUPS_REQUIREMENT_FILENAME incorrect! " +
+                    "Should be exactly three."
+        }
         val label = tokens[0]
         val ageFrom = tokens[1].toIntOrNull()
         requireNotNull(ageFrom) {
@@ -102,19 +96,15 @@ fun initializeCompetition(configFolderPath: String): Competition {
         requireNotNull(route) {
             "No route specified for group $label."
         }
-        Pair(
-            label,
-            AgeGroup(
-                label = label,
-                route = route,
-                ageFrom = ageFrom,
-                ageTo = ageTo,
-            ),
+        label to AgeGroup(
+            label = label,
+            route = route,
+            ageFrom = ageFrom,
+            ageTo = ageTo,
         )
     }
     for (g in groups)
-        if (!requirementByGroup.containsKey(g))
-            throw IllegalArgumentException("Requirements for group $g is missed!")
+        require(requirementByGroup.containsKey(g)) { "Requirements for group $g is missed!" }
     return Competition(
         discipline,
         name,

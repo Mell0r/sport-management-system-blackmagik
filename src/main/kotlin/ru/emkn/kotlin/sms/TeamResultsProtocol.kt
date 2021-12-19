@@ -9,10 +9,9 @@ class TeamResultsProtocol(scores: List<TeamToScore>) : CsvDumpable {
 
     private fun generatePlaces(): List<Int> {
         val places = (1..scores.size).toMutableList()
-        for (i in 0 until scores.lastIndex) {
-            if (scores[i].score == scores[i + 1].score)
-                places[i + 1] = places[i]
-        }
+        (0 until scores.lastIndex)
+            .filter { scores[it].score == scores[it + 1].score }
+            .forEach { places[it + 1] = places[it] }
         return places
     }
 

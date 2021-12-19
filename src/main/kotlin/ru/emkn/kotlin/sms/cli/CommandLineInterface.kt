@@ -1,3 +1,4 @@
+
 package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
@@ -9,6 +10,7 @@ import ru.emkn.kotlin.sms.io.readAndParseFile
 import java.io.File
 import kotlin.system.exitProcess
 
+@Suppress("unused") // as it is a possible mode
 fun runCommandLineInterface(args: Array<String>) {
     val argParsingSystem = ArgParsingSystem()
     argParsingSystem.parse(args)

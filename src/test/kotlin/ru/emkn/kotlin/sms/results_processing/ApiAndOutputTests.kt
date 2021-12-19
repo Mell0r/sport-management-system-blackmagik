@@ -78,7 +78,8 @@ internal class ApiTests {
                 FinalParticipantResult.Finished(Time(90)),
                 FinalParticipantResult.Disqualified(),
             ),
-            maleResults.entries.map { it.result })
+            maleResults.entries.map { it.result }
+        )
         val femaleResults = resultProtocols.single { it.group.label == "Ж10" }
         assertEquals(4, femaleResults.entries.single().id)
         assertEquals(FinalParticipantResult.Finished(Time(20)), femaleResults.entries.single().result)
@@ -249,10 +250,13 @@ internal class ApiTests {
     @Test
     fun testDisqualificationOnFalseStart() {
         val participants = ParticipantsList(
-            listOf(Participant(1, 10, "Иван", "Иванов", competition.getGroupByLabelOrNull("М10")!!, "T1", ""))
+            listOf(Participant(1, 10, "Иван", "Иванов", groupM10, "T1", ""))
         )
         val startingProtocols = listOf(
-            StartingProtocol(competition.getGroupByLabelOrNull("М10")!!, listOf(StartingProtocolEntry(1, 100.s())))
+            StartingProtocol(
+                groupM10,
+                listOf(StartingProtocolEntry(1, 100.s()))
+            )
         )
         val route = OrderedCheckpointsRoute("main", mutableListOf("1", "2"))
         val competition = Competition(
@@ -260,7 +264,7 @@ internal class ApiTests {
             "",
             0,
             "",
-            listOf(competition.getGroupByLabelOrNull("М10")!!),
+            listOf(groupM10),
             listOf(route),
         )
         val checkpointProtocols = listOf(
@@ -277,6 +281,4 @@ internal class ApiTests {
     }
 }
 
-private fun List<String>.asLines(): String {
-    return joinToString("\n")
-}
+private fun List<String>.asLines(): String = joinToString("\n")

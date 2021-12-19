@@ -7,11 +7,8 @@ abstract class Group(val label: String, var route: Route) : CsvStringDumpable {
 
 class AgeGroup(label: String, route: Route, val ageFrom: Int, val ageTo: Int) :
     Group(label, route) {
-    override fun checkParticipantValidity(participant: Participant): Boolean {
-        return participant.age in ageFrom..ageTo
-    }
+    override fun checkParticipantValidity(participant: Participant): Boolean =
+        participant.age in ageFrom..ageTo
 
-    override fun dumpToCsvString(): String {
-        return "$label,$ageFrom,$ageTo"
-    }
+    override fun dumpToCsvString(): String = "$label,$ageFrom,$ageTo"
 }

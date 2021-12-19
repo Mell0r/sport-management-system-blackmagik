@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class RouteCompletionProtocolsReadersTest {
-    val testCompetition = Competition(
+    private val testCompetition = Competition(
         discipline = "",
         name = "",
         year = 0,

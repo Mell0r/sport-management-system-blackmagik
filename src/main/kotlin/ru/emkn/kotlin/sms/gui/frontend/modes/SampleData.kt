@@ -37,27 +37,27 @@ val sampleOngoingCompetition = OnGoingCompetitionProgramState(
             q3 to Time(0),
         )
     )
-).also {
-    it.competitionModelController.addTimestamp(
+).apply {
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p1, "1", Time(1))
     )
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p1, "1", Time(81))
     )
     // p1 disqualified
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p2, "1", Time(40))
     )
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p2, "2", Time(53))
     )
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p2, "3", Time(106))
     )
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(p3, "1", Time(36))
     )
-    it.competitionModelController.addTimestamp(
+    competitionModelController.addTimestamp(
         ParticipantCheckpointTime(q2, "1", Time(39))
     )
 }

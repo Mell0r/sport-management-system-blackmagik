@@ -1,8 +1,12 @@
 package ru.emkn.kotlin.sms
 
-fun competitionToString(competition: Competition) : String {
-    return "Competition(discipline='${competition.discipline}', name='${competition.name}', year=${competition.year}, date='${competition.date}', groups=${competition.groups}, routes=${competition.routes})"
-}
+fun competitionToString(competition: Competition): String =
+    "Competition(discipline='${competition.discipline}', " +
+            "name='${competition.name}', " +
+            "year=${competition.year}, " +
+            "date='${competition.date}', " +
+            "groups=${competition.groups}, " +
+            "routes=${competition.routes})"
 
 fun groupEquals(group1: Group, group2: Group): Boolean {
     // i couldn't make a consistent equals of Group (AgeGroup) due to inheritance

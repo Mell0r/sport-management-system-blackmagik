@@ -27,11 +27,10 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
             competition: Competition
         ): Participant {
             val tokens = row.split(',')
-            if (row.count { it == ',' } != SIZE_OF_PARTICIPANT_LIST_ROW)
-                throw IllegalArgumentException(
-                    "Incorrect number of commas! " +
-                            "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
-                )
+            require(row.count { it == ',' } == SIZE_OF_PARTICIPANT_LIST_ROW) {
+                "Incorrect number of commas! " +
+                        "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
+            }
             val id = tokens[0].toIntOrThrow(
                 IllegalArgumentException("First argument(ID) of participant is not a number!")
             )
@@ -56,7 +55,7 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
 
     fun getParticipantById(id: Int) = list.find { it.id == id }
 
-    override fun dumpToCsv() = list.map { it.toString() }
+    override fun dumpToCsv() = list.map { "$it" }
     override fun defaultCsvFileName() = "participants-list.csv"
 
     override fun equals(other: Any?): Boolean {
@@ -68,7 +67,5 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
         return list.containsAll(other.list) && other.list.containsAll(list)
     }
 
-    override fun hashCode(): Int {
-        return list.hashCode()
-    }
+    override fun hashCode(): Int = list.hashCode()
 }

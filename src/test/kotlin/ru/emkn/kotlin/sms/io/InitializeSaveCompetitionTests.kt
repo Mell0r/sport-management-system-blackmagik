@@ -1,10 +1,13 @@
 package ru.emkn.kotlin.sms.io
 
-import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.TestDataSetCompetition1
+import ru.emkn.kotlin.sms.competitionEquals
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.*
+import kotlin.test.assertTrue
 
 internal class InitializeSaveCompetitionTests {
     /* Test data */

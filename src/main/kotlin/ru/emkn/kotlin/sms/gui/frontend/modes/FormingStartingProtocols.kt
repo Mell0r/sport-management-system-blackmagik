@@ -176,9 +176,7 @@ private fun LoadApplicationsFromCSVButton(
             }
             // add all applications
             applicationBuilders.addAll(
-                applications.map { application ->
-                    ApplicationBuilder.fromApplication(application)
-                }
+                applications.map(ApplicationBuilder.Companion::fromApplication)
             )
         },
         content = { Text(text = "Загрузить заявки из CSV") },
@@ -260,7 +258,7 @@ fun DisplayApplication(
                         applicationBuilder
                     )
                 },
-                { ApplicantBuilder() }
+                ::ApplicantBuilder
             )
         }
     }

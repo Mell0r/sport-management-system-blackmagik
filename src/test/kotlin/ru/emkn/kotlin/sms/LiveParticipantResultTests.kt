@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms
 import org.junit.Test
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 internal class LiveParticipantResultTests {

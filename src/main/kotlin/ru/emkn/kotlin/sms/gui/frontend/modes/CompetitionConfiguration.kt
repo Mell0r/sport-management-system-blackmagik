@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
-import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
@@ -33,7 +32,7 @@ import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import java.io.File
 
-val ages = (0..99).map { it.toString() }.toMutableStateList()
+val ages = (0..99).map { "$it" }.toMutableStateList()
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -117,9 +116,8 @@ fun DisplayGroup(
     availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>
 ) {
     @Composable
-    fun checkAge(a: String, b: String): Boolean {
-        return (a.toIntOrNull() ?: 0) > (b.toIntOrNull() ?: -1)
-    }
+    fun checkAge(a: String, b: String): Boolean =
+        (a.toIntOrNull() ?: 0) > (b.toIntOrNull() ?: -1)
 
     @Composable
     fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
@@ -210,7 +208,7 @@ fun CompetitionConfiguration(
                 )
             },
             competitionBuilder.value.routes,
-            { route -> DisplayRoute(route) },
+            { DisplayRoute(it) },
             {
                 OrderedCheckpointsRouteBuilder(
                     mutableStateOf(""),
@@ -231,7 +229,7 @@ fun CompetitionConfiguration(
             },
             competitionBuilder.value.groups,
             { group -> DisplayGroup(group, competitionBuilder.value.routes) },
-            { AgeGroupBuilder() },
+            ::AgeGroupBuilder,
             majorListsFontSize
         )
     }

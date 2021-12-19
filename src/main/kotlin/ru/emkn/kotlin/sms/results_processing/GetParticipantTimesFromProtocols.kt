@@ -14,9 +14,8 @@ fun getParticipantsTimesFromParticipantTimestampsProtocols(
 ): List<IdWithFinalResult> {
 
     val listOfIdAndCheckpointAndTimes =
-        routeCompletionProtocols.flatMap { protocol ->
-            val id = protocol.id
-            protocol.checkpointTimes.map { (checkpointLabel, time) ->
+        routeCompletionProtocols.flatMap { (id, checkpointTimes) ->
+            checkpointTimes.map { (checkpointLabel, time) ->
                 IdAndCheckpointAndTime(id, checkpointLabel, time)
             }
         }
@@ -33,9 +32,8 @@ fun getParticipantsTimesFromCheckpointTimestampsProtocols(
     helper: Helper
 ): List<IdWithFinalResult> {
     val listOfIdCheckpointTimes =
-        routeCompletionProtocols.flatMap { protocol ->
-            val checkpointLabel = protocol.checkpointLabel
-            protocol.participantTimes.map { (id, time) ->
+        routeCompletionProtocols.flatMap { (checkpointLabel, participantTimes) ->
+            participantTimes.map { (id, time) ->
                 IdAndCheckpointAndTime(id, checkpointLabel, time)
             }
         }

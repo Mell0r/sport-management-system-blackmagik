@@ -50,8 +50,7 @@ fun readRouteFromLine(line: String): Route {
 
 private fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
     val tokens = line.split(',').filter { it.isNotEmpty() }
-    if (tokens.isEmpty())
-        throw IllegalArgumentException("Empty line in 'Route_description.")
+    require(tokens.isNotEmpty()) { "Empty line in 'Route_description." }
     val name = tokens[0]
     val k = tokens[1].toIntOrNull()
         ?: throw IllegalArgumentException("Bad k (not a number): ${tokens[1]}")
@@ -140,9 +139,8 @@ class OrderedCheckpointsRoute(
         }
     }
 
-    override fun dumpToCsvString(): String {
-        return "$0$${name}," + orderedCheckpoints.joinToString(",")
-    }
+    override fun dumpToCsvString(): String =
+        "$0$${name}," + orderedCheckpoints.joinToString(",")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -156,11 +154,8 @@ class OrderedCheckpointsRoute(
         return true
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode() + 31 * orderedCheckpoints.hashCode()
-    }
-
-    override fun toString() = "OrderedCheckpointsRoute(${name}, ${orderedCheckpoints})"
+    override fun hashCode(): Int =
+        name.hashCode() + 31 * orderedCheckpoints.hashCode()
 }
 
 class AtLeastKCheckpointsRoute(
@@ -202,9 +197,8 @@ class AtLeastKCheckpointsRoute(
         )
     }
 
-    override fun dumpToCsvString(): String {
-        return "$1$${name},${threshold}," + checkpoints.joinToString(",")
-    }
+    override fun dumpToCsvString(): String =
+        "$1$${name},${threshold}," + checkpoints.joinToString(",")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -225,6 +219,4 @@ class AtLeastKCheckpointsRoute(
         result = 31 * result + name.hashCode()
         return result
     }
-
-    override fun toString() = "AtLeastKCheckpointsRoute(${name}, ${checkpoints})"
 }

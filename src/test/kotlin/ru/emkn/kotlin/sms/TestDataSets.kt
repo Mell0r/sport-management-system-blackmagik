@@ -1,16 +1,40 @@
 package ru.emkn.kotlin.sms
 
 object TestDataSetCompetition1 {
-    val testRoutes = listOf(
-        OrderedCheckpointsRoute("orderedRoute1", mutableListOf("c1", "c2", "c3")),
-        OrderedCheckpointsRoute("orderedRoute2", mutableListOf("c2", "c1", "c3", "c4", "c1", "c2")),
-        OrderedCheckpointsRoute("orderedRoute3", mutableListOf("c6", "c7", "c1", "c2", "c5", "c1", "c2", "c1")),
-        OrderedCheckpointsRoute("orderedRoute4", mutableListOf("c2", "c1", "c3")),
-        AtLeastKCheckpointsRoute("ALKCRoute1", mutableSetOf("c1", "c2", "c3", "c5"), 3),
-        AtLeastKCheckpointsRoute("ALKCRoute2", mutableSetOf("c1", "c2", "c3", "c5"), 2),
-        AtLeastKCheckpointsRoute("ALKCRoute3", mutableSetOf("c5", "c6", "c7"), 2),
+    private val testRoutes = listOf(
+        OrderedCheckpointsRoute(
+            "orderedRoute1",
+            mutableListOf("c1", "c2", "c3")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute2",
+            mutableListOf("c2", "c1", "c3", "c4", "c1", "c2")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute3",
+            mutableListOf("c6", "c7", "c1", "c2", "c5", "c1", "c2", "c1")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute4",
+            mutableListOf("c2", "c1", "c3")
+        ),
+        AtLeastKCheckpointsRoute(
+            "ALKCRoute1",
+            mutableSetOf("c1", "c2", "c3", "c5"),
+            3
+        ),
+        AtLeastKCheckpointsRoute(
+            "ALKCRoute2",
+            mutableSetOf("c1", "c2", "c3", "c5"),
+            2
+        ),
+        AtLeastKCheckpointsRoute(
+            "ALKCRoute3",
+            mutableSetOf("c5", "c6", "c7"),
+            2
+        ),
     )
-    val testGroups = listOf(
+    private val testGroups = listOf(
         AgeGroup("group0", testRoutes[0], 18, 21),
         AgeGroup("group1", testRoutes[1], 25, 35),
         AgeGroup("group2", testRoutes[2], 20, 50),
@@ -60,13 +84,25 @@ object TestDataSetCompetition1 {
 }
 
 object TestDataSetCompetition1WithoutAtLeastKRoutes {
-    val testRoutes = listOf(
-        OrderedCheckpointsRoute("orderedRoute1", mutableListOf("c1", "c2", "c3")),
-        OrderedCheckpointsRoute("orderedRoute2", mutableListOf("c2", "c1", "c3", "c4", "c1", "c2")),
-        OrderedCheckpointsRoute("orderedRoute3", mutableListOf("c6", "c7", "c1", "c2", "c5", "c1", "c2", "c1")),
-        OrderedCheckpointsRoute("orderedRoute4", mutableListOf("c2", "c1", "c3")),
+    private val testRoutes = listOf(
+        OrderedCheckpointsRoute(
+            "orderedRoute1",
+            mutableListOf("c1", "c2", "c3")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute2",
+            mutableListOf("c2", "c1", "c3", "c4", "c1", "c2")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute3",
+            mutableListOf("c6", "c7", "c1", "c2", "c5", "c1", "c2", "c1")
+        ),
+        OrderedCheckpointsRoute(
+            "orderedRoute4",
+            mutableListOf("c2", "c1", "c3")
+        ),
     )
-    val testGroups = listOf(
+    private val testGroups = listOf(
         AgeGroup("group0", testRoutes[0], 18, 21),
         AgeGroup("group1", testRoutes[1], 25, 35),
         AgeGroup("group2", testRoutes[2], 20, 50),

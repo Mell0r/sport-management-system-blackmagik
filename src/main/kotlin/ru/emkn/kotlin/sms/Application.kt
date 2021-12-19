@@ -50,12 +50,9 @@ class Application(
             competition: Competition
         ): Application {
             val application = fileContent.map { row -> row.split(",") }
-            if (application.size < 2)
-                throw IllegalArgumentException("Application can not be empty!")
-            if (application.any { it.size != SIZE_OF_APPLICATION_ROW })
-                throw IllegalArgumentException("Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}.")
-            if (application[0][0] == "")
-                throw IllegalArgumentException("Application can not have empty team name!")
+            require(application.size >= 2) { "Application can not be empty!" }
+            require(application.all { it.size == SIZE_OF_APPLICATION_ROW }) { "Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}." }
+            require(application[0][0] != "") { "Application can not have empty team name!" }
 
             val teamName = application[0][0]
             val applicantsList = application
