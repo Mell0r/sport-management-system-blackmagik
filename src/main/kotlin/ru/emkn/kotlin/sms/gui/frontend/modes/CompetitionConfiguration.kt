@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
@@ -183,8 +184,7 @@ fun CompetitionConfiguration(
             Column {
                 Button(
                     onClick = {
-                        programState.value =
-                            state.nextProgramState()
+                        programState.value = state.nextProgramState()
                     },
                     content = { Text("Сохранить и далее") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
@@ -244,14 +244,16 @@ private fun ExportCompetitionButton(
         onClick = onClick@{
             val folder: File? = pickFolderDialog()
             if (folder == null) {
+                // No failure window is required because user probably just selected cancel
                 Logger.warn("No folder was selected; Aborting")
                 return@onClick
             }
-            try {
-                saveCompetition(competitionBuilder.build(), folder.absolutePath)
-            } catch (e: Exception) {
-                Logger.warn("Failed to save competition: ${e.message}.\nAborting.")
-            }
+            saveCompetition(competitionBuilder.build(), folder.absolutePath)
+                .onSuccess { /* TODO success window */ }
+                .onFailure { message ->
+                    Logger.warn("Failed to save competition.\n$message\nAborting.")
+                    /* TODO failure window */
+                }
         },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
@@ -267,14 +269,16 @@ private fun LoadCompetitionButton(
         onClick = onClick@{
             val folder: File? = pickFolderDialog()
             if (folder == null) {
+                // No failure window is required because user probably just selected cancel
                 Logger.warn("No folder was selected; Aborting")
                 return@onClick
             }
-            try {
-                competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
-            } catch (e: Exception) {
-                Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
-            }
+            competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
+                .onSuccess { /* TODO success window */ }
+                .onFailure { message ->
+                    Logger.warn("Failed to initialize competition.\n$message\nAborting.")
+                    /* TODO failure window */
+                }
         },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)

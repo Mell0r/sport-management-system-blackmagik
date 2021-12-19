@@ -1,6 +1,7 @@
 
 package ru.emkn.kotlin.sms.cli
 
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
@@ -37,15 +38,16 @@ fun exitWithInfoLog(): Nothing {
 
 private fun loadCompetition(competitionConfigDirPath: String): Competition {
     // Competition config MUST be loaded, otherwise program has to terminate.
-    return try {
-        initializeCompetition(competitionConfigDirPath)
-    } catch (e: IllegalArgumentException) {
-        Logger.error {
-            "Competition config files in directory \"$competitionConfigDirPath\" are invalid! See following exception:\n" +
-                    "${e.message}"
-        }
-        exitWithInfoLog()
-    }
+    return initializeCompetition(competitionConfigDirPath).mapBoth(
+        success = { it },
+        failure = { message ->
+            Logger.error {
+                "Competition config files in directory \"$competitionConfigDirPath\" are invalid! See following exception:\n" +
+                        "${message}"
+            }
+            exitWithInfoLog()
+        },
+    )
 }
 
 private fun ensureOutputDirectory(outputDirectoryPath: String): File {

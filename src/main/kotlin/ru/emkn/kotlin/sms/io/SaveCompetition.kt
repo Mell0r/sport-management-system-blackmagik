@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.io
 
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import java.io.File
@@ -11,21 +12,34 @@ import java.io.File
  *
  * @throws [IllegalArgumentException] if an IO exception happened.
  */
-fun saveCompetition(competition: Competition, configFolderPath: String) {
+fun saveCompetition(competition: Competition, configFolderPath: String): Result<Unit, String?> {
     Logger.debug { "Beginning to save competition to directory \"$configFolderPath\"." }
-    val directory = File(configFolderPath)
-    if (directory.exists()) {
-        require(directory.isDirectory) {
-            "Config folder exists and is not \"$configFolderPath\" is not a directory!"
+    val result = runCatching {
+        val directory = File(configFolderPath)
+        if (directory.exists()) {
+            require(directory.isDirectory) {
+                "Config folder exists and is not \"$configFolderPath\" is not a directory!"
+            }
+        } else {
+            directory.mkdirs()
         }
-    } else {
-        directory.mkdirs()
+        saveNameAndDate(competition, directory)
+        saveRouteOfGroups(competition, directory)
+        saveRouteDescription(competition, directory)
+        saveGroupsRequirement(competition, directory)
     }
-    saveNameAndDate(competition, directory)
-    saveRouteOfGroups(competition, directory)
-    saveRouteDescription(competition, directory)
-    saveGroupsRequirement(competition, directory)
-    Logger.debug { "Successfully finished saving competition to directory \"$configFolderPath\"." }
+    return result.mapEither(
+        success = {
+            Logger.debug("Successfully finished saving competition to directory \"$configFolderPath\".")
+        },
+        failure = {
+            Logger.debug {
+                "Some error happened while saving competition to to directory \"$configFolderPath\".\n" +
+                        it.message
+            }
+            it.message
+        },
+    )
 }
 
 private fun saveNameAndDate(competition: Competition, directory: File) {

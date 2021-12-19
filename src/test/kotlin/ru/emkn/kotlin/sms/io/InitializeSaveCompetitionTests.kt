@@ -1,13 +1,12 @@
 package ru.emkn.kotlin.sms.io
 
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.TestDataSetCompetition1
 import ru.emkn.kotlin.sms.competitionEquals
 import java.io.File
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 internal class InitializeSaveCompetitionTests {
     /* Test data */
@@ -29,7 +28,8 @@ internal class InitializeSaveCompetitionTests {
     private fun testSingleCompetition(competition: Competition) {
         val dirPath = "$testDataDir/testCompetition-${competition.name}"
         saveCompetition(competition, dirPath)
-        val loadedCompetition = initializeCompetition(dirPath)
+        val (loadedCompetition, _) = initializeCompetition(dirPath)
+        assertNotNull(loadedCompetition)
         assertTrue(competitionEquals(competition, loadedCompetition))
     }
 

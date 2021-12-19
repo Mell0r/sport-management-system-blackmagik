@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
@@ -67,9 +68,11 @@ class CompetitionBuilder(
      *
      * @throws [IllegalArgumentException] if something went wrong.
      */
-    fun replaceFromFilesInFolder(configFolderPath: String) {
-        val competition = initializeCompetition(configFolderPath)
-        return replaceFromCompetition(competition)
+    fun replaceFromFilesInFolder(configFolderPath: String): Result<Unit, String?> {
+        return initializeCompetition(configFolderPath).mapEither(
+            success = { competition -> replaceFromCompetition(competition) },
+            failure = { it }
+        )
     }
 
     /**

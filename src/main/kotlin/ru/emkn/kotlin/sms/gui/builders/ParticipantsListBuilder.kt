@@ -8,6 +8,7 @@ import com.github.michaelbull.result.mapEither
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.catchIllegalArgumentExceptionToString
 import ru.emkn.kotlin.sms.io.ReadFailException
 import ru.emkn.kotlin.sms.io.WrongFormatException
 import ru.emkn.kotlin.sms.io.readAndParseFile
@@ -48,12 +49,7 @@ class ParticipantsListBuilder(
                 success = {
                     fromParticipantsList(it)
                 },
-                failure = { exception ->
-                    when (exception) {
-                        is IllegalArgumentException -> exception.message
-                        else -> throw exception // propagate the exception if we cannot handle it here
-                    }
-                }
+                failure = ::catchIllegalArgumentExceptionToString,
             )
         }
 
