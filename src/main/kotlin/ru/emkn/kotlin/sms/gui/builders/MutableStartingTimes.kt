@@ -1,12 +1,15 @@
 package ru.emkn.kotlin.sms.gui.builders
 
-import com.github.michaelbull.result.*
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.andThen
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.io.readAndParseAllFilesOrErrorMessage
 import ru.emkn.kotlin.sms.time.Time
 import java.io.File
+import kotlin.collections.set
 
 class MutableStartingTimes(
     val startingTimesMapping: SnapshotStateMap<Participant, Time> = mutableStateMapOf(),
@@ -25,7 +28,8 @@ class MutableStartingTimes(
         startingTimesMapping.clear()
         startingProtocols.forEach { startingProtocol ->
             startingProtocol.entries.forEach { (participantID, startingTime) ->
-                val participant = participantsList.getParticipantById(participantID)
+                val participant =
+                    participantsList.getParticipantById(participantID)
                         ?: return Err("There is participant with ID=$participantID in participants list.")
                 startingTimesMapping[participant] = startingTime
             }
@@ -49,15 +53,16 @@ class MutableStartingTimes(
         competition: Competition,
         participantsList: ParticipantsList,
     ): UnitOrMessage {
-        val startingProtocols = readAndParseAllFilesOrErrorMessage(
+        return readAndParseAllFilesOrErrorMessage(
             files = files,
             competition = competition,
             parser = StartingProtocol::readFromFileContentAndCompetition,
-        ).mapBoth(
-            success = { it },
-            failure = { return Err(it) },
-        )
-        return replaceFromStartingProtocolsAndParticipantsList(startingProtocols, participantsList)
+        ).andThen { startingProtocols ->
+            replaceFromStartingProtocolsAndParticipantsList(
+                startingProtocols,
+                participantsList
+            )
+        }
     }
 
     /**
