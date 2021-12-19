@@ -83,7 +83,7 @@ private fun LoadReadyStartingConfigurationButton(
     errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = {
+        onClick = onClick@{
             Logger.debug { "User pressed load ready start configuration." }
 
             val rawParticipantsListFile = openFileDialog(
@@ -92,7 +92,7 @@ private fun LoadReadyStartingConfigurationButton(
             )
             if (rawParticipantsListFile.size != 1) {
                 Logger.error { "User did not select exactly one participants list file." }
-                return@Button
+                return@onClick
             }
             val participantsListFile = rawParticipantsListFile.single()
 
@@ -110,11 +110,11 @@ private fun LoadReadyStartingConfigurationButton(
             } catch (e: ReadFailException) {
                 Logger.error { "Could not read participants list. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             } catch (e: WrongFormatException) {
                 Logger.error { "Participants list had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             }
 
             val startingProtocols = try {
@@ -126,11 +126,11 @@ private fun LoadReadyStartingConfigurationButton(
             } catch (e: ReadFailException) {
                 Logger.error { "Could not read some starting protocol. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             } catch (e: WrongFormatException) {
                 Logger.error { "Some starting protocol had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             }
 
             // successfully read participants list and starting protocols
@@ -154,7 +154,7 @@ private fun LoadApplicationsFromCSVButton(
     errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = {
+        onClick = onClick@{
             val files = openFileDialog(
                 title = "Загрузить заявки из CSV",
                 allowMultiSelection = true
@@ -168,11 +168,11 @@ private fun LoadApplicationsFromCSVButton(
             } catch (e: ReadFailException) {
                 Logger.error { "Could not read applications. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             } catch (e: WrongFormatException) {
                 Logger.error { "Some application had wrong format. Following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             }
             // add all applications
             applicationBuilders.addAll(
@@ -193,7 +193,7 @@ private fun SaveAndNextButton(
     errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = {
+        onClick = onClick@{
             // form applications
             // if something went wrong, do not succeed to the next mode
             val applicationBuilders = applications.toList()
@@ -202,7 +202,7 @@ private fun SaveAndNextButton(
             } catch (e: IllegalArgumentException) {
                 Logger.error { "Could not form applications, following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             }
             val (participantsList, startingProtocols) = try {
                 getStartConfigurationByApplications(
@@ -212,7 +212,7 @@ private fun SaveAndNextButton(
             } catch (e: IllegalArgumentException) {
                 Logger.error { "Could not form starting configuration, following exception occurred:\n${e.message}" }
                 errorMessage.value = e.message
-                return@Button
+                return@onClick
             }
             // form participant list and starting times
             state.participantsListBuilder.replaceFromParticipantsList(
