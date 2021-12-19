@@ -38,23 +38,6 @@ fun readFileContentOrNull(file: File): FileContent? {
 }
 
 
-/**
- * Tries to read content of all specified [java.io.File]'s.
- * If it cannot read a file, it reacts based on a function [reactionOnFailure].
- */
-fun readAllReadableFiles(
-    files: List<File>,
-    reactionOnFailure: (File) -> Unit = {},
-): List<List<String>> {
-    return files.map { file ->
-        file to readFileContentOrNull(file)
-    }.mapNotNull { (file, content) ->
-        if (content == null) {
-            reactionOnFailure(file)
-        }
-        content
-    }
-}
 
 /**
  * Tries to read content of all specified [java.io.File]'s.

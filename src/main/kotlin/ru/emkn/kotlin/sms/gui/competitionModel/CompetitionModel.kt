@@ -46,11 +46,6 @@ class CompetitionModel(
             notifyAllListeners()
         }
 
-        fun removeTimestamp(timestamp: ParticipantCheckpointTime) {
-            require(timestamps.remove(timestamp))
-            notifyAllListeners()
-        }
-
         fun addTimestampsFromProtocolsByParticipant(protocols: List<ParticipantTimestampsProtocol>) {
             val timestampsToAdd = protocols
                 .flatMap { (participantID, checkpointAndTimePairs) ->
@@ -137,9 +132,5 @@ class CompetitionModel(
                 )
         }
 
-        fun clearAllTimestamps() {
-            timestamps.clear()
-            notifyAllListeners()
-        }
     }
 }

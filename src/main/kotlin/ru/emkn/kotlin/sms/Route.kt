@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms
 
-import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.time.Time
 import java.lang.Integer.max
 
@@ -117,25 +116,6 @@ class OrderedCheckpointsRoute(
                 // Passed checkpoints in wrong order
                 LiveParticipantResult.Disqualified()
             }
-        }
-    }
-
-    private fun logFalseStartWarning(
-        checkpointsToTimes: List<CheckpointAndTime>,
-        startingTime: Time
-    ) {
-        Logger.warn {
-            "Current participant passed his first checkpoint (at ${checkpointsToTimes.minOf { it.time }}) before he is supposed to start (${
-                startingTime
-            }). Disqualifying."
-        }
-    }
-
-    private fun logDisqualificationWarning(chronologicalCheckpoints: List<CheckpointLabelT>) {
-        Logger.warn {
-            "Current participant passed checkpoints in wrong order (expected: ${
-                orderedCheckpoints
-            }, actual: $chronologicalCheckpoints). Disqualifying."
         }
     }
 

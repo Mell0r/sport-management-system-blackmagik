@@ -89,7 +89,7 @@ fun DisplayResults(
             val participantsWithLiveResults = liveResultProtocol.entries
             val participantField = FieldComparableBySelector(
                 "Участник",
-                { it: ParticipantWithLiveResult -> it.participant.toString() },
+                { (participant, _): ParticipantWithLiveResult -> "$participant" },
                 { it.participant.toString() },
                 200f
             )

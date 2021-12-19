@@ -5,7 +5,6 @@ import ru.emkn.kotlin.sms.time.Time
 
 class Helper(
     private val participantsList: ParticipantsList,
-    private val competitionConfig: Competition,
     private val startingProtocols: List<StartingProtocol>
 ) {
     fun getRouteOf(id: Int): Route {
@@ -42,7 +41,7 @@ fun generateResultsProtocolsOfParticipant(
         participantTimestampsProtocols,
         competitionConfig
     )
-    val helper = Helper(participantsList, competitionConfig, startingProtocols)
+    val helper = Helper(participantsList, startingProtocols)
     val participantTimes =
         getParticipantsTimesFromParticipantTimestampsProtocols(
             participantTimestampsProtocols,
@@ -66,7 +65,7 @@ fun generateResultsProtocolsOfCheckpoint(
         checkpointTimestampsProtocols,
         competitionConfig
     )
-    val helper = Helper(participantsList, competitionConfig, startingProtocols)
+    val helper = Helper(participantsList, startingProtocols)
     val participantTimes =
         getParticipantsTimesFromCheckpointTimestampsProtocols(
             checkpointTimestampsProtocols,
