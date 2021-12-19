@@ -14,11 +14,12 @@ import java.io.File
 fun saveCompetition(competition: Competition, configFolderPath: String) {
     Logger.debug { "Beginning to save competition to directory \"$configFolderPath\"." }
     val directory = File(configFolderPath)
-    require(!directory.isDirectory) {
-        "Config folder \"$configFolderPath\" is not a directory!"
-    }
-    require(directory.mkdirs()) {
-        "Could not create all necessary directories for directory \"$configFolderPath\"."
+    if (directory.exists()) {
+        require(directory.isDirectory) {
+            "Config folder exists and is not \"$configFolderPath\" is not a directory!"
+        }
+    } else {
+        directory.mkdirs()
     }
     saveNameAndDate(competition, directory)
     saveRouteOfGroups(competition, directory)

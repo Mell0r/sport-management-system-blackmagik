@@ -27,9 +27,9 @@ internal class InitializeSaveCompetitionTests {
     }
 
     private fun testSingleCompetition(competition: Competition) {
-        val dir = "$testDataDir/testCompetition-${competition.name}"
-        saveCompetition(competition, dir)
-        val loadedCompetition = initializeCompetition(dir)
+        val dirPath = "$testDataDir/testCompetition-${competition.name}"
+        saveCompetition(competition, dirPath)
+        val loadedCompetition = initializeCompetition(dirPath)
         assertTrue(competitionEquals(competition, loadedCompetition))
     }
 

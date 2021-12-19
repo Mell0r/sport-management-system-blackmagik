@@ -30,6 +30,7 @@ import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.io.saveCompetition
 import java.io.File
 
 val ages = (0..99).map { "$it" }.toMutableStateList()
@@ -240,12 +241,21 @@ private fun ExportCompetitionButton(
     dialogSize: DpSize,
 ) {
     Button(
-        onClick = {
-            TODO()
+        onClick = onClick@{
+            val folder: File? = pickFolderDialog()
+            if (folder == null) {
+                Logger.warn("No folder was selected; Aborting")
+                return@onClick
+            }
+            try {
+                saveCompetition(competitionBuilder.build(), folder.absolutePath)
+            } catch (e: Exception) {
+                Logger.warn("Failed to save competition: ${e.message}.\nAborting.")
+            }
         },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
-    ) { Text("Сохранить соревнование") }
+    ) { Text("Сохранить соревнование в папку (CSV)") }
 }
 
 @Composable
@@ -255,18 +265,18 @@ private fun LoadCompetitionButton(
 ) {
     Button(
         onClick = onClick@{
-            val file: File? = pickFolderDialog()
-            if (file == null) {
+            val folder: File? = pickFolderDialog()
+            if (folder == null) {
                 Logger.warn("No folder was selected; Aborting")
                 return@onClick
             }
             try {
-                competitionBuilder.replaceFromFilesInFolder(file.absolutePath)
+                competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
             } catch (e: Exception) {
                 Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
             }
         },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
-    ) { Text("Загрузить соревнование из папки") }
+    ) { Text("Загрузить соревнование из папки (CSV)") }
 }
