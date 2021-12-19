@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui
+package ru.emkn.kotlin.sms.gui.frontend
 
 import ru.emkn.kotlin.sms.AgeGroup
 import ru.emkn.kotlin.sms.Competition
