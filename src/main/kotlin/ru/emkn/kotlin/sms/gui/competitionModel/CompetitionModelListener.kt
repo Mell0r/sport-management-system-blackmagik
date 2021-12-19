@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui.competitonModel
+package ru.emkn.kotlin.sms.gui.competitionModel
 
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 

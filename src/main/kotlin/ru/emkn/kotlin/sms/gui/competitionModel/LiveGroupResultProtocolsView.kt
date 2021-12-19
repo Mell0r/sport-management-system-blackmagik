@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui.competitonModel
+package ru.emkn.kotlin.sms.gui.competitionModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

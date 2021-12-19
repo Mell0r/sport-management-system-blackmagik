@@ -51,13 +51,13 @@ private fun LoadParticipantsTimestampsButton(
     errorMessage: MutableState<String?>
 ) {
     Button(onClick = {
-        val files = openFileDialog("Load participant timestamps protocols")
+        val files = openFileDialog("Загрузить протоколы прохождения участников")
             .map { it.path }
         state.competitionModelController
             .addTimestampsFromProtocolFilesByParticipant(files)
             .onSuccess { errorMessage.value = null }
             .onFailure { errorMessage.value = it }
-    }) { Text("Load participant timestamps protocols") }
+    }) { Text("Загрузить протоколы прохождения участников") }
 }
 
 @Composable
@@ -66,13 +66,14 @@ private fun LoadCheckpointsTimestampsButton(
     errorMessage: MutableState<String?>
 ) {
     Button(onClick = {
-        val files = openFileDialog("Load checkpoint timestamps protocols")
-            .map { it.path }
+        val files =
+            openFileDialog("Загрузить протоколы отметок на контрольных точках")
+                .map { it.path }
         state.competitionModelController
             .addTimestampsFromProtocolFilesByCheckpoint(files)
             .onSuccess { errorMessage.value = null }
             .onFailure { errorMessage.value = it }
-    }) { Text("Load checkpoint timestamps protocols") }
+    }) { Text("Загрузить протоколы отметок на контрольных точках") }
 }
 
 @Composable

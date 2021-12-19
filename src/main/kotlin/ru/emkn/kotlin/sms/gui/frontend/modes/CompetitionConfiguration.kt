@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
@@ -206,17 +207,18 @@ fun CompetitionConfiguration(
                             competitionBuilder.value =
                                 CompetitionBuilder.fromFilesInFolder(file.absolutePath)
                         } catch (e: Exception) {
+                            Logger.warn("Failed to initialize competition: ${e.message}.\nAborting.")
                         }
                     },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
                         .size(dialogSize.width / 4, dialogSize.height / 10)
-                ) { Text("Bitch") }
+                ) { Text("Загрузить соревнование из папки") }
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
                 Button(
-                    onClick = {},
+                    onClick = { Logger.info("Sorry, not implemented") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
                         .size(dialogSize.width / 4, dialogSize.height / 10)
-                ) { Text("Bitch") }
+                ) { Text("Сохранить соревнование") }
             }
         }
 

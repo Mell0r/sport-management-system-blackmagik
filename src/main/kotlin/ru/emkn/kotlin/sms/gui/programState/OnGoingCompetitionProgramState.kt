@@ -5,7 +5,7 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
-import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
 
 /**
  * Mode 3 of the program:

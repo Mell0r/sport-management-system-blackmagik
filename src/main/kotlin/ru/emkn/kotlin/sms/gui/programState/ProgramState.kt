@@ -3,8 +3,8 @@ package ru.emkn.kotlin.sms.gui.programState
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.StartingTimes
-import ru.emkn.kotlin.sms.gui.competitonModel.CompetitionModel
-import ru.emkn.kotlin.sms.gui.competitonModel.LiveGroupResultProtocolsView
+import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.LiveGroupResultProtocolsView
 
 /**
  * Abstract class with all backend

@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui.competitonModel
+package ru.emkn.kotlin.sms.gui.competitionModel
 
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapEither
