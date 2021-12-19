@@ -159,6 +159,8 @@ class OrderedCheckpointsRoute(
     override fun hashCode(): Int {
         return name.hashCode() + 31 * orderedCheckpoints.hashCode()
     }
+
+    override fun toString() = "OrderedCheckpointsRoute(${name}, ${orderedCheckpoints})"
 }
 
 class AtLeastKCheckpointsRoute(
@@ -223,4 +225,6 @@ class AtLeastKCheckpointsRoute(
         result = 31 * result + name.hashCode()
         return result
     }
+
+    override fun toString() = "AtLeastKCheckpointsRoute(${name}, ${checkpoints})"
 }

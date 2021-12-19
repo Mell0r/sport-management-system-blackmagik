@@ -11,6 +11,6 @@ class OrderedCheckpointsRouteBuilder(
 ) {
     fun toOrderedCheckpointsRoute() = OrderedCheckpointsRoute(
         name.value,
-        orderedCheckpoints.map { it.value }.toMutableList()
+        orderedCheckpoints.map { it.value }.toMutableList(),
     )
 }
