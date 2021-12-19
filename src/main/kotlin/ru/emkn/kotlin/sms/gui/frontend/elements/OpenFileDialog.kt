@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui.frontend
+package ru.emkn.kotlin.sms.gui.frontend.elements
 
 import androidx.compose.ui.awt.ComposeWindow
 import java.awt.FileDialog

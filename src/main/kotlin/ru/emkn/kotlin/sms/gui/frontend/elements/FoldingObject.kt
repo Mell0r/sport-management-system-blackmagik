@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.gui.frontend
+package ru.emkn.kotlin.sms.gui.frontend.elements
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.TextUnit
+import ru.emkn.kotlin.sms.gui.frontend.getEmojiByUnicode
 
 val downArrow = getEmojiByUnicode(11167)
 val rightArrow = getEmojiByUnicode(11166)
@@ -17,8 +18,8 @@ val rightArrow = getEmojiByUnicode(11166)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FoldingObject(
-    Header: @Composable() () -> Unit,
-    Content: @Composable() () -> Unit,
+    Header: @Composable () -> Unit,
+    Content: @Composable () -> Unit,
     headerFontSize: TextUnit = TextUnit.Unspecified
 ) {
     var expanded by remember { mutableStateOf(false) }

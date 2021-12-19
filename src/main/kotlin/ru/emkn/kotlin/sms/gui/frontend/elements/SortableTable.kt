@@ -1,14 +1,15 @@
-package ru.emkn.kotlin.sms.gui.frontend
+package ru.emkn.kotlin.sms.gui.frontend.elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 
-@androidx.compose.runtime.Composable
+@Composable
 fun TextBox(text: String = "Item") {
     androidx.compose.foundation.layout.Box(
         modifier = androidx.compose.ui.Modifier.height(32.dp)
@@ -39,7 +40,7 @@ class FieldComparableBySelector<T, R : Comparable<R>>(
 
 }
 
-@androidx.compose.runtime.Composable
+@Composable
 fun <T> SortableTable(values: List<T>, fields: List<Field<T>>) {
     val fieldForSorting =
         androidx.compose.runtime.mutableStateOf(fields.first())
@@ -51,7 +52,7 @@ fun <T> SortableTable(values: List<T>, fields: List<Field<T>>) {
     }
 }
 
-@androidx.compose.runtime.Composable
+@Composable
 private fun <T> drawButtonRow(
     fields: List<Field<T>>,
     valuesSorted: androidx.compose.runtime.MutableState<List<T>>,
@@ -83,7 +84,7 @@ private fun <T> drawButtonRow(
     }
 }
 
-@androidx.compose.runtime.Composable
+@Composable
 private fun <T> drawValueRows(
     valuesSorted: androidx.compose.runtime.MutableState<List<T>>,
     fields: List<Field<T>>

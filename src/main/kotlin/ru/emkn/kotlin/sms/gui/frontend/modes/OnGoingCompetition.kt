@@ -12,10 +12,10 @@ import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import ru.emkn.kotlin.sms.ParticipantWithLiveResult
-import ru.emkn.kotlin.sms.gui.frontend.FieldComparableBySelector
-import ru.emkn.kotlin.sms.gui.frontend.ImmutableFoldingList
-import ru.emkn.kotlin.sms.gui.frontend.SortableTable
-import ru.emkn.kotlin.sms.gui.frontend.openFileDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.FieldComparableBySelector
+import ru.emkn.kotlin.sms.gui.frontend.elements.ImmutableFoldingList
+import ru.emkn.kotlin.sms.gui.frontend.elements.SortableTable
+import ru.emkn.kotlin.sms.gui.frontend.elements.openFileDialog
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 

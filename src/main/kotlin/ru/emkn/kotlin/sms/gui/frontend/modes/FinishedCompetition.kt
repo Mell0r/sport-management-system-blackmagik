@@ -14,8 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.gui.frontend.pickFolderDialog
-import ru.emkn.kotlin.sms.gui.frontend.saveFileDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.saveFileDialog
 import ru.emkn.kotlin.sms.gui.programState.FinishedCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 

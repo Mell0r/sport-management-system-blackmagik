@@ -25,8 +25,8 @@ import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.builders.INCORRECT_YEAR
 import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
-import ru.emkn.kotlin.sms.gui.frontend.FoldingList
-import ru.emkn.kotlin.sms.gui.frontend.LabeledDropdownMenu
+import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
+import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 

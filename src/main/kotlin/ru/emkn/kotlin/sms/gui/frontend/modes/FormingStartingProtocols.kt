@@ -22,9 +22,9 @@ import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.getStartConfigurationByApplications
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
-import ru.emkn.kotlin.sms.gui.frontend.FoldingList
-import ru.emkn.kotlin.sms.gui.frontend.LabeledDropdownMenu
-import ru.emkn.kotlin.sms.gui.frontend.openFileDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
+import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
+import ru.emkn.kotlin.sms.gui.frontend.elements.openFileDialog
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.ReadFailException
