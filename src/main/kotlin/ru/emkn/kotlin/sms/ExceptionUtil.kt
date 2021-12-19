@@ -3,6 +3,9 @@ package ru.emkn.kotlin.sms
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 
+typealias ResultOrMessage<T> = Result<T, String?>
+typealias UnitOrMessage = ResultOrMessage<Unit>
+
 fun logErrorAndThrow(message: String): Nothing {
     Logger.error(message)
     throw IllegalArgumentException(message)

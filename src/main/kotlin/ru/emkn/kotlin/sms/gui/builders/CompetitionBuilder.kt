@@ -6,9 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.github.michaelbull.result.*
-import ru.emkn.kotlin.sms.AgeGroup
-import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.OrderedCheckpointsRoute
+import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.io.initializeCompetition
 
 const val INCORRECT_YEAR = -6666
@@ -68,7 +66,7 @@ class CompetitionBuilder(
      *
      * @throws [IllegalArgumentException] if something went wrong.
      */
-    fun replaceFromFilesInFolder(configFolderPath: String): Result<Unit, String?> {
+    fun replaceFromFilesInFolder(configFolderPath: String): UnitOrMessage {
         return initializeCompetition(configFolderPath).mapEither(
             success = { competition -> replaceFromCompetition(competition) },
             failure = { it }

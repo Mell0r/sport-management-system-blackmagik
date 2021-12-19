@@ -3,15 +3,9 @@ package ru.emkn.kotlin.sms.gui.builders
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.mapEither
-import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.Participant
-import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.catchIllegalArgumentExceptionToString
-import ru.emkn.kotlin.sms.io.ReadFailException
-import ru.emkn.kotlin.sms.io.WrongFormatException
-import ru.emkn.kotlin.sms.io.readAndParseFile
+import com.github.michaelbull.result.*
+import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.io.readAndParseFileOrErrorMessage
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
@@ -22,6 +16,10 @@ class ParticipantsListBuilder(
         list.clear()
         list.addAll(participantsList.list)
     }
+    fun replaceFromParticipantsListBuilder(participantsListBuilder: ParticipantsListBuilder) {
+        list.clear()
+        list.addAll(participantsListBuilder.list)
+    }
 
     companion object {
         fun fromParticipantsList(participantsList: ParticipantsList) =
@@ -31,56 +29,20 @@ class ParticipantsListBuilder(
 
         /**
          * Creates a new [ParticipantsListBuilder]
-         * with data from [fileContent] and [competition]
+         * with data from file at [filePath] and with the help of [competition]
          * in format consistent with [ParticipantsList.readFromFileContentAndCompetition].
-         */
-        fun fromFileContentAndCompetition(
-            fileContent: FileContent,
-            competition: Competition,
-        ): Result<ParticipantsListBuilder, String?> {
-            val participantsListOrError =
-                com.github.michaelbull.result.runCatching {
-                    ParticipantsList.readFromFileContentAndCompetition(
-                        fileContent,
-                        competition
-                    )
-                }
-            return participantsListOrError.mapEither(
-                success = {
-                    fromParticipantsList(it)
-                },
-                failure = ::catchIllegalArgumentExceptionToString,
-            )
-        }
-
-        /**
-         * Creates a new [ParticipantsListBuilder]
-         * with data from file at [filePath]
-         * in format consistent with [ParticipantsList.readFromFileContentAndCompetition].
+         *
+         * If some exception happens, it is in the result message.
          */
         fun fromFileAndCompetition(
             filePath: String,
             competition: Competition,
-        ): Result<ParticipantsListBuilder, String?> {
-            val fileContentOrError = com.github.michaelbull.result.runCatching {
-                readAndParseFile(
-                    file = File(filePath),
-                    competition = competition,
-                    parser = ParticipantsList::readFromFileContentAndCompetition,
-                )
-            }
-            return fileContentOrError.mapEither(
-                success = {
-                    fromParticipantsList(it)
-                },
-                failure = { exception ->
-                    when (exception) {
-                        is ReadFailException -> exception.message
-                        is WrongFormatException -> exception.message
-                        else -> throw exception // propagate the exception if we cannot handle it here
-                    }
-                }
-            )
+        ): ResultOrMessage<ParticipantsListBuilder> {
+            return readAndParseFileOrErrorMessage(
+                file = File(filePath),
+                competition = competition,
+                parser = ParticipantsList::readFromFileContentAndCompetition,
+            ).map { participantsList -> fromParticipantsList(participantsList) }
         }
     }
 

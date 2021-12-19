@@ -2,10 +2,7 @@ package ru.emkn.kotlin.sms.io
 
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.AgeGroup
-import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.catchIllegalArgumentExceptionToString
-import ru.emkn.kotlin.sms.readRouteFromLine
+import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
@@ -23,7 +20,7 @@ fun checkAndReadFileInFolder(
     return file.readLines()
 }
 
-fun initializeCompetition(configFolderPath: String): Result<Competition, String?> {
+fun initializeCompetition(configFolderPath: String): ResultOrMessage<Competition> {
     return runCatching {
         _initializeCompetition(configFolderPath)
     }.mapEither(

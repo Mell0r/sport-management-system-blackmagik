@@ -15,22 +15,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Application
-import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.StartingProtocol
 import ru.emkn.kotlin.sms.getStartConfigurationByApplications
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
+import ru.emkn.kotlin.sms.gui.builders.ParticipantsListBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
 import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
 import ru.emkn.kotlin.sms.gui.frontend.elements.openFileDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.safeOpenSingleFileOrNull
 import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.io.*
 import ru.emkn.kotlin.sms.io.ReadFailException
 import ru.emkn.kotlin.sms.io.WrongFormatException
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.readAndParseFile
 
 @Composable
 fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
@@ -57,10 +57,11 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
             { ApplicationBuilder() },
             majorListsFontSize
         )
+
         val errorMessage = remember { mutableStateOf<String?>(null) }
 
         LoadApplicationsFromCSVButton(state, applicationBuilders, errorMessage)
-        LoadReadyStartingConfigurationButton(programState, state, errorMessage)
+        LoadReadyStartingConfigurationButton(programState, state)
         SaveAndNextButton(
             programState,
             state,
@@ -76,73 +77,57 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
 
 }
 
+private fun loadReadyStartingConfiguration(
+    programState: MutableState<ProgramState>,
+    state: FormingStartingProtocolsProgramState,
+) {
+    Logger.debug { "User pressed load ready start configuration." }
+
+    val participantsListFile = safeOpenSingleFileOrNull("Выберите список участников (participants-list.csv)")
+        ?: return
+    val startingProtocolFiles = openFileDialog(
+        title = "Выберите файлы стартовых протоколов",
+        allowMultiSelection = true,
+    ).toList()
+
+    val participantsListBuilder = ParticipantsListBuilder.fromFileAndCompetition(
+        filePath = participantsListFile.absolutePath,
+        competition = state.competition,
+    ).mapBoth(
+        success = { it },
+        failure = { errorMessage ->
+            // TODO failure window
+            return
+        },
+    )
+
+
+    // successfully read participants list and starting protocols
+
+    state.participantsListBuilder.replaceFromParticipantsListBuilder(participantsListBuilder)
+
+    state.startingTimes.replaceFromStartingProtocolFilesAndParticipantsList(
+        files = startingProtocolFiles,
+        competition = state.competition,
+        participantsList = state.participantsList,
+    ).mapBoth(
+        success = {},
+        failure = { errorMessage ->
+            // TODO failure window
+            return
+        },
+    )
+
+    programState.value = state.nextProgramState()
+}
+
 @Composable
 private fun LoadReadyStartingConfigurationButton(
     programState: MutableState<ProgramState>,
     state: FormingStartingProtocolsProgramState,
-    errorMessage: MutableState<String?>,
 ) {
     Button(
-        onClick = onClick@{
-            Logger.debug { "User pressed load ready start configuration." }
-
-            val rawParticipantsListFile = openFileDialog(
-                title = "Выберите список участников (participants-list.csv)",
-                allowMultiSelection = false,
-            )
-            if (rawParticipantsListFile.size != 1) {
-                Logger.error { "User did not select exactly one participants list file." }
-                return@onClick
-            }
-            val participantsListFile = rawParticipantsListFile.single()
-
-            val startingProtocolFiles = openFileDialog(
-                title = "Выберите файлы стартовых протоколов",
-                allowMultiSelection = true,
-            ).toList()
-
-            val participantsList = try {
-                readAndParseFile(
-                    file = participantsListFile,
-                    competition = state.competition,
-                    parser = ParticipantsList::readFromFileContentAndCompetition,
-                )
-            } catch (e: ReadFailException) {
-                Logger.error { "Could not read participants list. Following exception occurred:\n${e.message}" }
-                errorMessage.value = e.message
-                return@onClick
-            } catch (e: WrongFormatException) {
-                Logger.error { "Participants list had wrong format. Following exception occurred:\n${e.message}" }
-                errorMessage.value = e.message
-                return@onClick
-            }
-
-            val startingProtocols = try {
-                readAndParseAllFiles(
-                    files = startingProtocolFiles,
-                    competition = state.competition,
-                    parser = StartingProtocol::readFromFileContentAndCompetition,
-                )
-            } catch (e: ReadFailException) {
-                Logger.error { "Could not read some starting protocol. Following exception occurred:\n${e.message}" }
-                errorMessage.value = e.message
-                return@onClick
-            } catch (e: WrongFormatException) {
-                Logger.error { "Some starting protocol had wrong format. Following exception occurred:\n${e.message}" }
-                errorMessage.value = e.message
-                return@onClick
-            }
-
-            // successfully read participants list and starting protocols
-            state.participantsListBuilder.replaceFromParticipantsList(
-                participantsList
-            )
-            state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(
-                startingProtocols,
-                participantsList
-            )
-            programState.value = state.nextProgramState()
-        },
+        onClick = { loadReadyStartingConfiguration(programState, state) },
         content = { Text(text = "Загрузить готовые список учасников и стартовые протоколы из CSV и перейти далее.") },
     )
 }

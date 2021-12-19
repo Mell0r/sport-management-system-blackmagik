@@ -3,6 +3,8 @@ package ru.emkn.kotlin.sms.io
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.UnitOrMessage
 import java.io.File
 
 /**
@@ -12,7 +14,7 @@ import java.io.File
  *
  * @throws [IllegalArgumentException] if an IO exception happened.
  */
-fun saveCompetition(competition: Competition, configFolderPath: String): Result<Unit, String?> {
+fun saveCompetition(competition: Competition, configFolderPath: String): UnitOrMessage {
     Logger.debug { "Beginning to save competition to directory \"$configFolderPath\"." }
     val result = runCatching {
         val directory = File(configFolderPath)
