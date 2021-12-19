@@ -63,11 +63,9 @@ fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
         LoadReadyStartingConfigurationButton(programState, state)
         SaveAndNextButton(programState, state, applicationBuilders)
         SaveAndExportToCSVAndNextButton(programState, state, applicationBuilders)
-
-        SuccessDialog(successDialogMessage)
-        ErrorDialog(errorDialogMessage)
     }
-
+    SuccessDialog(successDialogMessage)
+    ErrorDialog(errorDialogMessage)
 }
 
 fun safeOpenSingleFileOrNull(title: String): File? {
