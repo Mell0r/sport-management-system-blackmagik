@@ -86,6 +86,7 @@ class CompetitionBuilder(
                 route = route,
                 ageFrom = ageGroupBuilder.ageFrom.value.toInt(),
                 ageTo = ageGroupBuilder.ageTo.value.toInt(),
+                competitionYear = year.value,
             )
         }
         return Competition(

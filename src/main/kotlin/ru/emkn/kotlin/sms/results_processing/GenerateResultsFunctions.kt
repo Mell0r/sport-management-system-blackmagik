@@ -1,53 +1,28 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 import ru.emkn.kotlin.sms.time.Time
-
-class Helper(
-    private val participantsList: ParticipantsList,
-    private val startingProtocols: List<StartingProtocol>
-) {
-    fun getRouteOf(id: Int): Route {
-        val group = getGroupOf(id)
-        return group.route
-    }
-
-    fun getParticipantBy(id: Int): Participant {
-        return participantsList.getParticipantById(id)
-            ?: throw InternalError("Bad input checker: participant with id \"$id\" wasn't found!")
-    }
-
-    fun getGroupOf(id: Int): Group {
-        return getParticipantBy(id).group
-    }
-
-    fun getStartingTimeOf(id: Int): Time =
-        startingProtocols.flatMap { it.entries }
-            .single { it.id == id }.startTime
-}
 
 /**
  * Part of API.
  */
 fun generateResultsProtocolsOfParticipant(
     participantsList: ParticipantsList,
-    startingProtocols: List<StartingProtocol>,
     participantTimestampsProtocols: List<ParticipantTimestampsProtocol>,
-    competitionConfig: Competition
+    competition: Competition,
 ): List<GroupResultProtocol> {
     checkInputCorrectnessParticipantTimestamps(
         participantsList,
-        startingProtocols,
         participantTimestampsProtocols,
-        competitionConfig
+        competition,
     )
-    val helper = Helper(participantsList, startingProtocols)
     val participantTimes =
         getParticipantsTimesFromParticipantTimestampsProtocols(
             participantTimestampsProtocols,
-            helper
+            participantsList,
         )
-    return convertToGroupResults(participantTimes, helper)
+    return convertToGroupResults(participantTimes, participantsList)
 }
 
 /**
@@ -55,39 +30,46 @@ fun generateResultsProtocolsOfParticipant(
  */
 fun generateResultsProtocolsOfCheckpoint(
     participantsList: ParticipantsList,
-    startingProtocols: List<StartingProtocol>,
     checkpointTimestampsProtocols: List<CheckpointTimestampsProtocol>,
     competitionConfig: Competition
 ): List<GroupResultProtocol> {
     checkInputCorrectnessCheckpointTimestamps(
         participantsList,
-        startingProtocols,
         checkpointTimestampsProtocols,
-        competitionConfig
+        competitionConfig,
     )
-    val helper = Helper(participantsList, startingProtocols)
     val participantTimes =
         getParticipantsTimesFromCheckpointTimestampsProtocols(
             checkpointTimestampsProtocols,
-            helper
+            participantsList,
         )
-    return convertToGroupResults(participantTimes, helper)
+    return convertToGroupResults(participantTimes, participantsList)
 }
 
 private fun convertToGroupResults(
     participantTimes: List<IdWithFinalResult>,
-    helper: Helper
+    participantsList: ParticipantsList,
 ): List<GroupResultProtocol> {
     val groupedByGroups = participantTimes.groupBy({ (id, _) ->
-        helper.getGroupOf(id)
+        val group = participantsList.getGroupOfId(id)
+        requireNotNull(group) {
+            "There is no participant with ID=$id"
+        }
+        group
     }) { (participant, completionTime) ->
         IdWithFinalResult(participant, completionTime)
     }
-    return groupedByGroups.map { (groupLabel, participantResults) ->
+    return groupedByGroups.map { (group, participantResults) ->
         generateResultProtocolWithinAGroup(
-            groupLabel,
+            group,
             participantResults
-        ) { id -> helper.getParticipantBy(id) }
+        ) { id ->
+            val participant = participantsList.getParticipantById(id)
+            requireNotNull(participant) {
+                "There is no participant with ID=$id"
+            }
+            participant
+        }
     }
 }
 

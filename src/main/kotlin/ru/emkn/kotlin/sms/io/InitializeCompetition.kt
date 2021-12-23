@@ -106,6 +106,7 @@ private fun throwingInitializeCompetition(configFolderPath: String): Competition
             route = route,
             ageFrom = ageFrom,
             ageTo = ageTo,
+            competitionYear = year,
         )
     }
     for (g in groups)

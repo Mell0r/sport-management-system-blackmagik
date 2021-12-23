@@ -3,7 +3,7 @@ val kotlin_version = "1.6.10"
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     id("application")
-    id("org.jetbrains.compose") version "1.0.1-rc2"
+    id("org.jetbrains.compose") version "1.0.1"
 }
 
 group = "ru.senin.kotlin"
@@ -27,7 +27,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")
     implementation("org.tinylog:tinylog-api-kotlin:2.3.2")

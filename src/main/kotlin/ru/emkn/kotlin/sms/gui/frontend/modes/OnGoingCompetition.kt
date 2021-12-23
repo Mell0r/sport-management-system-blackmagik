@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
+import org.tinylog.Logger
 import ru.emkn.kotlin.sms.ParticipantWithLiveResult
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
@@ -89,6 +92,7 @@ private fun LoadCheckpointsTimestampsButton(
 fun DisplayResults(
     state: OnGoingCompetitionProgramState,
 ) {
+    Logger.trace{"part. list: ${state.participantsList.list}"}
     val liveResultProtocols = state.liveGroupResultProtocolsView.protocols
     ImmutableFoldingList(
         { Text("Результаты", fontSize = 20.sp) },

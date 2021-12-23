@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import androidx.compose.foundation.layout.Column
@@ -17,26 +19,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.Application
-import ru.emkn.kotlin.sms.getStartConfigurationByApplications
+import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
-import ru.emkn.kotlin.sms.gui.builders.ParticipantsListBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
-import ru.emkn.kotlin.sms.gui.programState.FormingStartingProtocolsProgramState
+import ru.emkn.kotlin.sms.gui.programState.FormingParticipantsListProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
 import ru.emkn.kotlin.sms.io.*
+import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
+import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
 import java.io.File
 
 private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
 private val successDialogMessage: MutableState<String?> = mutableStateOf(null)
 
 @Composable
-fun FormingStartingProtocols(programState: MutableState<ProgramState>) {
+fun FormingParticipantsList(programState: MutableState<ProgramState>) {
     val state =
-        programState.value as? FormingStartingProtocolsProgramState ?: return
+        programState.value as? FormingParticipantsListProgramState ?: return
     val applicationBuilders =
         remember { mutableStateListOf<ApplicationBuilder>() }
 
@@ -84,41 +87,19 @@ fun safeOpenSingleFileOrNull(title: String): File? {
 
 private fun loadReadyStartingConfiguration(
     programState: MutableState<ProgramState>,
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
 ) {
     Logger.debug { "User pressed load ready start configuration." }
 
     val participantsListFile = safeOpenSingleFileOrNull("Выберите список участников (participants-list.csv)")
         ?: return
-    val startingProtocolFiles = openFileDialog(
-        title = "Выберите файлы стартовых протоколов",
-        allowMultiSelection = true,
-    ).toList()
-
-    val participantsListBuilder = ParticipantsListBuilder.fromFileAndCompetition(
-        filePath = participantsListFile.absolutePath,
-        competition = state.competition,
-    ).mapBoth(
-        success = { it },
-        failure = { errorMessage ->
-            errorDialogMessage.value = errorMessage
-            return
-        },
-    )
-
-    // successfully read participants list and starting protocols
-    state.participantsListBuilder.replaceFromParticipantsListBuilder(participantsListBuilder)
-    state.startingTimes.replaceFromStartingProtocolFilesAndParticipantsList(
-        files = startingProtocolFiles,
-        competition = state.competition,
-        participantsList = state.participantsList,
-    ).mapBoth(
-        success = {},
-        failure = { errorMessage ->
-            errorDialogMessage.value = errorMessage
-            return
-        },
-    )
+    val participantsList = try {
+        ParticipantsList.readFromFileAndCompetition(participantsListFile, state.competition)
+    } catch (e: IllegalArgumentException) {
+        errorDialogMessage.value = e.message
+        return
+    }
+    state.participantsList = participantsList
 
     programState.value = state.nextProgramState()
 }
@@ -126,16 +107,16 @@ private fun loadReadyStartingConfiguration(
 @Composable
 private fun LoadReadyStartingConfigurationButton(
     programState: MutableState<ProgramState>,
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
 ) {
     Button(
         onClick = { loadReadyStartingConfiguration(programState, state) },
-        content = { Text(text = "Загрузить готовые список учасников и стартовые протоколы из CSV и перейти далее.") },
+        content = { Text(text = "Загрузить готовый список учасников из CSV и перейти далее.") },
     )
 }
 
 private fun loadApplicationsFromCSV(
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applicationBuilders: SnapshotStateList<ApplicationBuilder>,
 ) {
     val files = openFileDialog(
@@ -165,7 +146,7 @@ private fun loadApplicationsFromCSV(
 
 @Composable
 private fun LoadApplicationsFromCSVButton(
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applicationBuilders: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
@@ -176,7 +157,7 @@ private fun LoadApplicationsFromCSVButton(
 
 private fun saveAndNext(
     programState: MutableState<ProgramState>,
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
     exportToCSV: Boolean = false,
 ) {
@@ -191,25 +172,19 @@ private fun saveAndNext(
         return
     }
 
-    val (participantsList, startingProtocols) = try {
-        getStartConfigurationByApplications(
-            applications = actualApplications,
-            competition = state.competition,
-        )
+    // form participant list
+    val participantsList = try {
+        val applicationProcessor = ApplicationProcessor(state.competition, actualApplications.toMutableList())
+        val processedApplicants = applicationProcessor.process()
+        val startingTimeAssigner = LinearStartingTimeAssigner()
+        startingTimeAssigner.assign(processedApplicants)
     } catch (e: IllegalArgumentException) {
         Logger.error { "Could not form starting configuration, following exception occurred:\n${e.message}" }
         errorDialogMessage.value = e.message
         return
     }
 
-    // form participant list and starting times
-    state.participantsListBuilder.replaceFromParticipantsList(
-        participantsList
-    )
-    state.startingTimes.replaceFromStartingProtocolsAndParticipantsList(
-        startingProtocols,
-        participantsList
-    )
+    state.participantsList = participantsList
 
     if (exportToCSV) {
         Logger.debug {"Saving participants list and starting protocols to CSV."}
@@ -227,7 +202,7 @@ private fun saveAndNext(
         }
 
         safeCSVDumpableToFile(participantsList, participantsListFile.absolutePath)
-        writeCSVDumpablesToDirectory(startingProtocols, folder)
+        writeCSVDumpablesToDirectory(participantsList.toStartingProtocols(), folder)
     }
 
     programState.value = state.nextProgramState()
@@ -236,7 +211,7 @@ private fun saveAndNext(
 @Composable
 private fun SaveAndNextButton(
     programState: MutableState<ProgramState>,
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
@@ -248,7 +223,7 @@ private fun SaveAndNextButton(
 @Composable
 private fun SaveAndExportToCSVAndNextButton(
     programState: MutableState<ProgramState>,
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
@@ -259,7 +234,7 @@ private fun SaveAndExportToCSVAndNextButton(
 
 @Composable
 fun DisplayApplication(
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applicationBuilder: ApplicationBuilder
 ) {
     Card(backgroundColor = Color.LightGray) {
@@ -297,7 +272,7 @@ fun DisplayApplication(
 
 @Composable
 fun ShowApplicantBuilder(
-    state: FormingStartingProtocolsProgramState,
+    state: FormingParticipantsListProgramState,
     applicantBuilder: ApplicantBuilder
 ) {
     val groups = state.competition.groups.map { it.label }.toMutableStateList()

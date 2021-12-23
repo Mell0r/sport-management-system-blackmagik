@@ -1,26 +1,20 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.startcfg
 
 import org.tinylog.Logger
+import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.CreatableFromFileContentAndCompetition
 import ru.emkn.kotlin.sms.results_processing.FileContent
 
-
-const val SIZE_OF_APPLICATION_ROW = 5
-
-data class Applicant(
-    val supposedGroupLabel: String,
-    val lastName: String,
-    val name: String,
-    val birthYear: Int,
-    val teamName: String,
-    val sportsCategory: String,
-)
-
-// class for an application for a single team
+/**
+ * An application for a single team.
+ */
 class Application(
     val teamName: String,
     val applicantsList: List<Applicant>,
 ) {
     companion object : CreatableFromFileContentAndCompetition<Application> {
+        private const val SIZE_OF_APPLICATION_ROW = 5
+
         private fun readApplicantFromLineOrNull(
             lineNo: Int,
             tokens: List<String>,

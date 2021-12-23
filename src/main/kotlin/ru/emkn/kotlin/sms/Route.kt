@@ -99,7 +99,7 @@ class OrderedCheckpointsRoute(
             )
             chronologicalCheckpoints == orderedCheckpoints -> {
                 // Finished
-                LiveParticipantResult.Finished(Time(lastCheckpointTime - startingTime))
+                LiveParticipantResult.Finished(lastCheckpointTime - startingTime)
             }
             chronologicalCheckpoints.size < orderedCheckpoints.size &&
                     chronologicalCheckpoints == orderedCheckpoints.dropLast(
@@ -109,7 +109,7 @@ class OrderedCheckpointsRoute(
                 // Participant is in process
                 LiveParticipantResult.InProcess(
                     chronologicalCheckpoints.size,
-                    Time(lastCheckpointTime - startingTime)
+                    lastCheckpointTime - startingTime
                 )
             }
             else -> {
@@ -173,7 +173,7 @@ class AtLeastKCheckpointsRoute(
         // Finished
         val lastRelevantCheckpoint = visitedCheckpointFromRoute[threshold - 1]
         return LiveParticipantResult.Finished(
-            Time(lastRelevantCheckpoint.time - startingTime)
+            lastRelevantCheckpoint.time - startingTime
         )
     }
 

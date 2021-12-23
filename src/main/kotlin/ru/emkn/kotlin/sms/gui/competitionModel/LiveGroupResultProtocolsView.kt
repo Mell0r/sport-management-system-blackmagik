@@ -22,15 +22,12 @@ class LiveGroupResultProtocolsView(
 
         val liveResultsWithinGroups =
             participantsByGroups.mapValues { (_, participants) ->
-                participants.map {
-                    val startingTimeOfParticipantOrNull =
-                        state.startingTimes.getStartingTimeOfOrNull(it)
-                    val liveResult = it.group.route.calculateLiveResult(
-                        checkpointsToTimes = checkpointsOfParticipant(it),
-                        startingTime = startingTimeOfParticipantOrNull
-                            ?: throw InternalError("No starting time for participant $it")
+                participants.map { participant ->
+                    val liveResult = participant.group.route.calculateLiveResult(
+                        checkpointsToTimes = checkpointsOfParticipant(participant),
+                        startingTime = participant.startingTime,
                     )
-                    ParticipantWithLiveResult(it, liveResult)
+                    ParticipantWithLiveResult(participant, liveResult)
                 }.sortedBy { it.liveResult }
             }
 

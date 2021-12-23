@@ -1,8 +1,10 @@
 package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.startcfg.StartingProtocol
+import ru.emkn.kotlin.sms.time.Time
 
-const val SIZE_OF_PARTICIPANT_LIST_ROW = 6
+const val SIZE_OF_PARTICIPANT_LIST_ROW = 7
 
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
     companion object :
@@ -42,18 +44,22 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
                 "Invalid group label \"$groupLabel\" of participant. No group with such label exist."
             }
             return Participant(
-                id,
-                age,
-                tokens[2],
-                tokens[3],
-                group,
-                tokens[5],
-                tokens[6]
+                id = id,
+                age = age,
+                name = tokens[2],
+                lastName = tokens[3],
+                group = group,
+                team = tokens[5],
+                sportsCategory = tokens[6],
+                startingTime = Time.fromString(tokens[7]),
             )
         }
     }
 
     fun getParticipantById(id: Int) = list.find { it.id == id }
+    fun getGroupOfId(id: Int) = getParticipantById(id)?.group
+    fun getRouteOfId(id: Int) = getParticipantById(id)?.group?.route
+    fun getStartingTimeOfId(id: Int) = getParticipantById(id)?.startingTime
 
     override fun dumpToCsv() = list.map { "$it" }
     override fun defaultCsvFileName() = "participants-list.csv"
@@ -68,4 +74,9 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
     }
 
     override fun hashCode(): Int = list.hashCode()
+
+    fun toStartingProtocols(): List<StartingProtocol> =
+        list.groupBy { it.group }.map { (group, participants) ->
+            StartingProtocol(group, participants)
+        }
 }

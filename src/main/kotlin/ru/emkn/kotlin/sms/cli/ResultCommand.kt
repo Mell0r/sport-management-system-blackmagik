@@ -4,7 +4,7 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.GroupResultProtocol
 import ru.emkn.kotlin.sms.RouteProtocolType
-import ru.emkn.kotlin.sms.StartingProtocol
+import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
@@ -22,27 +22,6 @@ class ResultCommand(
     override fun execute(competition: Competition, outputDirectory: File) {
         val participantsList =
             loadParticipantsList(participantListFile, competition)
-
-        val startingProtocols = readAndParseAllFiles(
-            files = startingProtocolFiles,
-            competition = competition,
-            parser = StartingProtocol.Companion::readFromFileContentAndCompetition,
-            strategyOnReadFail = { file ->
-                // Starting protocol MUST be read
-                // Otherwise terminating
-                Logger.error { "Starting protocol at \"${file.absolutePath}\" cannot be reached or read." }
-                exitWithInfoLog()
-            },
-            strategyOnWrongFormat = { file, exception ->
-                // Starting protocol MUST have correct format
-                // Otherwise terminating
-                Logger.error {
-                    "Starting protocol at \"${file.absolutePath}\" has invalid format:\n" +
-                            "${exception.message}"
-                }
-                exitWithInfoLog()
-            },
-        )
 
         fun routeCompletionProtocolCouldntBeReadStrategy(file: File) {
             Logger.error { "Route completion protocol at \"${file.absolutePath}\" cannot be reached or read" }
@@ -82,7 +61,6 @@ class ResultCommand(
             val resultProtocols = try {
                 generateResultsProtocolsOfCheckpoint(
                     participantsList,
-                    startingProtocols,
                     checkpointTimestampsProtocols,
                     competition
                 )
@@ -107,9 +85,8 @@ class ResultCommand(
             val resultProtocols = try {
                 generateResultsProtocolsOfParticipant(
                     participantsList,
-                    startingProtocols,
                     participantTimestampsProtocols,
-                    competition
+                    competition,
                 )
             } catch (e: IllegalArgumentException) {
                 Logger.error {

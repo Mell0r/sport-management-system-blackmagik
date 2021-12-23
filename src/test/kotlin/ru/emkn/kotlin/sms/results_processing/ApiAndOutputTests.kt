@@ -5,49 +5,35 @@ import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertEquals
 
-private fun Int.s() = Time(this)
+internal fun Int.s() = Time(this)
 
 internal class ApiTests {
     private val mainRoute =
         OrderedCheckpointsRoute("main", mutableListOf("1", "2", "3"))
     private val shortRoute = OrderedCheckpointsRoute("short", mutableListOf("1"))
+    private val competitionYear = 0
     private val competition = Competition(
         "",
         "",
-        0,
+        competitionYear,
         "",
         listOf(
-            AgeGroup("М10", mainRoute, -100, 100),
-            AgeGroup("Ж10", mainRoute, -100, 100)
+            AgeGroup("М10", mainRoute, -100, 100, competitionYear),
+            AgeGroup("Ж10", mainRoute, -100, 100, competitionYear),
         ),
         listOf(mainRoute, shortRoute),
     )
     private val groupM10 = competition.getGroupByLabelOrNull("М10")
-        ?: throw Error("Competition::getGroupByLabelOrNull si buggy (or typo in test.)")
+        ?: throw Error("Competition::getGroupByLabelOrNull is buggy (or typo in test.)")
     private val groupF10 = competition.getGroupByLabelOrNull("Ж10")
-        ?: throw Error("Competition::getGroupByLabelOrNull si buggy (or typo in test.)")
+        ?: throw Error("Competition::getGroupByLabelOrNull is buggy (or typo in test.)")
 
-    private val participants = ParticipantsList(
+    private val participantsList = ParticipantsList(
         listOf(
-            Participant(1, 10, "Иван", "Иванов", groupM10, "T1", ""),
-            Participant(2, 10, "Иван", "Неиванов", groupM10, "T2", ""),
-            Participant(3, 10, "Иван", "Дурак", groupM10, "T2", ""),
-            Participant(4, 10, "Афродита", "Иванова", groupF10, "T1", ""),
-        )
-    )
-    private val startingProtocols = listOf(
-        StartingProtocol(
-            competition.getGroupByLabelOrNull("М10")!!,
-            listOf(
-                StartingProtocolEntry(1, 0.s()),
-                StartingProtocolEntry(2, 0.s()),
-                StartingProtocolEntry(3, 0.s())
-            )
-        ), StartingProtocol(
-            competition.getGroupByLabelOrNull("Ж10")!!,
-            listOf(
-                StartingProtocolEntry(4, 0.s()),
-            )
+            Participant(1, 10, "Иван", "Иванов", groupM10, "T1", "", Time(0)),
+            Participant(2, 10, "Иван", "Неиванов", groupM10, "T2", "", Time(0)),
+            Participant(3, 10, "Иван", "Дурак", groupM10, "T2", "", Time(0)),
+            Participant(4, 10, "Афродита", "Иванова", groupF10, "T1", "", Time(0)),
         )
     )
 
@@ -104,8 +90,7 @@ internal class ApiTests {
             )
         )
         return generateResultsProtocolsOfParticipant(
-            participants,
-            startingProtocols,
+            participantsList,
             protocols,
             competition
         )
@@ -142,12 +127,11 @@ internal class ApiTests {
                 )
             )
         )
-        val maleParticipants = ParticipantsList(participants.list.dropLast(1))
+        val maleParticipants = ParticipantsList(participantsList.list.dropLast(1))
         val resultProtocols = generateResultsProtocolsOfCheckpoint(
             maleParticipants,
-            startingProtocols,
             protocols,
-            competition
+            competition,
         )
         assertEquals(1, resultProtocols.size)
         val maleResults = resultProtocols.single { it.group.label == "М10" }
@@ -181,15 +165,15 @@ internal class ApiTests {
 
     @Test
     fun peopleWithSameResultHaveSamePlaces() {
-        val group = AgeGroup("М10", shortRoute, -100, 100)
+        val group = AgeGroup("М10", shortRoute, -100, 100, competitionYear)
         val participantsShort = ParticipantsList(
             listOf(
-                Participant(1, 10, "Иван", "А", group, "T1", ""),
-                Participant(2, 10, "Иван", "Б", group, "T2", ""),
-                Participant(3, 10, "Иван", "В", group, "T2", ""),
-                Participant(4, 10, "Иван", "Г", group, "T1", ""),
-                Participant(5, 10, "Иван", "Д", group, "T1", ""),
-                Participant(6, 10, "Иван", "Е", group, "T1", ""),
+                Participant(1, 10, "Иван", "А", group, "T1", "", 0.s()),
+                Participant(2, 10, "Иван", "Б", group, "T2", "", 0.s()),
+                Participant(3, 10, "Иван", "В", group, "T2", "", 0.s()),
+                Participant(4, 10, "Иван", "Г", group, "T1", "", 0.s()),
+                Participant(5, 10, "Иван", "Д", group, "T1", "", 0.s()),
+                Participant(6, 10, "Иван", "Е", group, "T1", "", 0.s()),
             )
         )
         val protocolsWithSameTime = listOf(
@@ -205,19 +189,6 @@ internal class ApiTests {
                 )
             )
         )
-        val startingProtocolsShort = listOf(
-            StartingProtocol(
-                group,
-                listOf(
-                    StartingProtocolEntry(1, 0.s()),
-                    StartingProtocolEntry(2, 0.s()),
-                    StartingProtocolEntry(3, 0.s()),
-                    StartingProtocolEntry(4, 0.s()),
-                    StartingProtocolEntry(5, 0.s()),
-                    StartingProtocolEntry(6, 0.s())
-                )
-            )
-        )
         val shortCompetition = Competition(
             "",
             "",
@@ -229,7 +200,6 @@ internal class ApiTests {
         val groupResultProtocol =
             generateResultsProtocolsOfCheckpoint(
                 participantsShort,
-                startingProtocolsShort,
                 protocolsWithSameTime,
                 shortCompetition
             ).single { it.group.label == "М10" }
@@ -250,13 +220,7 @@ internal class ApiTests {
     @Test
     fun testDisqualificationOnFalseStart() {
         val participants = ParticipantsList(
-            listOf(Participant(1, 10, "Иван", "Иванов", groupM10, "T1", ""))
-        )
-        val startingProtocols = listOf(
-            StartingProtocol(
-                groupM10,
-                listOf(StartingProtocolEntry(1, 100.s()))
-            )
+            listOf(Participant(1, 10, "Иван", "Иванов", groupM10, "T1", "", 100.s()))
         )
         val route = OrderedCheckpointsRoute("main", mutableListOf("1", "2"))
         val competition = Competition(
@@ -273,7 +237,6 @@ internal class ApiTests {
         )
         val results = generateResultsProtocolsOfCheckpoint(
             participants,
-            startingProtocols,
             checkpointProtocols,
             competition
         )

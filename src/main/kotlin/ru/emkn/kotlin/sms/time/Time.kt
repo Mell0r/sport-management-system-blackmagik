@@ -1,23 +1,41 @@
 package ru.emkn.kotlin.sms.time
 
-class Time(
-    val hours: Int,
-    val minutes: Int,
+/**
+ * Arithmetic is modulo a single day.
+ */
+class Time(seconds: Int) : Comparable<Time> {
+
+    private val totalSeconds: Int = modulo(seconds)
+
     val seconds: Int
-) : Comparable<Time> {
+        get() = totalSeconds % SECONDS_IN_MINUTE
+    val minutes: Int
+        get() = (totalSeconds / SECONDS_IN_MINUTE) % MINUTES_IN_HOUR
+    val hours: Int
+        get() = totalSeconds / SECONDS_IN_HOUR
+
     init {
-        require(hours in 0..23) { "Hours must be in [0, 23]." }
-        require(minutes in 0..59) { "Minutes must be in [0, 59]." }
-        require(seconds in 0..59) { "Seconds must be in [0, 59]." }
+        assert(totalSeconds in 0 until SECONDS_IN_DAY)
     }
 
-    constructor (seconds: Int) : this(
-        seconds / 3600,
-        (seconds % 3600) / 60,
-        seconds % 60
-    )
+    constructor(
+        hours: Int,
+        minutes: Int,
+        seconds: Int
+    ) : this(hours * SECONDS_IN_HOUR + minutes * SECONDS_IN_MINUTE + seconds) {
+        require(hours in 0 until HOURS_IN_DAY)
+        require(minutes in 0 until MINUTES_IN_HOUR)
+        require(seconds in 0 until SECONDS_IN_MINUTE)
+    }
 
     companion object {
+        const val SECONDS_IN_MINUTE = 60
+        const val MINUTES_IN_HOUR = 60
+        const val HOURS_IN_DAY = 24
+
+        const val SECONDS_IN_HOUR = SECONDS_IN_MINUTE * MINUTES_IN_HOUR
+        const val SECONDS_IN_DAY = SECONDS_IN_HOUR * HOURS_IN_DAY
+
         /**
          * Parses the time string in format "HH:MM:SS" into the native time
          * class. Throws illegal argument exception if the format does not hold.
@@ -34,11 +52,22 @@ class Time(
         }
     }
 
+    private fun modulo(x: Int): Int {
+        val rem = x % SECONDS_IN_DAY
+        return when {
+            rem >= 0 -> rem
+            else -> SECONDS_IN_DAY - rem
+        }
+    }
+
     override operator fun compareTo(other: Time): Int =
         this.asSeconds() - other.asSeconds()
 
-    fun asSeconds(): Int = hours * 3600 + minutes * 60 + seconds
-    operator fun minus(other: Time): Int = this.asSeconds() - other.asSeconds()
+    fun asSeconds(): Int = totalSeconds
+
+    operator fun plus(other: Time): Time = Time(totalSeconds + other.totalSeconds)
+    operator fun minus(other: Time): Time = Time(totalSeconds - other.totalSeconds)
+    operator fun times(scalar: Int): Time = Time(totalSeconds * scalar)
 
     override fun toString(): String {
         fun toTwoDigits(number: Int) = number.toString().padStart(2, '0')
@@ -55,18 +84,13 @@ class Time(
 
         other as Time
 
-        if (hours != other.hours) return false
-        if (minutes != other.minutes) return false
-        if (seconds != other.seconds) return false
+        if (totalSeconds != other.totalSeconds) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = hours
-        result = 31 * result + minutes
-        result = 31 * result + seconds
-        return result
+        return totalSeconds
     }
 
 }

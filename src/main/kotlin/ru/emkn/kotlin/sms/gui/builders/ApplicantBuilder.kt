@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms.gui.builders
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import ru.emkn.kotlin.sms.Applicant
+import ru.emkn.kotlin.sms.startcfg.Applicant
 
 class ApplicantBuilder(
     val supposedGroupLabel: MutableState<String> = mutableStateOf(""),

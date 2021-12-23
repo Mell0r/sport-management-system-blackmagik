@@ -1,11 +1,12 @@
 package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.Application
+import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.getStartConfigurationByApplications
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.io.safeWriteContentToFile
+import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
+import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
 import java.io.File
 
 class StartCommand(
@@ -34,8 +35,11 @@ class StartCommand(
             },
         )
 
-        val (participantsList, startingProtocols) = try {
-            getStartConfigurationByApplications(applications, competition)
+        val participantsList = try {
+            val applicationProcessor = ApplicationProcessor(competition, applications.toMutableList())
+            val processedApplicants = applicationProcessor.process()
+            val startingTimeAssigner = LinearStartingTimeAssigner()
+            startingTimeAssigner.assign(processedApplicants)
         } catch (e: IllegalArgumentException) {
             Logger.error {
                 "Some data needed to generate start configuration is invalid:\n" +
@@ -54,6 +58,9 @@ class StartCommand(
             participantsListOutputFolder,
             participantsListFileName
         )
+
+        // generate write starting protocols
+        val startingProtocols = participantsList.toStartingProtocols()
         val startingProtocolsOutputFolder =
             File(outputDirectory, "starting-protocols")
         startingProtocolsOutputFolder.mkdirs()

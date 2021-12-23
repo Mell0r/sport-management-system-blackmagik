@@ -5,7 +5,6 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.GroupResultProtocol
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.TeamResultsProtocol
-import ru.emkn.kotlin.sms.gui.builders.FixedStartingTimes
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
@@ -17,13 +16,12 @@ import java.io.File
  * competition is finished,
  * results can only be viewed and saved to file.
  *
- * [competition], [participantsList], [startingTimes], [competitionModel]
+ * [competition], [participantsList], [competitionModel]
  * are fixed and given via constructor.
  */
 class FinishedCompetitionProgramState(
     override val competition: Competition,
     override val participantsList: ParticipantsList,
-    override val startingTimes: FixedStartingTimes,
     override val competitionModel: CompetitionModel,
 ) : ProgramState() {
 
