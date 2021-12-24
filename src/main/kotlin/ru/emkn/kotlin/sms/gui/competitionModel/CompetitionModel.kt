@@ -9,6 +9,7 @@ import ru.emkn.kotlin.sms.io.WrongFormatException
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
+import ru.emkn.kotlin.sms.results_processing.TimestampsProtocolProcessor
 import java.io.File
 
 /**
@@ -25,6 +26,8 @@ class CompetitionModel(
     // private because any modification MUST notify all listeners
     private val timestamps: MutableList<ParticipantCheckpointTime> =
         mutableListOf()
+
+    private val timestampsProtocolProcessor = TimestampsProtocolProcessor(state.participantsList)
 
     private val listeners: MutableList<CompetitionModelListener> =
         mutableListOf()
@@ -47,39 +50,13 @@ class CompetitionModel(
         }
 
         fun addTimestampsFromProtocolsByParticipant(protocols: List<ParticipantTimestampsProtocol>) {
-            val timestampsToAdd = protocols
-                .flatMap { (participantID, checkpointAndTimePairs) ->
-                    val participant =
-                        state.participantsList.getParticipantById(participantID)
-                            ?: return
-                    checkpointAndTimePairs.map { checkpointAndTime ->
-                        ParticipantCheckpointTime(
-                            participant = participant,
-                            checkpoint = checkpointAndTime.checkpointLabel,
-                            time = checkpointAndTime.time,
-                        )
-                    }
-                }
+            val timestampsToAdd = timestampsProtocolProcessor.processByParticipant(protocols)
             timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }
 
         fun addTimestampsFromProtocolsByCheckpoint(protocols: List<CheckpointTimestampsProtocol>) {
-            val timestampsToAdd = protocols
-                .flatMap { (checkpoint, participantIDAndTimePairs) ->
-                    participantIDAndTimePairs.map { (participantID, time) ->
-                        val participant =
-                            state.participantsList.getParticipantById(
-                                participantID
-                            )
-                                ?: return
-                        ParticipantCheckpointTime(
-                            participant = participant,
-                            checkpoint = checkpoint,
-                            time = time,
-                        )
-                    }
-                }
+            val timestampsToAdd = timestampsProtocolProcessor.processByCheckpoint(protocols)
             timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }

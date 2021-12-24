@@ -2,13 +2,9 @@ package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
 import ru.emkn.kotlin.sms.RouteProtocolType
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
-import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsOfCheckpoint
-import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsOfParticipant
+import ru.emkn.kotlin.sms.results_processing.*
 import java.io.File
 
 class ResultCommand(
@@ -20,7 +16,7 @@ class ResultCommand(
         val participantsList =
             loadParticipantsList(participantListFile, competition)
 
-        fun routeCompletionProtocolCouldntBeReadStrategy(file: File) {
+        fun routeCompletionProtocolReadFailStrategy(file: File) {
             Logger.error { "Route completion protocol at \"${file.absolutePath}\" cannot be reached or read" }
             exitWithInfoLog()
         }
@@ -44,57 +40,29 @@ class ResultCommand(
             }
         }
 
-        val type = routeProtocolType
+        val timestampsProtocolProcessor = TimestampsProtocolProcessor(participantsList)
 
-        if (type == RouteProtocolType.OF_CHECKPOINT) {
+        val timestamps = if (routeProtocolType == RouteProtocolType.OF_CHECKPOINT) {
             val checkpointTimestampsProtocols = readAndParseAllFiles(
                 files = routeProtocolFiles,
                 competition = competition,
                 parser = CheckpointTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
-                strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
+                strategyOnReadFail = ::routeCompletionProtocolReadFailStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )
-
-            val resultProtocols = try {
-                generateResultsProtocolsOfCheckpoint(
-                    participantsList,
-                    checkpointTimestampsProtocols,
-                    competition
-                )
-            } catch (e: IllegalArgumentException) {
-                Logger.error {
-                    "Some data needed to generate group result protocols is invalid:\n" +
-                            "${e.message}"
-                }
-                exitWithInfoLog()
-            }
-
-            saveGroupResultProtocols(resultProtocols)
+            timestampsProtocolProcessor.processByCheckpoint(checkpointTimestampsProtocols)
         } else {
             val participantTimestampsProtocols = readAndParseAllFiles(
                 files = routeProtocolFiles,
                 competition = competition,
                 parser = ParticipantTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
-                strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
+                strategyOnReadFail = ::routeCompletionProtocolReadFailStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )
-
-            val resultProtocols = try {
-                generateResultsProtocolsOfParticipant(
-                    participantsList,
-                    participantTimestampsProtocols,
-                    competition,
-                )
-            } catch (e: IllegalArgumentException) {
-                Logger.error {
-                    "Some data needed to generate result protocols is invalid:\n" +
-                            "${e.message}"
-                }
-                exitWithInfoLog()
-            }
-
-            // save in output folder
-            saveGroupResultProtocols(resultProtocols)
+            timestampsProtocolProcessor.processByParticipant(participantTimestampsProtocols)
         }
+
+        val groupResultProtocols = GroupResultProtocolGenerator(participantsList).generate(timestamps)
+        saveGroupResultProtocols(groupResultProtocols)
     }
 }
