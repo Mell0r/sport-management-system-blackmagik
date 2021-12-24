@@ -98,15 +98,9 @@ class OrderedCheckpointsRoute(
                 Time(0)
             )
             chronologicalCheckpoints == orderedCheckpoints -> {
-                // Finished
                 LiveParticipantResult.Finished(lastCheckpointTime - startingTime)
             }
-            chronologicalCheckpoints.size < orderedCheckpoints.size &&
-                    chronologicalCheckpoints == orderedCheckpoints.dropLast(
-                orderedCheckpoints.size - chronologicalCheckpoints.size
-            ) -> {
-                // [chronologicalCheckpoints] is a strict prefix of [orderedCheckpoints]
-                // Participant is in process
+            chronologicalCheckpoints.isStrictPrefixOf(orderedCheckpoints) -> {
                 LiveParticipantResult.InProcess(
                     chronologicalCheckpoints.size,
                     lastCheckpointTime - startingTime
@@ -136,6 +130,9 @@ class OrderedCheckpointsRoute(
 
     override fun hashCode(): Int =
         name.hashCode() + 31 * orderedCheckpoints.hashCode()
+
+    private fun <T> List<T>.isStrictPrefixOf(other: List<T>) =
+        this.size < other.size && this == other.dropLast(other.size - this.size)
 }
 
 class AtLeastKCheckpointsRoute(
@@ -164,7 +161,6 @@ class AtLeastKCheckpointsRoute(
             .distinctBy { it.checkpointLabel }
 
         if (visitedCheckpointFromRoute.size < threshold) {
-            // In process
             return LiveParticipantResult.InProcess(
                 completedCheckpoints = visitedCheckpointFromRoute.size,
                 lastCheckpointTime = visitedCheckpointFromRoute.lastOrNull()?.time
@@ -172,7 +168,6 @@ class AtLeastKCheckpointsRoute(
             )
         }
 
-        // Finished
         val lastRelevantCheckpoint = visitedCheckpointFromRoute[threshold - 1]
         return LiveParticipantResult.Finished(
             lastRelevantCheckpoint.time - startingTime
