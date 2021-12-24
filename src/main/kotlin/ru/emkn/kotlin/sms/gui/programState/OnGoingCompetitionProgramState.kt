@@ -5,6 +5,7 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.LiveGroupResultProtocolsView
 
 /**
  * Mode 3 of the program:
@@ -25,9 +26,11 @@ class OnGoingCompetitionProgramState(
     override val competitionModel = CompetitionModel(this)
     val competitionModelController = competitionModel.Controller()
 
+    override val liveGroupResultProtocolsView = LiveGroupResultProtocolsView(this)
+
     init {
         Logger.info { "Initialized OnGoingCompetitionProgramState." }
-        competitionModel.addListener(super.liveGroupResultProtocolsView)
+        competitionModel.addListener(liveGroupResultProtocolsView)
     }
 
     override fun nextProgramState() = FinishedCompetitionProgramState(

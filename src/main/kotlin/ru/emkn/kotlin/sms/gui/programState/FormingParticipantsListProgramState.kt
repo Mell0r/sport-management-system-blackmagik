@@ -4,6 +4,7 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.LiveGroupResultProtocolsView
 
 /**
  * Mode 2 of the program:
@@ -19,6 +20,7 @@ class FormingParticipantsListProgramState(
     override var participantsList: ParticipantsList = ParticipantsList(listOf())
 
     override val competitionModel = CompetitionModel(this)
+    override val liveGroupResultProtocolsView = LiveGroupResultProtocolsView(this)
 
     init {
         Logger.info { "Initialized FormingStartingProtocolsProgramState." }

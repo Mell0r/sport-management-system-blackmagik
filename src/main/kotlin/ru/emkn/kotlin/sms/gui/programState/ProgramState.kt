@@ -34,7 +34,7 @@ abstract class ProgramState {
 
     // Mode 3
     abstract val competitionModel: CompetitionModel
-    val liveGroupResultProtocolsView = LiveGroupResultProtocolsView(this)
+    abstract val liveGroupResultProtocolsView: LiveGroupResultProtocolsView
 
     abstract fun nextProgramState(): ProgramState // moves on to the next program state
 }

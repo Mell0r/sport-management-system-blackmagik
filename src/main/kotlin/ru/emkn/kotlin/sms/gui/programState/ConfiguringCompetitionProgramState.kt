@@ -5,6 +5,7 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.LiveGroupResultProtocolsView
 
 /**
  * Mode 1 of the program: configure [competition].
@@ -20,6 +21,7 @@ class ConfiguringCompetitionProgramState : ProgramState() {
     // following properties are always empty in this program mode
     override val participantsList = ParticipantsList(listOf())
     override val competitionModel = CompetitionModel(this)
+    override val liveGroupResultProtocolsView = LiveGroupResultProtocolsView(this)
 
     init {
         Logger.info { "Initialized ConfiguredCompetitionProgramState." }

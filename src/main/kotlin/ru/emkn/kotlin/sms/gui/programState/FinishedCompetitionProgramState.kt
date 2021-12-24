@@ -6,6 +6,7 @@ import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.results_processing.TeamResultsProtocol
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
+import ru.emkn.kotlin.sms.gui.competitionModel.LiveGroupResultProtocolsView
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
 import ru.emkn.kotlin.sms.results_processing.SampleTeamResultsCalculator
@@ -25,20 +26,22 @@ class FinishedCompetitionProgramState(
     override val competitionModel: CompetitionModel,
 ) : ProgramState() {
 
+    override val liveGroupResultProtocolsView = LiveGroupResultProtocolsView(this)
+
     init {
         Logger.info { "Initialized FinishedCompetitionProgramState." }
-        competitionModel.addListener(super.liveGroupResultProtocolsView)
+        competitionModel.addListener(liveGroupResultProtocolsView)
     }
 
     override fun nextProgramState(): FinishedCompetitionProgramState = this
 
     private val groupResultProtocols: List<GroupResultProtocol>
-        get() = super.liveGroupResultProtocolsView.getGroupResultProtocols()
+        get() = liveGroupResultProtocolsView.getGroupResultProtocols()
     private val teamResultsProtocol: TeamResultsProtocol
         get() = SampleTeamResultsCalculator.calculate(groupResultProtocols)
 
     fun writeGroupResultProtocolsToCSV(outputDirectory: File) {
-        Logger.trace { "liveGroupResultProtocols: ${super.liveGroupResultProtocolsView.protocols}" }
+        Logger.trace { "liveGroupResultProtocols: ${liveGroupResultProtocolsView.protocols}" }
         Logger.trace { "groupResultProtocols: $groupResultProtocols" }
         writeCSVDumpablesToDirectory(groupResultProtocols, outputDirectory)
     }
