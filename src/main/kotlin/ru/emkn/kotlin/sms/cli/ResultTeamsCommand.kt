@@ -2,9 +2,8 @@ package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.generateTeamResultsProtocol
 import java.io.File
 
@@ -20,7 +19,7 @@ class ResultTeamsCommand(
         val groupResultProtocols = readAndParseAllFiles(
             files = resultProtocolFiles,
             competition = competition,
-            parser = GroupResultProtocol.Companion::readFromFileContentAndCompetition,
+            parser = GroupResultProtocol.Companion::readFromCsvContentAndCompetition,
             strategyOnReadFail = { file ->
                 Logger.error { "Group result protocol at \"${file.absolutePath}\" couldn't be reached or read." }
                 exitWithInfoLog()

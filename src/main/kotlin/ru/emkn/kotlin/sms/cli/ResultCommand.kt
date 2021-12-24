@@ -2,11 +2,9 @@ package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
 import ru.emkn.kotlin.sms.RouteProtocolType
-import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.generateResultsProtocolsOfCheckpoint
@@ -53,7 +51,7 @@ class ResultCommand(
             val checkpointTimestampsProtocols = readAndParseAllFiles(
                 files = routeProtocolFiles,
                 competition = competition,
-                parser = CheckpointTimestampsProtocol.Companion::readFromFileContentAndCompetition,
+                parser = CheckpointTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
                 strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )
@@ -77,7 +75,7 @@ class ResultCommand(
             val participantTimestampsProtocols = readAndParseAllFiles(
                 files = routeProtocolFiles,
                 competition = competition,
-                parser = ParticipantTimestampsProtocol.Companion::readFromFileContentAndCompetition,
+                parser = ParticipantTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
                 strategyOnReadFail = ::routeCompletionProtocolCouldntBeReadStrategy,
                 strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
             )

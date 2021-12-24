@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.csv.CsvStringDumpable
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
 
@@ -16,7 +17,7 @@ data class Participant(
     val team: String,
     val sportsCategory: String,
     val startingTime: Time,
-) {
+) : CsvStringDumpable {
     constructor(
         age: Int,
         name: String,
@@ -52,5 +53,8 @@ data class Participant(
     }
 
     override fun toString() =
+        "$id. $name $lastName"
+
+    override fun dumpToCsvString() =
         "$id,$age,$name,$lastName,$group,$team,$sportsCategory,$startingTime"
 }

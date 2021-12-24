@@ -4,7 +4,6 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
-import ru.emkn.kotlin.sms.io.safeWriteContentToFile
 import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
 import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
 import java.io.File
@@ -16,7 +15,7 @@ class StartCommand(
         val applications = readAndParseAllFiles(
             files = applicationFiles,
             competition = competition,
-            parser = Application.Companion::readFromFileContentAndCompetition,
+            parser = Application.Companion::readFromCsvContentAndCompetition,
             strategyOnReadFail = { file ->
                 // If some application couldn't be loaded as a file,
                 // Then organiser has to check it manually,

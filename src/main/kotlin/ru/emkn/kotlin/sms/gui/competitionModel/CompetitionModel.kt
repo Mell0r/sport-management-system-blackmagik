@@ -1,9 +1,7 @@
 package ru.emkn.kotlin.sms.gui.competitionModel
 
-import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapEither
-import ru.emkn.kotlin.sms.ParticipantCheckpointTime
-import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.UnitOrMessage
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.ReadFailException
@@ -92,7 +90,7 @@ class CompetitionModel(
                     readAndParseAllFiles(
                         files = filePaths.map { File(it) },
                         competition = state.competition,
-                        parser = ParticipantTimestampsProtocol::readFromFileContentAndCompetition,
+                        parser = ParticipantTimestampsProtocol::readFromCsvContentAndCompetition,
                     )
                 }
             return protocolsByParticipantOrError
@@ -116,7 +114,7 @@ class CompetitionModel(
                     readAndParseAllFiles(
                         files = filePaths.map { File(it) },
                         competition = state.competition,
-                        parser = CheckpointTimestampsProtocol::readFromFileContentAndCompetition,
+                        parser = CheckpointTimestampsProtocol::readFromCsvContentAndCompetition,
                     )
                 }
             return protocolsByCheckpointOrError

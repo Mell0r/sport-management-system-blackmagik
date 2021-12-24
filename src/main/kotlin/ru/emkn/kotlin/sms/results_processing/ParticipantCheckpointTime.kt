@@ -1,6 +1,7 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.time.Time
+import ru.emkn.kotlin.sms.*
 
 /**
  * Base entry for all checkpoint data.

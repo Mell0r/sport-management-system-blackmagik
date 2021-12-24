@@ -1,6 +1,8 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
+import ru.emkn.kotlin.sms.csv.CsvDumpable
 import ru.emkn.kotlin.sms.time.Time
 
 data class IdWithFinalResult(
@@ -27,8 +29,8 @@ class GroupResultProtocol(
     }
 
     companion object :
-        CreatableFromFileContentAndCompetition<GroupResultProtocol> {
-        override fun readFromFileContentAndCompetition(
+        CreatableFromCsvAndCompetition<GroupResultProtocol> {
+        override fun readFromCsvContentAndCompetition(
             fileContent: FileContent,
             competition: Competition
         ): GroupResultProtocol {

@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.results_processing.*
 
 class LiveGroupResultProtocolsView(
     private val state: ProgramState,

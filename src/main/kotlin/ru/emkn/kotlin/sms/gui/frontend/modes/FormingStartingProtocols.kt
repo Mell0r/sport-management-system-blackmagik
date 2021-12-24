@@ -94,7 +94,7 @@ private fun loadReadyStartingConfiguration(
     val participantsListFile = safeOpenSingleFileOrNull("Выберите список участников (participants-list.csv)")
         ?: return
     val participantsList = try {
-        ParticipantsList.readFromFileAndCompetition(participantsListFile, state.competition)
+        ParticipantsList.readFromCsvAndCompetition(participantsListFile, state.competition)
     } catch (e: IllegalArgumentException) {
         errorDialogMessage.value = e.message
         return
@@ -128,7 +128,7 @@ private fun loadApplicationsFromCSV(
     val applications = readAndParseAllFilesOrErrorMessage(
         files = files,
         competition = state.competition,
-        parser = Application::readFromFileContentAndCompetition,
+        parser = Application::readFromCsvContentAndCompetition,
     ).mapBoth(
         success = { it },
         failure = { errorMessage ->

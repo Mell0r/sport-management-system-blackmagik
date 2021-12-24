@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.io
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.UnitOrMessage
 import java.io.File
 

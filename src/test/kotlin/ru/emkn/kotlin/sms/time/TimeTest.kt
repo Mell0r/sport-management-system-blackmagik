@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.time
 
-import org.junit.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

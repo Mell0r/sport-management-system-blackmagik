@@ -10,5 +10,4 @@ class Competition(
 ) {
     fun getGroupByLabelOrNull(label: String): Group? =
         groups.find { it.label == label }
-
 }

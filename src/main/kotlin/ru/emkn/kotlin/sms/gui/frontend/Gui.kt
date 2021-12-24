@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.application
-import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.gui.frontend.modes.CompetitionConfiguration
 import ru.emkn.kotlin.sms.gui.frontend.modes.FinishedCompetition
 import ru.emkn.kotlin.sms.gui.frontend.modes.FormingParticipantsList

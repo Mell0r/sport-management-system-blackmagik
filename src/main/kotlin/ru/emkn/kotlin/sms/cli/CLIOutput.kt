@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.io
+package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.cli.exitWithInfoLog

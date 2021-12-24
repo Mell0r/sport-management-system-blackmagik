@@ -43,7 +43,7 @@ private fun loadCompetition(competitionConfigDirPath: String): Competition {
         failure = { message ->
             Logger.error {
                 "Competition config files in directory \"$competitionConfigDirPath\" are invalid! See following exception:\n" +
-                        "${message}"
+                        "$message"
             }
             exitWithInfoLog()
         },
@@ -67,7 +67,7 @@ fun loadParticipantsList(
     readAndParseFile(
         file = participantListFile,
         competition = competition,
-        parser = ParticipantsList.Companion::readFromFileContentAndCompetition,
+        parser = ParticipantsList.Companion::readFromCsvContentAndCompetition,
         strategyOnReadFail = { file ->
             // Participants list MUST be readable
             // Otherwise, terminate

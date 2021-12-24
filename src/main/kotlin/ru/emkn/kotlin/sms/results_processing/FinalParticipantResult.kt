@@ -1,5 +1,6 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.results_processing
 
+import ru.emkn.kotlin.sms.csv.CsvStringDumpable
 import ru.emkn.kotlin.sms.time.Time
 
 /**

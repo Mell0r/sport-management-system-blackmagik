@@ -8,13 +8,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import org.tinylog.Logger
-import ru.emkn.kotlin.sms.ParticipantWithLiveResult
+import ru.emkn.kotlin.sms.results_processing.ParticipantWithLiveResult
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
@@ -103,7 +101,7 @@ fun DisplayResults(
             val participantField = FieldComparableBySelector(
                 "Участник",
                 { (participant, _): ParticipantWithLiveResult -> "$participant" },
-                { it.participant.toString() },
+                { it.participant.dumpToCsvString() },
                 200f
             )
             val liveResultField = FieldComparableBySelector(

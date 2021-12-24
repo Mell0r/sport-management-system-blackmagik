@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import androidx.compose.foundation.layout.Column
@@ -7,12 +9,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
 import ru.emkn.kotlin.sms.gui.frontend.elements.saveFileDialog

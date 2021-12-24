@@ -1,8 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.startcfg.StartingProtocol
-import ru.emkn.kotlin.sms.time.Time
 
 /**
  * Part of API.

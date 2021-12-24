@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.CheckpointAndTime
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.Test
@@ -25,7 +24,7 @@ internal class RouteCompletionProtocolsReadersTest {
                     IdAndTime(1, Time(12, 0, 0)),
                     IdAndTime(2, Time(12, 0, 2)),
                 )
-            ), CheckpointTimestampsProtocol.readFromFileContentAndCompetition(protocol, testCompetition)
+            ), CheckpointTimestampsProtocol.readFromCsvContentAndCompetition(protocol, testCompetition)
         )
     }
 
@@ -38,7 +37,7 @@ internal class RouteCompletionProtocolsReadersTest {
                     CheckpointAndTime("1km", Time(12, 0, 0)),
                     CheckpointAndTime("2km", Time(12, 0, 2)),
                 )
-            ), ParticipantTimestampsProtocol.readFromFileContentAndCompetition(protocol, testCompetition)
+            ), ParticipantTimestampsProtocol.readFromCsvContentAndCompetition(protocol, testCompetition)
         )
     }
 }

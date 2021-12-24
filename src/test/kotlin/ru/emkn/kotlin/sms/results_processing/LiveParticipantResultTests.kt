@@ -1,6 +1,8 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.results_processing
 
 import org.junit.Test
+import ru.emkn.kotlin.sms.results_processing.FinalParticipantResult
+import ru.emkn.kotlin.sms.results_processing.LiveParticipantResult
 import ru.emkn.kotlin.sms.time.Time
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

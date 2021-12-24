@@ -1,6 +1,6 @@
 package ru.emkn.kotlin.sms.startcfg
 
-import ru.emkn.kotlin.sms.CsvDumpable
+import ru.emkn.kotlin.sms.csv.CsvDumpable
 import ru.emkn.kotlin.sms.Group
 import ru.emkn.kotlin.sms.Participant
 

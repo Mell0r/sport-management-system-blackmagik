@@ -1,7 +1,5 @@
 package ru.emkn.kotlin.sms.io
 
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.TestDataSetCompetition1
 import ru.emkn.kotlin.sms.competitionEquals

@@ -1,8 +1,6 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.CheckpointAndTime
-import ru.emkn.kotlin.sms.IdWithLiveResult
 import ru.emkn.kotlin.sms.ParticipantsList
 
 

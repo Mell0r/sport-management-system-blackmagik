@@ -2,9 +2,9 @@ package ru.emkn.kotlin.sms.gui.programState
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.GroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
 import ru.emkn.kotlin.sms.ParticipantsList
-import ru.emkn.kotlin.sms.TeamResultsProtocol
+import ru.emkn.kotlin.sms.results_processing.TeamResultsProtocol
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory

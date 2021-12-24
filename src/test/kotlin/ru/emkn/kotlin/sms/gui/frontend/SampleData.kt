@@ -3,6 +3,7 @@ package ru.emkn.kotlin.sms.gui.frontend
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.programState.FormingParticipantsListProgramState
 import ru.emkn.kotlin.sms.gui.programState.OnGoingCompetitionProgramState
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.time.Time
 
 const val sampleCompetitionYear = 2021

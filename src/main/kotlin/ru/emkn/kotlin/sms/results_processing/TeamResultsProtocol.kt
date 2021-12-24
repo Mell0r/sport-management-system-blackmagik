@@ -1,6 +1,6 @@
-package ru.emkn.kotlin.sms
+package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.csv.CsvDumpable
 
 data class TeamToScore(val team: String, val score: Int)
 class TeamResultsProtocol(scores: List<TeamToScore>) : CsvDumpable {

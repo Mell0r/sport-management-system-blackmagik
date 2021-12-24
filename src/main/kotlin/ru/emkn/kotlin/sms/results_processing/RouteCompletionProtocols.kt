@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.time.Time
 
 typealias FileContent = List<String>
@@ -10,8 +11,8 @@ data class ParticipantTimestampsProtocol(
     val checkpointTimes: List<CheckpointAndTime>
 ) {
     companion object :
-        CreatableFromFileContentAndCompetition<ParticipantTimestampsProtocol> {
-        override fun readFromFileContentAndCompetition(
+        CreatableFromCsvAndCompetition<ParticipantTimestampsProtocol> {
+        override fun readFromCsvContentAndCompetition(
             fileContent: FileContent,
             competition: Competition
         ): ParticipantTimestampsProtocol {
@@ -46,8 +47,8 @@ data class CheckpointTimestampsProtocol(
     val participantTimes: List<IdAndTime>
 ) {
     companion object :
-        CreatableFromFileContentAndCompetition<CheckpointTimestampsProtocol> {
-        override fun readFromFileContentAndCompetition(
+        CreatableFromCsvAndCompetition<CheckpointTimestampsProtocol> {
+        override fun readFromCsvContentAndCompetition(
             fileContent: FileContent,
             competition: Competition
         ): CheckpointTimestampsProtocol {

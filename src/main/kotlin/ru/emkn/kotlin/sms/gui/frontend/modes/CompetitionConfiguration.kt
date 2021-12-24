@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import androidx.compose.animation.AnimatedVisibility

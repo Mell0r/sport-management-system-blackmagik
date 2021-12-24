@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "LocalVariableName")
+
 package ru.emkn.kotlin.sms.gui.frontend.elements
 
 import androidx.compose.foundation.layout.Column

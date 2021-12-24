@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms.startcfg
 
 import org.tinylog.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.CreatableFromFileContentAndCompetition
+import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.results_processing.FileContent
 
 /**
@@ -12,7 +12,7 @@ class Application(
     val teamName: String,
     val applicantsList: List<Applicant>,
 ) {
-    companion object : CreatableFromFileContentAndCompetition<Application> {
+    companion object : CreatableFromCsvAndCompetition<Application> {
         private const val SIZE_OF_APPLICATION_ROW = 5
 
         private fun readApplicantFromLineOrNull(
@@ -39,7 +39,7 @@ class Application(
             )
         }
 
-        override fun readFromFileContentAndCompetition(
+        override fun readFromCsvContentAndCompetition(
             fileContent: FileContent,
             competition: Competition
         ): Application {

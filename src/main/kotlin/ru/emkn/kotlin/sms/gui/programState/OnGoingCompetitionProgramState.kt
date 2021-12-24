@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms.gui.programState
 
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.ParticipantCheckpointTime
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
 
