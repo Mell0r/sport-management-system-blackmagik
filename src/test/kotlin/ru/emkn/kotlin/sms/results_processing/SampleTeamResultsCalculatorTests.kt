@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-internal class GenerateTeamResultsProtocolsTests {
+internal class SampleTeamResultsCalculatorTests {
     private val testRoute = OrderedCheckpointsRoute("", mutableListOf())
     private val groupM12To15 = AgeGroup("M12-15", testRoute, 12, 15, 2021)
     private val groupM19To35 = AgeGroup("M19-35", testRoute, 19, 35, 2021)
@@ -67,9 +67,8 @@ internal class GenerateTeamResultsProtocolsTests {
 
     @Test
     fun `Generate team results protocols test`() {
-        val teamResultsProtocol = generateTeamResultsProtocol(
+        val teamResultsProtocol = SampleTeamResultsCalculator.calculate(
             groupResultProtocols = testGroupResultProtocols,
-            participantsList = testParticipantsList
         )
         assertEquals(
             expectedTeamResultsProtocol.scores,
@@ -79,9 +78,8 @@ internal class GenerateTeamResultsProtocolsTests {
 
     @Test
     fun `Empty test`() {
-        val teamResultsProtocol = generateTeamResultsProtocol(
+        val teamResultsProtocol = SampleTeamResultsCalculator.calculate(
             groupResultProtocols = listOf(),
-            testParticipantsList
         )
         assertEquals(listOf(), teamResultsProtocol.scores)
     }
@@ -89,12 +87,6 @@ internal class GenerateTeamResultsProtocolsTests {
     @Test
     fun `Test division by zero`() {
         val group1 = AgeGroup("group1", OrderedCheckpointsRoute("", mutableListOf()), -100, 100, 2021)
-        val participantsList = ParticipantsList(
-            listOf(
-                Participant(0, 18, "Name1", "Surname1", group1, "Team1", "", 0.s()),
-                Participant(1, 19, "Name2", "Surname2", group1, "Team2", "", 0.s()),
-            )
-        )
         val groupResultsProtocols = listOf(
             GroupResultProtocol(
                 group = group1,
@@ -105,9 +97,8 @@ internal class GenerateTeamResultsProtocolsTests {
             )
         )
         assertFails {
-            val teamResultsProtocol = generateTeamResultsProtocol(
+            val teamResultsProtocol = SampleTeamResultsCalculator.calculate(
                 groupResultProtocols = groupResultsProtocols,
-                participantsList
             )
             println(teamResultsProtocol)
         }

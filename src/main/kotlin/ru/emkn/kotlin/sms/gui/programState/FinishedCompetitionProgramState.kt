@@ -8,7 +8,7 @@ import ru.emkn.kotlin.sms.results_processing.TeamResultsProtocol
 import ru.emkn.kotlin.sms.gui.competitionModel.CompetitionModel
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
-import ru.emkn.kotlin.sms.results_processing.generateTeamResultsProtocol
+import ru.emkn.kotlin.sms.results_processing.SampleTeamResultsCalculator
 import java.io.File
 
 /**
@@ -32,13 +32,10 @@ class FinishedCompetitionProgramState(
 
     override fun nextProgramState(): FinishedCompetitionProgramState = this
 
-    val groupResultProtocols: List<GroupResultProtocol>
+    private val groupResultProtocols: List<GroupResultProtocol>
         get() = super.liveGroupResultProtocolsView.getGroupResultProtocols()
-    val teamResultsProtocol: TeamResultsProtocol
-        get() = generateTeamResultsProtocol(
-            groupResultProtocols = groupResultProtocols,
-            participantsList = participantsList,
-        )
+    private val teamResultsProtocol: TeamResultsProtocol
+        get() = SampleTeamResultsCalculator.calculate(groupResultProtocols)
 
     fun writeGroupResultProtocolsToCSV(outputDirectory: File) {
         Logger.trace { "liveGroupResultProtocols: ${super.liveGroupResultProtocolsView.protocols}" }
