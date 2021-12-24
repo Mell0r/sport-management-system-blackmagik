@@ -277,15 +277,15 @@ object TestDataSet2 {
         GroupResultProtocol(
             group = m10,
             entries = listOf(
-                IdWithFinalResult(p1.id, FinalParticipantResult.Finished(15.s())),
-                IdWithFinalResult(p2.id, FinalParticipantResult.Finished(21.s())),
-                IdWithFinalResult(p3.id, FinalParticipantResult.Disqualified()),
+                ParticipantWithFinalResult(p1, FinalParticipantResult.Finished(15.s())),
+                ParticipantWithFinalResult(p2, FinalParticipantResult.Finished(21.s())),
+                ParticipantWithFinalResult(p3, FinalParticipantResult.Disqualified()),
             ),
         ),
         GroupResultProtocol(
             group = f10,
             entries = listOf(
-                IdWithFinalResult(p4.id, FinalParticipantResult.Disqualified())
+                ParticipantWithFinalResult(p4, FinalParticipantResult.Disqualified())
             ),
         ),
     )

@@ -13,48 +13,46 @@ internal class GenerateTeamResultsProtocolsTests {
     private val groupM19To35 = AgeGroup("M19-35", testRoute, 19, 35, 2021)
     private val groupM16To18 = AgeGroup("M16-18", testRoute, 16, 18, 2021)
 
-    private val testParticipantsList = ParticipantsList(
-        listOf(
-            Participant(0, 14, "Name2", "Surname2", groupM12To15, "Team1", "", 0.s()),
-            Participant(1, 13, "Name1", "Surname1", groupM12To15, "Team1", "", 0.s()),
-            Participant(2, 30, "Name2", "Surname2", groupM19To35, "Team1", "", 0.s()),
-            Participant(3, 18, "Name3", "Surname3", groupM16To18, "Team1", "", 0.s()),
-            Participant(4, 16, "Name4", "Surname4", groupM16To18, "Team1", "", 0.s()),
+    private val p0 = Participant(0, 14, "Name2", "Surname2", groupM12To15, "Team1", "", 0.s())
+    private val p1 = Participant(1, 13, "Name1", "Surname1", groupM12To15, "Team1", "", 0.s())
+    private val p2 = Participant(2, 30, "Name2", "Surname2", groupM19To35, "Team1", "", 0.s())
+    private val p3 = Participant(3, 18, "Name3", "Surname3", groupM16To18, "Team1", "", 0.s())
+    private val p4 = Participant(4, 16, "Name4", "Surname4", groupM16To18, "Team1", "", 0.s())
 
-            Participant(5, 21, "Name5", "Surname5", groupM19To35, "Team2", "", 0.s()),
-            Participant(6, 34, "Name6", "Surname6", groupM19To35, "Team2", "", 0.s()),
-            Participant(7, 12, "Name7", "Surname7", groupM12To15, "Team2", "", 0.s()),
+    private val p5 = Participant(5, 21, "Name5", "Surname5", groupM19To35, "Team2", "", 0.s())
+    private val p6 = Participant(6, 34, "Name6", "Surname6", groupM19To35, "Team2", "", 0.s())
+    private val p7 = Participant(7, 12, "Name7", "Surname7", groupM12To15, "Team2", "", 0.s())
 
-            Participant(8, 15, "Name8", "Surname8", groupM12To15, "Team3", "", 0.s()),
-            Participant(9, 16, "Name9", "Surname9", groupM16To18, "Team3", "", 0.s()),
-        )
-    )
+    private val p8 = Participant(8, 15, "Name8", "Surname8", groupM12To15, "Team3", "", 0.s())
+    private val p9 = Participant(9, 16, "Name9", "Surname9", groupM16To18, "Team3", "", 0.s())
+
+    private val testParticipantsList = ParticipantsList(listOf(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9))
 
     private val testGroupResultProtocols = listOf(
         GroupResultProtocol(
             group = groupM12To15,
             entries = listOf(
-                IdWithFinalResult(7, FinalParticipantResult.Finished(Time(500))),
-                IdWithFinalResult(1, FinalParticipantResult.Finished(Time(600))),
-                IdWithFinalResult(0, FinalParticipantResult.Finished(Time(600))),
-                IdWithFinalResult(8, FinalParticipantResult.Disqualified()),
+                ParticipantWithFinalResult(p7, FinalParticipantResult.Finished(Time(500))),
+                ParticipantWithFinalResult(p1, FinalParticipantResult.Finished(Time(600))),
+                ParticipantWithFinalResult(p0, FinalParticipantResult.Finished(Time(600))),
+                ParticipantWithFinalResult(p8, FinalParticipantResult.Disqualified()),
             )
         ),
         GroupResultProtocol(
             group = groupM16To18,
             entries = listOf(
-                IdWithFinalResult(4, FinalParticipantResult.Finished(Time(1500))),
-                IdWithFinalResult(9, FinalParticipantResult.Finished(Time(2000))),
-                IdWithFinalResult(3, FinalParticipantResult.Finished(Time(3000))),
+                ParticipantWithFinalResult(p4, FinalParticipantResult.Finished(Time(1500))),
+                ParticipantWithFinalResult(p9, FinalParticipantResult.Finished(Time(2000))),
+                ParticipantWithFinalResult(p3, FinalParticipantResult.Finished(Time(3000))),
             )
         ),
         GroupResultProtocol(
             group = groupM19To35,
             entries = listOf(
                 // whole group was disqualified --- definitely a real situation
-                IdWithFinalResult(2, FinalParticipantResult.Disqualified()),
-                IdWithFinalResult(5, FinalParticipantResult.Disqualified()),
-                IdWithFinalResult(6, FinalParticipantResult.Disqualified()),
+                ParticipantWithFinalResult(p2, FinalParticipantResult.Disqualified()),
+                ParticipantWithFinalResult(p5, FinalParticipantResult.Disqualified()),
+                ParticipantWithFinalResult(p6, FinalParticipantResult.Disqualified()),
             )
         ),
     )
@@ -101,8 +99,8 @@ internal class GenerateTeamResultsProtocolsTests {
             GroupResultProtocol(
                 group = group1,
                 entries = listOf(
-                    IdWithFinalResult(0, FinalParticipantResult.Finished(Time(0))),
-                    IdWithFinalResult(1, FinalParticipantResult.Finished(Time(0))),
+                    ParticipantWithFinalResult(p0, FinalParticipantResult.Finished(Time(0))),
+                    ParticipantWithFinalResult(p1, FinalParticipantResult.Finished(Time(0))),
                 ),
             )
         )

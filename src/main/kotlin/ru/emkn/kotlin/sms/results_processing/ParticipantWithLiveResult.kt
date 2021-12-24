@@ -6,8 +6,8 @@ data class ParticipantWithLiveResult(
     val participant: Participant,
     val liveResult: LiveParticipantResult,
 ) {
-    fun toIdWithFinalResult() = IdWithFinalResult(
-        id = participant.id,
+    fun toParticipantWithFinalResult() = ParticipantWithFinalResult(
+        participant = participant,
         result = liveResult.toFinalParticipantResult(),
     )
 }

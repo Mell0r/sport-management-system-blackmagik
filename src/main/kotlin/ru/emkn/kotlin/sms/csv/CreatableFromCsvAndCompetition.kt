@@ -2,7 +2,6 @@ package ru.emkn.kotlin.sms.csv
 
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.io.readAndParseFile
-import ru.emkn.kotlin.sms.results_processing.FileContent
 import java.io.File
 
 interface CreatableFromCsvAndCompetition<T> {

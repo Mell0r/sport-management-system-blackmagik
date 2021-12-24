@@ -2,9 +2,8 @@ package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
+import ru.emkn.kotlin.sms.csv.FileContent
 import ru.emkn.kotlin.sms.time.Time
-
-typealias FileContent = List<String>
 
 data class ParticipantTimestampsProtocol(
     val id: Int,

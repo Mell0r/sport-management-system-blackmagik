@@ -3,6 +3,7 @@ package ru.emkn.kotlin.sms.results_processing
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.csv.CsvDumpable
+import ru.emkn.kotlin.sms.csv.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
 data class IdWithFinalResult(
@@ -12,54 +13,12 @@ data class IdWithFinalResult(
 
 data class GroupResultProtocol(
     val group: Group,
-    val entries: List<IdWithFinalResult>
+    val entries: List<ParticipantWithFinalResult>
     // sorted by placeInGroup
 ) : CsvDumpable {
 
     init {
         require(entries == entries.sortedBy { it.result })
-    }
-
-    companion object :
-        CreatableFromCsvAndCompetition<GroupResultProtocol> {
-        override fun readFromCsvContentAndCompetition(
-            fileContent: FileContent,
-            competition: Competition
-        ): GroupResultProtocol {
-            val groupName = fileContent[0].split(",").first()
-            val group = competition.getGroupByLabelOrNull(groupName)
-                ?: logErrorAndThrow("No group with name \"$groupName\" exist.")
-            val rest = fileContent.drop(2) // group row and header row
-            val participantAndTimeList = rest.mapIndexed { index, row ->
-                try {
-                    readIdWithFinalResultFromRow(row)
-                } catch (e: IllegalArgumentException) {
-                    val lineNumber =
-                        index + 3 // 3 = 1 for zero-based indexing + 2 for the first two lines being dropped
-                    val messageWithLineNumber = "Line $lineNumber: ${e.message}"
-                    logErrorAndThrow(messageWithLineNumber)
-                }
-            }
-            return GroupResultProtocol(group, participantAndTimeList)
-        }
-
-        private fun readIdWithFinalResultFromRow(row: String): IdWithFinalResult {
-            val tokens = row.split(",")
-            if (tokens.size != 3)
-                logErrorAndThrow("Not three comma separated values.")
-            val (_, id, time) = tokens
-            val idNum =
-                id.toIntOrNull() ?: logErrorAndThrow("Bad id.")
-            val result = when (time) {
-                "снят" -> FinalParticipantResult.Disqualified()
-                else -> FinalParticipantResult.Finished(Time.fromString(time))
-            }
-            return IdWithFinalResult(
-                idNum,
-                result,
-            )
-        }
-
     }
 
     override fun dumpToCsv(): FileContent {
@@ -86,13 +45,14 @@ data class GroupResultProtocol(
         val places = generatePlaces()
         var index = -1
         return listOf(group.label) + PlayersPrinter(listOf(
-            FieldInfo("Место") { ++index; "${places[index]}" },
-            FieldInfo("Индивидуальный номер") { id: Int -> "$id" },
-            FieldInfo("Результат") { id ->
-                entries.first { it.id == id }.result.dumpToCsvString()
+            FieldInfo<ParticipantWithFinalResult>("Место") { ++index; "${places[index]}" },
+            FieldInfo("Индивидуальный номер") { (participant, _) ->
+                "${participant.id}"
+            },
+            FieldInfo("Результат") { (_, result) ->
+                result.dumpToCsvString()
             }
-        )).toTable(entries.map { it.id })
-
+        )).toTable(entries)
     }
 
     override fun defaultCsvFileName() = "result-of-group-${group.label}.csv"
@@ -104,19 +64,4 @@ data class GroupResultProtocol(
             .forEach { places[it + 1] = places[it] }
         return places
     }
-}
-
-data class LiveGroupResultProtocol(
-    val group: Group,
-    val entries: List<ParticipantWithLiveResult>,
-    // sorted by placeInGroup
-) {
-    init {
-        require(entries == entries.sortedBy { it.liveResult })
-    }
-
-    fun toGroupResultProtocol() = GroupResultProtocol(
-        group = group,
-        entries = entries.map { it.toIdWithFinalResult() }
-    )
 }

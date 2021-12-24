@@ -19,3 +19,12 @@ fun catchIllegalArgumentExceptionToString(throwable: Throwable): String? {
         else -> throw throwable // propagate the exception if we cannot handle it here
     }
 }
+
+fun<V, E> Result<V, E>.successOrNothing(
+    nothingReturner: (E) -> Nothing,
+): V {
+    return this.mapBoth (
+        success = {it},
+        failure = { nothingReturner(it) },
+    )
+}

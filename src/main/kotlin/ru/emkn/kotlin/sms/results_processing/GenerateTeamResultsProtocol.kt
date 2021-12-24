@@ -14,11 +14,10 @@ fun generateTeamResultsProtocol(
     val teamsToScore = groupResultProtocols
         .flatMap { it.entries }
         .groupBy {
-            participantsList.getParticipantById(it.id)?.team
-                ?: throw IllegalArgumentException("Invalid $it record in some group protocol: could not find participant with id \"it.id\"!")
+            it.participant.team
         }
         .mapValues { (_, listParticipantAndTime) ->
-            val idsOfTeam = listParticipantAndTime.map { it.id }
+            val idsOfTeam = listParticipantAndTime.map { it.participant.id }
             idsOfTeam.sumOf {
                 idToScore[it]
                     ?: throw InternalError("HashMap idToScore is not complete: it doesn't contain id \"$it\"!")
@@ -42,10 +41,10 @@ private fun moveCalculatedScoresIntoMap(
         .filterIsInstance<FinalParticipantResult.Finished>()
         .minOfOrNull { it.totalTime.asSeconds() }
     if (bestResult == null) {
-        groupResultProtocol.entries.map { it.id }
+        groupResultProtocol.entries.map { it.participant.id }
             .forEach { id -> idToScore[id] = 0 }
     } else {
-        groupResultProtocol.entries.map { it.id to it.result }
+        groupResultProtocol.entries.map { it.participant.id to it.result }
             .forEach { (id, result) ->
                 val score = when (result) {
                     is FinalParticipantResult.Disqualified -> 0

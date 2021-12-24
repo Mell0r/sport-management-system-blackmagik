@@ -1,10 +1,13 @@
 package ru.emkn.kotlin.sms.cli
 
+import com.github.michaelbull.result.mapBoth
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
+import ru.emkn.kotlin.sms.csv.FileContent
+import ru.emkn.kotlin.sms.csv.GroupResultProtocolCsvParser
 import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.generateTeamResultsProtocol
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 
 class ResultTeamsCommand(
@@ -15,23 +18,11 @@ class ResultTeamsCommand(
         val participantsList =
             loadParticipantsList(participantListFile, competition)
 
-        // All group result protocols must be valid and readable
-        val groupResultProtocols = readAndParseAllFiles(
-            files = resultProtocolFiles,
-            competition = competition,
-            parser = GroupResultProtocol.Companion::readFromCsvContentAndCompetition,
-            strategyOnReadFail = { file ->
-                Logger.error { "Group result protocol at \"${file.absolutePath}\" couldn't be reached or read." }
-                exitWithInfoLog()
-            },
-            strategyOnWrongFormat = { file, exception ->
-                Logger.error {
-                    "Group result protocol at \"${file.absolutePath}\" has invalid format:\n" +
-                            "${exception.message}"
-                }
-                exitWithInfoLog()
-            },
-        )
+        val groupResultProtocolCsvParser = GroupResultProtocolCsvParser(competition, participantsList)
+        val groupResultProtocols = groupResultProtocolCsvParser.readAndParseAll(resultProtocolFiles).successOrNothing {
+            Logger.error {"$it"}
+            exitWithInfoLog()
+        }
 
         val teamResultProtocol = try {
             generateTeamResultsProtocol(

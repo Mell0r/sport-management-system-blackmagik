@@ -3,7 +3,7 @@ package ru.emkn.kotlin.sms.startcfg
 import org.tinylog.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.csv.FileContent
 
 /**
  * An application for a single team.

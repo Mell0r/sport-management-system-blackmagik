@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.csv.CsvDumpable
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.csv.FileContent
 import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 import ru.emkn.kotlin.sms.time.Time
 
