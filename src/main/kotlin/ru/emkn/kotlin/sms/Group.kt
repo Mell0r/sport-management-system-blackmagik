@@ -5,7 +5,7 @@ import ru.emkn.kotlin.sms.startcfg.Applicant
 
 abstract class Group(
     val label: String,
-    var route: Route,
+    val route: Route,
 ) : CsvStringDumpable {
     abstract fun checkApplicantValidity(applicant: Applicant): Boolean
     override fun toString() = label

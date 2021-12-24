@@ -4,7 +4,7 @@ import org.tinylog.Logger
 import ru.emkn.kotlin.sms.Competition
 
 /**
- * An object who processes given applications (that already passed by the format),
+ * An object that processes given applications (that already passed by the format),
  * filtering out applicants which cannot be assigned to the competition.
  */
 class ApplicationProcessor(

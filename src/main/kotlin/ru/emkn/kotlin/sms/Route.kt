@@ -70,7 +70,7 @@ private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
 
 class OrderedCheckpointsRoute(
     name: String,
-    val orderedCheckpoints: MutableList<CheckpointLabelT>,
+    val orderedCheckpoints: List<CheckpointLabelT>,
 ) : Route(name) {
     override val checkpoints: Set<CheckpointLabelT>
         get() = orderedCheckpoints.toSet()
@@ -141,8 +141,8 @@ class OrderedCheckpointsRoute(
 
 class AtLeastKCheckpointsRoute(
     name: String,
-    override val checkpoints: MutableSet<CheckpointLabelT>,
-    var threshold: Int,
+    override val checkpoints: Set<CheckpointLabelT>,
+    val threshold: Int,
 ) : Route(name) {
     init {
         require(threshold <= checkpoints.size) { "k must not be greater than the number of checkpoints." }

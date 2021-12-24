@@ -6,11 +6,10 @@ import ru.emkn.kotlin.sms.results_processing.FileContent
 import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 import ru.emkn.kotlin.sms.time.Time
 
-const val SIZE_OF_PARTICIPANT_LIST_ROW = 7
-
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
-    companion object :
-        CreatableFromCsvAndCompetition<ParticipantsList> {
+    companion object : CreatableFromCsvAndCompetition<ParticipantsList> {
+        private const val SIZE_OF_PARTICIPANT_LIST_ROW = 7
+
         override fun readFromCsvContentAndCompetition(
             fileContent: FileContent,
             competition: Competition
