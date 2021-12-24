@@ -63,7 +63,7 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
     fun getRouteOfId(id: Int) = getParticipantById(id)?.group?.route
     fun getStartingTimeOfId(id: Int) = getParticipantById(id)?.startingTime
 
-    override fun dumpToCsv() = list.map { "$it" }
+    override fun dumpToCsv() = list.map { it.dumpToCsvString() }
     override fun defaultCsvFileName() = "participants-list.csv"
 
     override fun equals(other: Any?): Boolean {
