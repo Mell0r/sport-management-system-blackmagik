@@ -1,15 +1,8 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.csv.CsvDumpable
-import ru.emkn.kotlin.sms.csv.FileContent
-import ru.emkn.kotlin.sms.time.Time
-
-data class IdWithFinalResult(
-    val id: Int,
-    val result: FinalParticipantResult,
-)
+import ru.emkn.kotlin.sms.io.FileContent
 
 data class GroupResultProtocol(
     val group: Group,

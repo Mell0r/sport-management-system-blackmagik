@@ -4,6 +4,7 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
 import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.io.FileContent
 import ru.emkn.kotlin.sms.io.FileParser
 import ru.emkn.kotlin.sms.results_processing.FinalParticipantResult
 import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol

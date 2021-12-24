@@ -20,7 +20,7 @@ fun catchIllegalArgumentExceptionToString(throwable: Throwable): String? {
     }
 }
 
-fun<V, E> Result<V, E>.successOrNothing(
+inline fun <V, E> Result<V, E>.successOrNothing(
     nothingReturner: (E) -> Nothing,
 ): V {
     return this.mapBoth (

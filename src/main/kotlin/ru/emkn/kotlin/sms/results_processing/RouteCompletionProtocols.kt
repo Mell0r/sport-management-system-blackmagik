@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
-import ru.emkn.kotlin.sms.csv.FileContent
+import ru.emkn.kotlin.sms.io.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
 data class ParticipantTimestampsProtocol(

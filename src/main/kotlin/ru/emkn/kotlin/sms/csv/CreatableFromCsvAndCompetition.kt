@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.csv
 
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.io.FileContent
 import ru.emkn.kotlin.sms.io.readAndParseFile
 import java.io.File
 

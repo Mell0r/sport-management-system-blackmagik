@@ -1,13 +1,9 @@
 package ru.emkn.kotlin.sms.cli
 
-import com.github.michaelbull.result.mapBoth
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.csv.FileContent
 import ru.emkn.kotlin.sms.csv.GroupResultProtocolCsvParser
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.SampleTeamResultsCalculator
-import ru.emkn.kotlin.sms.results_processing.TeamResultsCalculator
 import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 

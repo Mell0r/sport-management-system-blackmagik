@@ -1,62 +1,9 @@
 package ru.emkn.kotlin.sms
 
-import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
 import ru.emkn.kotlin.sms.csv.CsvDumpable
-import ru.emkn.kotlin.sms.csv.FileContent
 import ru.emkn.kotlin.sms.startcfg.StartingProtocol
-import ru.emkn.kotlin.sms.time.Time
 
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
-    companion object : CreatableFromCsvAndCompetition<ParticipantsList> {
-        private const val SIZE_OF_PARTICIPANT_LIST_ROW = 7
-
-        override fun readFromCsvContentAndCompetition(
-            fileContent: FileContent,
-            competition: Competition
-        ): ParticipantsList {
-            return ParticipantsList(fileContent.mapIndexed { index, row ->
-                try {
-                    readParticipantFromRow(row, competition)
-                } catch (e: IllegalArgumentException) {
-                    val lineNumber = index + 1
-                    val messageWithLineNumber = "Line $lineNumber: ${e.message}"
-                    logErrorAndThrow(messageWithLineNumber)
-                }
-            })
-        }
-
-        private fun readParticipantFromRow(
-            row: String,
-            competition: Competition
-        ): Participant {
-            val tokens = row.split(',')
-            require(row.count { it == ',' } == SIZE_OF_PARTICIPANT_LIST_ROW) {
-                "Incorrect number of commas! " +
-                        "Should be $SIZE_OF_PARTICIPANT_LIST_ROW."
-            }
-            val id = tokens[0].toIntOrThrow(
-                IllegalArgumentException("First argument(ID) of participant is not a number!")
-            )
-            val age = tokens[1].toIntOrNull()
-            requireNotNull(age) { "Second argument(age) of participant is not a number!" }
-            val groupLabel = tokens[4]
-            val group = competition.getGroupByLabelOrNull(groupLabel)
-            requireNotNull(group) {
-                "Invalid group label \"$groupLabel\" of participant. No group with such label exist."
-            }
-            return Participant(
-                id = id,
-                age = age,
-                name = tokens[2],
-                lastName = tokens[3],
-                group = group,
-                team = tokens[5],
-                sportsCategory = tokens[6],
-                startingTime = Time.fromString(tokens[7]),
-            )
-        }
-    }
-
     fun getParticipantById(id: Int) = list.find { it.id == id }
     fun getGroupOfId(id: Int) = getParticipantById(id)?.group
     fun getRouteOfId(id: Int) = getParticipantById(id)?.group?.route

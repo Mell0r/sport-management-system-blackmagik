@@ -2,7 +2,6 @@ package ru.emkn.kotlin.sms.io
 
 import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.ResultOrMessage
-import ru.emkn.kotlin.sms.csv.FileContent
 import java.io.File
 
 interface FileParser<T> {

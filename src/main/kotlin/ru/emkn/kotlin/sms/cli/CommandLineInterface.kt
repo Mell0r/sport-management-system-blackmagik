@@ -5,9 +5,11 @@ import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
 import ru.emkn.kotlin.sms.io.ensureDirectory
 import ru.emkn.kotlin.sms.io.initializeCompetition
 import ru.emkn.kotlin.sms.io.readAndParseFile
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -63,24 +65,11 @@ private fun ensureOutputDirectory(outputDirectoryPath: String): File {
 fun loadParticipantsList(
     participantListFile: File,
     competition: Competition
-): ParticipantsList =
-    readAndParseFile(
-        file = participantListFile,
-        competition = competition,
-        parser = ParticipantsList.Companion::readFromCsvContentAndCompetition,
-        strategyOnReadFail = { file ->
-            // Participants list MUST be readable
-            // Otherwise, terminate
-            Logger.error { "Couldn't read participants list at \"${file.path}\"." }
-            exitWithInfoLog()
-        },
-        strategyOnWrongFormat = { file, exception ->
-            // Participants list MUST have correct format
-            // Otherwise, terminate
-            Logger.error {
-                "Participants list at \"${file.path}\" has invalid format:\n" +
-                        "${exception.message}"
-            }
-            exitWithInfoLog()
-        },
-    )
+): ParticipantsList {
+    return ParticipantsListCsvParser(competition).readAndParse(participantListFile).successOrNothing {
+        Logger.error {
+            "Could not load participants list at \"${participantListFile.absolutePath}\":\n$it"
+        }
+        exitWithInfoLog()
+    }
+}

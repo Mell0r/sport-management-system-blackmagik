@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
 import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
@@ -31,6 +32,7 @@ import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
 import ru.emkn.kotlin.sms.io.*
 import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
 import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 
 private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
@@ -93,12 +95,12 @@ private fun loadReadyStartingConfiguration(
 
     val participantsListFile = safeOpenSingleFileOrNull("Выберите список участников (participants-list.csv)")
         ?: return
-    val participantsList = try {
-        ParticipantsList.readFromCsvAndCompetition(participantsListFile, state.competition)
-    } catch (e: IllegalArgumentException) {
-        errorDialogMessage.value = e.message
+
+    val participantsList = ParticipantsListCsvParser(state.competition).readAndParse(participantsListFile).successOrNothing {
+        errorDialogMessage.value = it
         return
     }
+
     state.participantsList = participantsList
 
     programState.value = state.nextProgramState()

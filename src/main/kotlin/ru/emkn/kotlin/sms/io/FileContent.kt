@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.csv
+package ru.emkn.kotlin.sms.io
 
 typealias FileContent = List<String>
 
