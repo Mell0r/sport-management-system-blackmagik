@@ -13,7 +13,6 @@ import java.io.File
 
 class ResultCommand(
     val participantListFile: File,
-    val startingProtocolFiles: List<File>,
     val routeProtocolType: RouteProtocolType,
     val routeProtocolFiles: List<File>,
 ) : ProgramCommand {
