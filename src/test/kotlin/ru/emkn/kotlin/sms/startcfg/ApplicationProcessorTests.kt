@@ -60,8 +60,7 @@ internal class ApplicationProcessorTests {
             Application("team2", listOf()),
             Application("team3", listOf())
         )
-        assertFailsWith<IllegalArgumentException> {
-            ApplicationProcessor(competition, applications).process()
-        }
+        // should not throw
+        ApplicationProcessor(competition, applications).process()
     }
 }
