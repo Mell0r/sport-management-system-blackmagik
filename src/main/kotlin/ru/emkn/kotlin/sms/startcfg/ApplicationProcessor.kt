@@ -22,25 +22,23 @@ class ApplicationProcessor(
     fun process(): List<ProcessedApplicant> {
         ensureTeamNamesDistinction()
         return applications.flatMap { application ->
-            application.applicantsList.flatMap { applicant ->
+            application.applicantsList.mapNotNull { applicant ->
                 val groupLabel = applicant.supposedGroupLabel
                 val group = competition.getGroupByLabelOrNull(groupLabel)
                 if (group == null) {
                     skipApplicant(applicant, reason = "Invalid group label \"$groupLabel\".")
-                    listOf()
+                    null
                 } else if (!group.checkApplicantValidity(applicant)) {
                     skipApplicant(applicant, reason = "Does not pass the requirement of group \"$groupLabel\".")
-                    listOf()
+                    null
                 } else {
-                    listOf(
-                        ProcessedApplicant(
-                            age = applicant.getAge(competition.year),
-                            name = applicant.name,
-                            lastName = applicant.lastName,
-                            group = group,
-                            team = applicant.teamName,
-                            sportsCategory = applicant.sportsCategory,
-                        )
+                    ProcessedApplicant(
+                        age = applicant.getAge(competition.year),
+                        name = applicant.name,
+                        lastName = applicant.lastName,
+                        group = group,
+                        team = applicant.teamName,
+                        sportsCategory = applicant.sportsCategory,
                     )
                 }
             }
@@ -59,7 +57,7 @@ class ApplicationProcessor(
         val teamNames = mutableSetOf<String>()
         applications.forEach {
             require(!teamNames.contains(it.teamName)) {
-                "Two different applications have same team name."
+                "Two (or more) different applications have same team name ${it.teamName}."
             }
             teamNames.add(it.teamName)
         }

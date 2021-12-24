@@ -283,7 +283,7 @@ private fun loadCompetition(
         }
         .onFailure { message ->
             Logger.error("Failed to initialize competition.\n$message\nAborting.")
-            errorDialogMessage.value = "Соревнование из папки \\\"${folder.path}\\\" не было загружено! Произошла следующяя ошибка.\n" +
+            errorDialogMessage.value = "Соревнование из папки \\\"${folder.path}\\\" не было загружено! Произошла следующая ошибка.\n" +
                 message
         }
 }
