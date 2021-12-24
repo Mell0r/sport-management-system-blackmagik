@@ -1,9 +1,8 @@
 package ru.emkn.kotlin.sms.results_processing
 
-import ru.emkn.kotlin.sms.results_processing.FinalParticipantResult
 import ru.emkn.kotlin.sms.time.Time
-import kotlin.test.*
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 internal class FinalParticipantResultTests {
     /* Test data */

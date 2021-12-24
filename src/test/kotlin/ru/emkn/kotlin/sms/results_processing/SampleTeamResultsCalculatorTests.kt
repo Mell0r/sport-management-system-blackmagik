@@ -26,8 +26,6 @@ internal class SampleTeamResultsCalculatorTests {
     private val p8 = Participant(8, 15, "Name8", "Surname8", groupM12To15, "Team3", "", 0.s())
     private val p9 = Participant(9, 16, "Name9", "Surname9", groupM16To18, "Team3", "", 0.s())
 
-    private val testParticipantsList = ParticipantsList(listOf(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9))
-
     private val testGroupResultProtocols = listOf(
         GroupResultProtocol(
             group = groupM12To15,

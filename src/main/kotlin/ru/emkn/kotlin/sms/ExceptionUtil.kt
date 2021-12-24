@@ -11,8 +11,6 @@ fun logErrorAndThrow(message: String): Nothing {
     throw IllegalArgumentException(message)
 }
 
-fun String.toIntOrThrow(e: Exception): Int = toIntOrNull() ?: throw e
-
 fun catchIllegalArgumentExceptionToString(throwable: Throwable): String? {
     return when (throwable) {
         is IllegalArgumentException -> throwable.message

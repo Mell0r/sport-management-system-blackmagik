@@ -3,7 +3,6 @@ package ru.emkn.kotlin.sms.results_processing
 import ru.emkn.kotlin.sms.csv.CsvDumpable
 import ru.emkn.kotlin.sms.io.FileContent
 
-data class TeamToScore(val team: String, val score: Int)
 class TeamResultsProtocol(scores: List<TeamToScore>) : CsvDumpable {
     val scores = scores.sortedBy { it.team }.sortedByDescending { it.score }
     private val places = generatePlaces()

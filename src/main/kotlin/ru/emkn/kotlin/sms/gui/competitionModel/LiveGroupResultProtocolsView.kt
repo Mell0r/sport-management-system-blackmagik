@@ -2,9 +2,11 @@ package ru.emkn.kotlin.sms.gui.competitionModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import ru.emkn.kotlin.sms.results_processing.*
+import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.LiveGroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.LiveGroupResultProtocolGenerator
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 
 class LiveGroupResultProtocolsView(
     state: ProgramState,

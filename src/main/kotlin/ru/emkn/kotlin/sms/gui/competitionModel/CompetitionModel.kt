@@ -21,8 +21,7 @@ class CompetitionModel(
 ) {
     // actual list of ParticipantCheckpointTime triples
     // private because any modification MUST notify all listeners
-    private val timestamps: MutableList<ParticipantCheckpointTime> =
-        mutableListOf()
+    private val timestamps: MutableList<ParticipantCheckpointTime> = mutableListOf()
 
     private val timestampsProtocolProcessor = TimestampsProtocolProcessor(state.participantsList)
 

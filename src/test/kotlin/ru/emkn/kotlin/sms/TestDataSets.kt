@@ -164,19 +164,10 @@ object TestDataSetCompetition1WithoutAtLeastKRoutes {
  * 3. GroupResultProtocolGenerator tests
  */
 object TestDataSet2 {
-    val competitionYear = 0
+    const val competitionYear = 0
     val mainRoute = OrderedCheckpointsRoute("main", mutableListOf("1", "2", "3"))
-    val shortRoute = OrderedCheckpointsRoute("short", mutableListOf("1"))
     val m10 = AgeGroup("М10", mainRoute, -100, 100, competitionYear)
     val f10 = AgeGroup("Ж10", mainRoute, -100, 100, competitionYear)
-    val competition = Competition(
-        discipline = "",
-        name = "",
-        year = competitionYear,
-        date = "",
-        groups = listOf(m10, f10),
-        routes = listOf(mainRoute, shortRoute),
-    )
     val p1 = Participant(1, 10, "Иван", "Иванов", m10, "T1", "", Time(0))
     val p2 = Participant(2, 10, "Иван", "Неиванов", m10, "T2", "", Time(0))
     val p3 = Participant(3, 10, "Иван", "Дурак", m10, "T2", "", Time(0))

@@ -1,7 +1,6 @@
 package ru.emkn.kotlin.sms.startcfg
 
 import org.tinylog.Logger
-import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.csv.CreatableFromCsv
 import ru.emkn.kotlin.sms.io.FileContent
 

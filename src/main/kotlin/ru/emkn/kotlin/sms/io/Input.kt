@@ -5,6 +5,8 @@ import ru.emkn.kotlin.sms.ResultOrMessage
 import java.io.File
 import java.nio.file.Files
 
+typealias FileContent = List<String>
+
 /**
  * Creates a directory by given filepath and all it's ancestors (if it doesn't exist already).
  * Returns a created directory as a [java.io.File].

@@ -5,9 +5,6 @@ import ru.emkn.kotlin.sms.startcfg.StartingProtocol
 
 class ParticipantsList(val list: List<Participant>) : CsvDumpable {
     fun getParticipantById(id: Int) = list.find { it.id == id }
-    fun getGroupOfId(id: Int) = getParticipantById(id)?.group
-    fun getRouteOfId(id: Int) = getParticipantById(id)?.group?.route
-    fun getStartingTimeOfId(id: Int) = getParticipantById(id)?.startingTime
 
     override fun dumpToCsv() = list.map { it.dumpToCsvString() }
     override fun defaultCsvFileName() = "participants-list.csv"

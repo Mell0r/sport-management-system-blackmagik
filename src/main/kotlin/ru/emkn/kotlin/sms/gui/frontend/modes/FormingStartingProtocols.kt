@@ -17,10 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
-import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
@@ -28,7 +26,7 @@ import ru.emkn.kotlin.sms.gui.programState.FormingParticipantsListProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.gui.safeCSVDumpableToFile
 import ru.emkn.kotlin.sms.gui.writeCSVDumpablesToDirectory
-import ru.emkn.kotlin.sms.io.*
+import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
 import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
 import ru.emkn.kotlin.sms.successOrNothing
