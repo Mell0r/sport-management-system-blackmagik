@@ -17,15 +17,11 @@ import ru.emkn.kotlin.sms.io.initializeCompetition
 class CompetitionBuilder(
     val discipline: MutableState<String> = mutableStateOf(""),
     val name: MutableState<String> = mutableStateOf(""),
-    val year: MutableState<Int> = mutableStateOf(INCORRECT_YEAR),
+    val year: MutableState<String> = mutableStateOf(""),
     val date: MutableState<String> = mutableStateOf(""),
     val groups: SnapshotStateList<AgeGroupBuilder> = mutableStateListOf(),
     val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
 ) {
-
-    companion object {
-        const val INCORRECT_YEAR = -6666
-    }
 
     /**
      * Replaces all the data in the builder with data from [competition].
@@ -34,7 +30,7 @@ class CompetitionBuilder(
     fun replaceFromCompetition(competition: Competition) {
         discipline.value = competition.discipline
         name.value = competition.name
-        year.value = competition.year
+        year.value = competition.year.toString()
         date.value = competition.date
         groups.clear()
         groups.addAll(
@@ -86,13 +82,13 @@ class CompetitionBuilder(
                 route = route,
                 ageFrom = ageGroupBuilder.ageFrom.value.toInt(),
                 ageTo = ageGroupBuilder.ageTo.value.toInt(),
-                competitionYear = year.value,
+                competitionYear = year.value.toInt(),
             )
         }
         return Competition(
             discipline = discipline.value,
             name = name.value,
-            year = year.value,
+            year = year.value.toInt(),
             date = date.value,
             groups = groups,
             routes = routes,

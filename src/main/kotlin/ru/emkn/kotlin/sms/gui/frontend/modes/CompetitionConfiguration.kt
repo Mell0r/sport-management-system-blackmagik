@@ -60,11 +60,10 @@ private fun DisplayCompetitionTextFields(
         BindableTextField("Дисциплина", competitionBuilder.discipline)
         BindableTextField("Название", competitionBuilder.name)
         OutlinedTextField(
-            if (!isYearIncorrect) competitionBuilder.year.value.toString() else "",
+            competitionBuilder.year.value,
             onValueChange = { newValue ->
                 isYearIncorrect = newValue.toIntOrNull() == null
-                competitionBuilder.year.value =
-                    newValue.toIntOrNull() ?: CompetitionBuilder.INCORRECT_YEAR
+                competitionBuilder.year.value = newValue
             },
             modifier = Modifier.width(width),
             label = { Text("Год проведения") }
@@ -187,6 +186,7 @@ fun CompetitionConfiguration(
                     onClick = {
                         programState.value = state.nextProgramState()
                     },
+                    enabled = competitionBuilder.year.value.toIntOrNull() != null,
                     content = { Text("Сохранить и далее") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
                         .size(dialogSize.width / 4, dialogSize.height / 4)
