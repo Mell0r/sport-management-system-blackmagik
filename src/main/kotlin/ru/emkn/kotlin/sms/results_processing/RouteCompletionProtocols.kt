@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.csv.CreatableFromCsvAndCompetition
+import ru.emkn.kotlin.sms.csv.CreatableFromCsv
 import ru.emkn.kotlin.sms.io.FileContent
 import ru.emkn.kotlin.sms.time.Time
 
@@ -9,12 +9,8 @@ data class ParticipantTimestampsProtocol(
     val id: Int,
     val checkpointTimes: List<CheckpointAndTime>
 ) {
-    companion object :
-        CreatableFromCsvAndCompetition<ParticipantTimestampsProtocol> {
-        override fun readFromCsvContentAndCompetition(
-            fileContent: FileContent,
-            competition: Competition
-        ): ParticipantTimestampsProtocol {
+    companion object : CreatableFromCsv<ParticipantTimestampsProtocol> {
+        override fun readFromCsvContent(fileContent: FileContent): ParticipantTimestampsProtocol {
             val id =
                 fileContent.first().split(",").first().toIntOrNull()
                     ?: logErrorAndThrow(
@@ -45,12 +41,8 @@ data class CheckpointTimestampsProtocol(
     val checkpointLabel: CheckpointLabelT,
     val participantTimes: List<IdAndTime>
 ) {
-    companion object :
-        CreatableFromCsvAndCompetition<CheckpointTimestampsProtocol> {
-        override fun readFromCsvContentAndCompetition(
-            fileContent: FileContent,
-            competition: Competition
-        ): CheckpointTimestampsProtocol {
+    companion object : CreatableFromCsv<CheckpointTimestampsProtocol> {
+        override fun readFromCsvContent(fileContent: FileContent): CheckpointTimestampsProtocol {
             val checkPointLabel = fileContent.first().split(",").first()
             val entries =
                 fileContent.zip(1..fileContent.size).drop(1)

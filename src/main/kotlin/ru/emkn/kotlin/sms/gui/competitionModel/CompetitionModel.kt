@@ -1,12 +1,9 @@
 package ru.emkn.kotlin.sms.gui.competitionModel
 
-import com.github.michaelbull.result.mapEither
+import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.UnitOrMessage
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import ru.emkn.kotlin.sms.io.ReadFailException
-import ru.emkn.kotlin.sms.io.WrongFormatException
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.TimestampsProtocolProcessor
@@ -20,7 +17,7 @@ import java.io.File
  * via [CompetitionModelListener] interface.
  */
 class CompetitionModel(
-    private val state: ProgramState,
+    state: ProgramState,
 ) {
     // actual list of ParticipantCheckpointTime triples
     // private because any modification MUST notify all listeners
@@ -61,53 +58,16 @@ class CompetitionModel(
             notifyAllListeners()
         }
 
-        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>): UnitOrMessage {
-            val protocolsByParticipantOrError =
-                com.github.michaelbull.result.runCatching {
-                    readAndParseAllFiles(
-                        files = filePaths.map { File(it) },
-                        competition = state.competition,
-                        parser = ParticipantTimestampsProtocol::readFromCsvContentAndCompetition,
-                    )
-                }
-            return protocolsByParticipantOrError
-                .mapEither(
-                    success = { protocols ->
-                        addTimestampsFromProtocolsByParticipant(protocols)
-                    },
-                    failure = { exception ->
-                        when (exception) {
-                            is ReadFailException -> exception.message
-                            is WrongFormatException -> exception.message
-                            else -> throw exception // propagate the exception if we cannot handle it here
-                        }
-                    }
-                )
+        fun addTimestampsFromProtocolFilesByParticipant(files: List<File>): UnitOrMessage {
+            return ParticipantTimestampsProtocol.readAndParseAll(files).map {
+                addTimestampsFromProtocolsByParticipant(it)
+            }
         }
 
-        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>): UnitOrMessage {
-            val protocolsByCheckpointOrError =
-                com.github.michaelbull.result.runCatching {
-                    readAndParseAllFiles(
-                        files = filePaths.map { File(it) },
-                        competition = state.competition,
-                        parser = CheckpointTimestampsProtocol::readFromCsvContentAndCompetition,
-                    )
-                }
-            return protocolsByCheckpointOrError
-                .mapEither(
-                    success = { protocols ->
-                        addTimestampsFromProtocolsByCheckpoint(protocols)
-                    },
-                    failure = { exception ->
-                        when (exception) {
-                            is ReadFailException -> exception.message
-                            is WrongFormatException -> exception.message
-                            else -> throw exception // propagate the exception if we cannot handle it here
-                        }
-                    }
-                )
+        fun addTimestampsFromProtocolFilesByCheckpoint(files: List<File>): UnitOrMessage {
+            return CheckpointTimestampsProtocol.readAndParseAll(files).map {
+                addTimestampsFromProtocolsByCheckpoint(it)
+            }
         }
-
     }
 }

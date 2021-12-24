@@ -3,36 +3,30 @@ package ru.emkn.kotlin.sms.cli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.Competition
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.startcfg.ApplicationProcessor
 import ru.emkn.kotlin.sms.startcfg.LinearStartingTimeAssigner
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 
 class StartCommand(
     val applicationFiles: List<File>,
 ) : ProgramCommand {
     override fun execute(competition: Competition, outputDirectory: File) {
-        val applications = readAndParseAllFiles(
+        val applications = Application.readAllParseSome(
             files = applicationFiles,
-            competition = competition,
-            parser = Application.Companion::readFromCsvContentAndCompetition,
-            strategyOnReadFail = { file ->
-                // If some application couldn't be loaded as a file,
-                // Then organiser has to check it manually,
-                // No application should be missed due to organisers mistake.
-                Logger.error { "Couldn't reach or read application file \"${file.absolutePath}\"." }
-                exitWithInfoLog()
-            },
-            strategyOnWrongFormat = { file, exception ->
+            strategyOnWrongFormat = { file, message ->
                 // If some application has invalid format, we skip it.
                 // It is probably team's responsibility to send a valid application???
                 Logger.warn {
                     "Application at \"${file.absolutePath}\" has invalid format:\n" +
-                            "${exception.message}" +
+                            "$message" +
                             "Skipping this application."
                 }
             },
-        )
+        ).successOrNothing {
+            Logger.error("Could not read and parse all applications:\n$it")
+            exitWithInfoLog()
+        }
 
         val participantsList = try {
             val applicationProcessor = ApplicationProcessor(competition, applications.toMutableList())

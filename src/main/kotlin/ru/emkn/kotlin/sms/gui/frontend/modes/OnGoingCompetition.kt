@@ -41,7 +41,7 @@ fun OnGoingCompetition(programState: MutableState<ProgramState>) {
 private fun loadParticipantsTimestamps(
     state: OnGoingCompetitionProgramState,
 ) {
-    val files = openFileDialog("Загрузить протоколы прохождения участников") .map { it.path }
+    val files = openFileDialog("Загрузить протоколы прохождения участников").toList()
     state.competitionModelController
         .addTimestampsFromProtocolFilesByParticipant(files)
         .onSuccess {
@@ -65,7 +65,7 @@ private fun LoadParticipantsTimestampsButton(
 private fun loadCheckpointTimestampsButton(
     state: OnGoingCompetitionProgramState,
 ) {
-    val files = openFileDialog("Загрузить протоколы отметок на контрольных точках") .map { it.path }
+    val files = openFileDialog("Загрузить протоколы отметок на контрольных точках").toList()
     state.competitionModelController
         .addTimestampsFromProtocolFilesByCheckpoint(files)
         .onSuccess {

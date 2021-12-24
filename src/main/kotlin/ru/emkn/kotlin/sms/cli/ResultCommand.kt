@@ -3,8 +3,8 @@ package ru.emkn.kotlin.sms.cli
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.RouteProtocolType
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.*
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 
 class ResultCommand(
@@ -16,19 +16,8 @@ class ResultCommand(
         val participantsList =
             loadParticipantsList(participantListFile, competition)
 
-        fun routeCompletionProtocolReadFailStrategy(file: File) {
-            Logger.error { "Route completion protocol at \"${file.absolutePath}\" cannot be reached or read" }
-            exitWithInfoLog()
-        }
-
-        fun routeCompletionProtocolHasWrongFormatStrategy(
-            file: File,
-            exception: IllegalArgumentException
-        ) {
-            Logger.error {
-                "Route completion protocol at \"${file.absolutePath}\" has wrong format:\n" +
-                        "${exception.message}"
-            }
+        fun routeCompletionProtocolReadParseFailStrategy(eMessage: String?): Nothing {
+            Logger.error("Could not read or parse route completion protocols:\n$eMessage")
             exitWithInfoLog()
         }
 
@@ -43,22 +32,14 @@ class ResultCommand(
         val timestampsProtocolProcessor = TimestampsProtocolProcessor(participantsList)
 
         val timestamps = if (routeProtocolType == RouteProtocolType.OF_CHECKPOINT) {
-            val checkpointTimestampsProtocols = readAndParseAllFiles(
-                files = routeProtocolFiles,
-                competition = competition,
-                parser = CheckpointTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
-                strategyOnReadFail = ::routeCompletionProtocolReadFailStrategy,
-                strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
-            )
+            val checkpointTimestampsProtocols = CheckpointTimestampsProtocol
+                .readAndParseAll(routeProtocolFiles)
+                .successOrNothing(::routeCompletionProtocolReadParseFailStrategy)
             timestampsProtocolProcessor.processByCheckpoint(checkpointTimestampsProtocols)
         } else {
-            val participantTimestampsProtocols = readAndParseAllFiles(
-                files = routeProtocolFiles,
-                competition = competition,
-                parser = ParticipantTimestampsProtocol.Companion::readFromCsvContentAndCompetition,
-                strategyOnReadFail = ::routeCompletionProtocolReadFailStrategy,
-                strategyOnWrongFormat = ::routeCompletionProtocolHasWrongFormatStrategy,
-            )
+            val participantTimestampsProtocols = ParticipantTimestampsProtocol
+                .readAndParseAll(routeProtocolFiles)
+                .successOrNothing(::routeCompletionProtocolReadParseFailStrategy)
             timestampsProtocolProcessor.processByParticipant(participantTimestampsProtocols)
         }
 

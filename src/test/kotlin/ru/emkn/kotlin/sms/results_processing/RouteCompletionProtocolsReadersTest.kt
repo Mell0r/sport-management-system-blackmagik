@@ -24,7 +24,7 @@ internal class RouteCompletionProtocolsReadersTest {
                     IdAndTime(1, Time(12, 0, 0)),
                     IdAndTime(2, Time(12, 0, 2)),
                 )
-            ), CheckpointTimestampsProtocol.readFromCsvContentAndCompetition(protocol, testCompetition)
+            ), CheckpointTimestampsProtocol.readFromCsvContent(protocol)
         )
     }
 
@@ -37,7 +37,7 @@ internal class RouteCompletionProtocolsReadersTest {
                     CheckpointAndTime("1km", Time(12, 0, 0)),
                     CheckpointAndTime("2km", Time(12, 0, 2)),
                 )
-            ), ParticipantTimestampsProtocol.readFromCsvContentAndCompetition(protocol, testCompetition)
+            ), ParticipantTimestampsProtocol.readFromCsvContent(protocol)
         )
     }
 }

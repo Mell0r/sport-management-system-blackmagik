@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
 import ru.emkn.kotlin.sms.startcfg.Application
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
@@ -64,7 +63,7 @@ fun FormingParticipantsList(programState: MutableState<ProgramState>) {
             majorListsFontSize
         )
 
-        LoadApplicationsFromCSVButton(state, applicationBuilders)
+        LoadApplicationsFromCSVButton(applicationBuilders)
         LoadReadyStartingConfigurationButton(programState, state)
         SaveAndNextButton(programState, state, applicationBuilders)
         SaveAndExportToCSVAndNextButton(programState, state, applicationBuilders)
@@ -118,7 +117,6 @@ private fun LoadReadyStartingConfigurationButton(
 }
 
 private fun loadApplicationsFromCSV(
-    state: FormingParticipantsListProgramState,
     applicationBuilders: SnapshotStateList<ApplicationBuilder>,
 ) {
     val files = openFileDialog(
@@ -127,17 +125,11 @@ private fun loadApplicationsFromCSV(
     ).toList()
     if (files.isEmpty()) return
 
-    val applications = readAndParseAllFilesOrErrorMessage(
-        files = files,
-        competition = state.competition,
-        parser = Application::readFromCsvContentAndCompetition,
-    ).mapBoth(
-        success = { it },
-        failure = { errorMessage ->
-            errorDialogMessage.value = errorMessage
-            return
-        }
-    )
+    val applications = Application.readAndParseAll(files).successOrNothing {
+        errorDialogMessage.value = it
+        return
+    }
+
     // add all applications
     applicationBuilders.addAll(
         applications.map(ApplicationBuilder::fromApplication)
@@ -148,11 +140,10 @@ private fun loadApplicationsFromCSV(
 
 @Composable
 private fun LoadApplicationsFromCSVButton(
-    state: FormingParticipantsListProgramState,
     applicationBuilders: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
-        onClick = { loadApplicationsFromCSV(state, applicationBuilders) },
+        onClick = { loadApplicationsFromCSV(applicationBuilders) },
         content = { Text(text = "Загрузить заявки из CSV") },
     )
 }

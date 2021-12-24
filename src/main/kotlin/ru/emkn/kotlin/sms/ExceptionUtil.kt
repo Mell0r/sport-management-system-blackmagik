@@ -20,6 +20,18 @@ fun catchIllegalArgumentExceptionToString(throwable: Throwable): String? {
     }
 }
 
+inline fun <V, E> Result<V, E>.successOrNull(
+    action: (E) -> Unit,
+): V? {
+    return this.mapBoth (
+        success = {it},
+        failure = {
+            action(it)
+            null
+        },
+    )
+}
+
 inline fun <V, E> Result<V, E>.successOrNothing(
     nothingReturner: (E) -> Nothing,
 ): V {

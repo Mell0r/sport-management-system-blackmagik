@@ -8,7 +8,6 @@ import ru.emkn.kotlin.sms.ParticipantsList
 import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
 import ru.emkn.kotlin.sms.io.ensureDirectory
 import ru.emkn.kotlin.sms.io.initializeCompetition
-import ru.emkn.kotlin.sms.io.readAndParseFile
 import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 import kotlin.system.exitProcess
