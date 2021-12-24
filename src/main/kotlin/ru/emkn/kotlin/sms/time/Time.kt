@@ -94,3 +94,5 @@ class Time(seconds: Int) : Comparable<Time> {
     }
 
 }
+
+fun Int.s() = Time(this)

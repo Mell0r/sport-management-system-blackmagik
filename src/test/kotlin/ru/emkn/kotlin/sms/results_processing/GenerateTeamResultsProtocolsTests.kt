@@ -2,6 +2,7 @@ package ru.emkn.kotlin.sms.results_processing
 
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.time.Time
+import ru.emkn.kotlin.sms.time.s
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails

@@ -14,8 +14,3 @@ data class ParticipantCheckpointTime(
     fun toCheckPointAndTime() = CheckpointAndTime(checkpoint, time)
 }
 
-data class CheckpointAndTime(
-    val checkpointLabel: CheckpointLabelT,
-    val time: Time
-)
-

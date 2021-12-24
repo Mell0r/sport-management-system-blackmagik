@@ -10,15 +10,7 @@ data class IdWithFinalResult(
     val result: FinalParticipantResult,
 )
 
-data class IdWithLiveResult(
-    val id: Int,
-    val result: LiveParticipantResult,
-) {
-    fun toIdWithFinalResult() =
-        IdWithFinalResult(id, result.toFinalParticipantResult())
-}
-
-class GroupResultProtocol(
+data class GroupResultProtocol(
     val group: Group,
     val entries: List<IdWithFinalResult>
     // sorted by placeInGroup
@@ -114,7 +106,7 @@ class GroupResultProtocol(
     }
 }
 
-class LiveGroupResultProtocol(
+data class LiveGroupResultProtocol(
     val group: Group,
     val entries: List<ParticipantWithLiveResult>,
     // sorted by placeInGroup
