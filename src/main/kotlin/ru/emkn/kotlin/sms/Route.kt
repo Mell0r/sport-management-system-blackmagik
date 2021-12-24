@@ -76,9 +76,9 @@ class OrderedCheckpointsRoute(
         startingTime: Time
     ): LiveParticipantResult {
         val firstTimestamp = checkpointsToTimes.minOfOrNull { it.time }
-        if (firstTimestamp != null && firstTimestamp < startingTime) {
-            // Finished earlier than started
-            // Disqualifying
+        val madeAFalseStart =
+            firstTimestamp != null && firstTimestamp < startingTime
+        if (madeAFalseStart) {
             return LiveParticipantResult.Disqualified()
         }
 
@@ -151,9 +151,10 @@ class AtLeastKCheckpointsRoute(
         checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
-        if (checkpointsToTimes.minOf { it.time } < startingTime) {
-            // Finished earlier than started
-            // Disqualifying
+        val firstTimestamp = checkpointsToTimes.minOfOrNull { it.time }
+        val madeAFalseStart =
+            firstTimestamp != null && firstTimestamp < startingTime
+        if (madeAFalseStart) {
             return LiveParticipantResult.Disqualified()
         }
 
@@ -166,7 +167,8 @@ class AtLeastKCheckpointsRoute(
             // In process
             return LiveParticipantResult.InProcess(
                 completedCheckpoints = visitedCheckpointFromRoute.size,
-                lastCheckpointTime = visitedCheckpointFromRoute.last().time,
+                lastCheckpointTime = visitedCheckpointFromRoute.lastOrNull()?.time
+                    ?: Time(0),
             )
         }
 
