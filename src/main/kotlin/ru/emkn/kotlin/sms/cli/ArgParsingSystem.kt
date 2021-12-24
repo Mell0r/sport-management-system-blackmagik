@@ -4,7 +4,6 @@ package ru.emkn.kotlin.sms.cli
 
 import kotlinx.cli.*
 import org.tinylog.Logger
-import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.system.exitProcess
@@ -81,7 +80,7 @@ class ArgParsingSystem {
             shortName = "tp",
             fullName = "routeProtocolType",
             description = "Route protocol type",
-        ).default(DEFAULT_ROUTE_PROTOCOL_TYPE)
+        ).default(RouteProtocolType.DEFAULT)
 
         val routeProtocolFiles by option(
             CsvFileListArgType,

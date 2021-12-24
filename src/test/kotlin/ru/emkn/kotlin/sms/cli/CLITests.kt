@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.cli
 
-import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.test.*
@@ -229,7 +228,7 @@ internal class CLITests {
                 "routeProtocol.csv"
             ),
             expectedParticipantsListFileName = "participantsList.csv",
-            expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+            expectedRouteProtocolType = RouteProtocolType.DEFAULT,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
@@ -246,7 +245,7 @@ internal class CLITests {
                 "participantsList.csv",
             ),
             expectedParticipantsListFileName = "participantsList.csv",
-            expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+            expectedRouteProtocolType = RouteProtocolType.DEFAULT,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
@@ -301,7 +300,7 @@ internal class CLITests {
                     "plist.csv",
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf()
             )
         }
@@ -316,7 +315,7 @@ internal class CLITests {
                     "protocol.csv",
                 ),
                 expectedParticipantsListFileName = "",
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
                 )
@@ -337,7 +336,7 @@ internal class CLITests {
                     "invalid_type"
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
                 )
@@ -358,7 +357,7 @@ internal class CLITests {
                     "invalid_type"
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
                 )
