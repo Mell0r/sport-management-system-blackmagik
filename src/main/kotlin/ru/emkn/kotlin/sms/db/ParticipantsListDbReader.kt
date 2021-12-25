@@ -22,16 +22,7 @@ class ParticipantsListDbReader(
                     val group = competition.getGroupByLabelOrNull(entity.group) ?: return@loggingTransaction Err(
                         "${entity.toShortString()} has invalid group label \"${entity.group}\""
                     )
-                    val startingTime = runCatching {
-                        Time.fromString(entity.startingTime)
-                    }.successOrNothing { exception ->
-                        when (exception) {
-                            is IllegalArgumentException -> return@loggingTransaction Err(
-                                "${entity.toShortString()} has invalid starting time \"${entity.startingTime}\":\n${exception.message}"
-                            )
-                            else -> throw exception
-                        }
-                    }
+                    val kek = entity.startingTime
                     Participant(
                         id = entity.id.value,
                         age = entity.age,
@@ -40,7 +31,7 @@ class ParticipantsListDbReader(
                         group = group,
                         team = entity.team,
                         sportsCategory = entity.sportsCategory,
-                        startingTime = startingTime,
+                        startingTime = kek,
                     )
                 }
                 val participantsList = ParticipantsList(participants)

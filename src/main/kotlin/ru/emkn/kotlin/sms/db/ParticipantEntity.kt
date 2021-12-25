@@ -3,6 +3,7 @@ package ru.emkn.kotlin.sms.db
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID
 import ru.emkn.kotlin.sms.Participant
+import ru.emkn.kotlin.sms.time.Time
 
 /**
  * A [Participant] adapter
@@ -18,7 +19,7 @@ class ParticipantEntity(id: EntityID<Int>) : IntEntity(id) {
     var group by ParticipantsListTable.group
     var team by ParticipantsListTable.team
     var sportsCategory by ParticipantsListTable.sportsCategory
-    var startingTime by ParticipantsListTable.startingTime
+    var startingTime: Time by ParticipantsListTable.startingTime
 
     fun toShortString() = "Participant #$id $name $lastName"
 }

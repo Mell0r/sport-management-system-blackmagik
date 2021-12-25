@@ -27,7 +27,7 @@ class ParticipantsListDbWriter(
                     group = participant.group.label
                     team = participant.team
                     sportsCategory = participant.sportsCategory
-                    startingTime = participant.startingTime.toString()
+                    startingTime = participant.startingTime
                 }
             }
         }
