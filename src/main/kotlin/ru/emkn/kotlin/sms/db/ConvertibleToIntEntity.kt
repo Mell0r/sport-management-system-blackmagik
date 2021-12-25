@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.IntEntity
  */
 interface ConvertibleToIntEntity<T : IntEntity> {
     /**
-     * Can be called ONLY within transaction!
+     * Can be called ONLY within a transaction!
      */
     fun toEntity(): T
 }

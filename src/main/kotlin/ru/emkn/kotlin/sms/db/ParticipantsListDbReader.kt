@@ -21,7 +21,6 @@ class ParticipantsListDbReader(
                     val group = competition.getGroupByLabelOrNull(entity.group) ?: return@loggingTransaction Err(
                         "${entity.toShortString()} has invalid group label \"${entity.group}\""
                     )
-                    val kek = entity.startingTime
                     Participant(
                         id = entity.id.value,
                         age = entity.age,
@@ -30,14 +29,11 @@ class ParticipantsListDbReader(
                         group = group,
                         team = entity.team,
                         sportsCategory = entity.sportsCategory,
-                        startingTime = kek,
+                        startingTime = entity.startingTime,
                     )
                 }
-                val participantsList = ParticipantsList(participants)
-                participantsList
-            }.mapError { exception ->
-                "Some error happened while reading database:\n${exception.message}"
-            }
+                ParticipantsList(participants)
+            }.mapDBReadErrorMessage()
         }
     }
 }
