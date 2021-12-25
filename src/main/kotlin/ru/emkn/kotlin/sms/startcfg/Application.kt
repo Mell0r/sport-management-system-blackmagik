@@ -28,7 +28,7 @@ class Application(
             if (birthYear == null) {
                 Logger.warn {
                     "Line $lineNo: The applicant has incorrect birth " +
-                            "year, so he/she is not allowed to competition."
+                            "year, so he/she is not admitted to competition."
                 }
                 return null
             }
