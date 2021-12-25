@@ -25,5 +25,4 @@ class DbWriter<T : IntEntity>(
             }
         }
     }
-
 }

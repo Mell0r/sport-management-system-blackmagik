@@ -5,24 +5,19 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import ru.emkn.kotlin.sms.Competition
 
+/**
+ * Writes [Competition] to multiple tables in [database].
+ */
 class CompetitionDbWriter(
     private val database: Database,
     private val competition: Competition,
 ) {
+    private val groupsWriter = DbWriter<GroupEntity>(database, GroupsTable)
+
     /**
      * OVERWRITES the whole [GroupsTable].
      */
     fun writeGroups() {
-        return loggingTransaction(database) {
-            SchemaUtils.create(GroupsTable) // create if not exists
-            GroupsTable.deleteAll()
-            competition.groups.forEach { group ->
-                with (group) {
-                    GroupEntity.new {
-                        initializeEntity()
-                    }
-                }
-            }
-        }
+        groupsWriter.overwrite(competition.groups)
     }
 }

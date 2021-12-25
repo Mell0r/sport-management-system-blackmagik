@@ -13,7 +13,7 @@ internal class ParticipantsListTableTest {
 
     private val testDataSet = TableTestDataSet1
     private val testCompetition = testDataSet.competition
-    private val testParticipantsList = testDataSet.participantsLists
+    private val testParticipantsLists = testDataSet.participantsLists
 
     private fun connectDB() = Database.safeConnectToPath("./$testDBPath").unwrap()
 
@@ -22,8 +22,8 @@ internal class ParticipantsListTableTest {
         val db = connectDB()
         val reader = ParticipantsListDbReader(db, testCompetition)
         val writer = ParticipantsListDbWriter(db)
-        testParticipantsList.forEach { participantsList ->
-            writer.write(participantsList)
+        testParticipantsLists.forEach { participantsList ->
+            writer.overwrite(participantsList)
             val result = reader.read().unwrap()
             assertEquals(participantsList, result)
         }

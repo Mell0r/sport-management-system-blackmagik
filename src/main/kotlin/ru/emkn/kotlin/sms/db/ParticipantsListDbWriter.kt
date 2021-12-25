@@ -13,18 +13,9 @@ import ru.emkn.kotlin.sms.*
 class ParticipantsListDbWriter(
     private val database: Database,
 ) {
-    /**
-     * OVERWRITES the whole [ParticipantsListTable].
-     */
-    // unsafe?
-    // should never throw anything afaik
-    fun write(participantsList: ParticipantsList) {
-        loggingTransaction(database) {
-            SchemaUtils.create(ParticipantsListTable) // create if not exists
-            ParticipantsListTable.deleteAll()
-            participantsList.list.forEach { participant ->
-                participant.toEntity()
-            }
-        }
+    private val writer = DbWriter<ParticipantEntity>(database, ParticipantsListTable)
+
+    fun overwrite(participantsList: ParticipantsList) {
+        writer.overwrite(participantsList.list)
     }
 }
