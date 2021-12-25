@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.cli
 
-import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.test.*
@@ -106,8 +105,6 @@ internal class CLITests {
                 "",
                 "-r",
                 "",
-                "-s",
-                ""
             ),
             expectedConfigFileName = "cfg1.json",
             expectedOutputDirectoryPath = "out",
@@ -192,12 +189,9 @@ internal class CLITests {
     private fun testResultSubcommand(
         args: Array<String>,
         expectedParticipantsListFileName: String,
-        expectedStartingProtocolFileNames: List<String>,
         expectedRouteProtocolType: RouteProtocolType,
         expectedRouteProtocolFileNames: List<String>,
     ) {
-        val expectedStartingProtocolFiles =
-            expectedStartingProtocolFileNames.map { File(it) }
         val expectedParticipantsListFile =
             File(expectedParticipantsListFileName)
         val expectedRouteProtocolFiles =
@@ -209,10 +203,6 @@ internal class CLITests {
         assertEquals(
             expectedParticipantsListFile,
             argParsingSystem.resultSubcommand.participantListFile
-        )
-        assertEquals(
-            expectedStartingProtocolFiles,
-            argParsingSystem.resultSubcommand.startingProtocolFiles
         )
         assertEquals(
             expectedRouteProtocolType,
@@ -234,16 +224,11 @@ internal class CLITests {
                 "out",
                 "-p",
                 "participantsList.csv",
-                "-s",
-                "startingProtocol.csv",
                 "-r",
                 "routeProtocol.csv"
             ),
             expectedParticipantsListFileName = "participantsList.csv",
-            expectedStartingProtocolFileNames = listOf(
-                "startingProtocol.csv",
-            ),
-            expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+            expectedRouteProtocolType = RouteProtocolType.DEFAULT,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
@@ -258,14 +243,9 @@ internal class CLITests {
                 "routeProtocol.csv",
                 "-p",
                 "participantsList.csv",
-                "-s",
-                "startingProtocol.csv"
             ),
             expectedParticipantsListFileName = "participantsList.csv",
-            expectedStartingProtocolFileNames = listOf(
-                "startingProtocol.csv",
-            ),
-            expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+            expectedRouteProtocolType = RouteProtocolType.DEFAULT,
             expectedRouteProtocolFileNames = listOf(
                 "routeProtocol.csv",
             )
@@ -276,8 +256,6 @@ internal class CLITests {
                 "cfg.json",
                 "-o",
                 "out",
-                "--startingProtocols",
-                "startingProtocol.csv",
                 "--participants",
                 "participantsList.csv",
                 "--routeProtocols",
@@ -286,9 +264,6 @@ internal class CLITests {
                 "OF_PARTICIPANT"
             ),
             expectedParticipantsListFileName = "participantsList.csv",
-            expectedStartingProtocolFileNames = listOf(
-                "startingProtocol.csv",
-            ),
             expectedRouteProtocolType = RouteProtocolType.OF_PARTICIPANT,
             expectedRouteProtocolFileNames = listOf(
                 "protocol1.csv",
@@ -299,8 +274,6 @@ internal class CLITests {
             arrayOf(
                 "result",
                 "cfg.json",
-                "-s",
-                "sprotocol.csv",
                 "-o",
                 "out",
                 "--routeProtocolType",
@@ -311,9 +284,6 @@ internal class CLITests {
                 "rprotocol.csv"
             ),
             expectedParticipantsListFileName = "plist.csv",
-            expectedStartingProtocolFileNames = listOf(
-                "sprotocol.csv",
-            ),
             expectedRouteProtocolType = RouteProtocolType.OF_CHECKPOINT,
             expectedRouteProtocolFileNames = listOf(
                 "rprotocol.csv",
@@ -328,14 +298,9 @@ internal class CLITests {
                     "out",
                     "-p",
                     "plist.csv",
-                    "-s",
-                    "sprotocol.csv"
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedStartingProtocolFileNames = listOf(
-                    "sprotocol.csv",
-                ),
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf()
             )
         }
@@ -348,14 +313,9 @@ internal class CLITests {
                     "out",
                     "-r",
                     "protocol.csv",
-                    "-s",
-                    "sprotocol.csv"
                 ),
                 expectedParticipantsListFileName = "",
-                expectedStartingProtocolFileNames = listOf(
-                    "sprotocol.csv",
-                ),
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
                 )
@@ -372,16 +332,11 @@ internal class CLITests {
                     "plist.csv",
                     "-r",
                     "protocol.csv",
-                    "-s",
-                    "sprotocol.csv",
                     "-tp",
                     "invalid_type"
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedStartingProtocolFileNames = listOf(
-                    "sprotocol.csv",
-                ),
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
                 )
@@ -398,38 +353,13 @@ internal class CLITests {
                     "plist.csv",
                     "-r",
                     "protocol.csv",
-                    "-s",
-                    "sprotocol.csv",
                     "-tp",
                     "invalid_type"
                 ),
                 expectedParticipantsListFileName = "plist.csv",
-                expectedStartingProtocolFileNames = listOf(
-                    "sprotocol.csv",
-                ),
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
+                expectedRouteProtocolType = RouteProtocolType.DEFAULT,
                 expectedRouteProtocolFileNames = listOf(
                     "protocol.csv"
-                )
-            )
-        }
-        assertFails {
-            testResultSubcommand(
-                arrayOf(
-                    "result",
-                    "cfg.json",
-                    "-o",
-                    "out",
-                    "-p",
-                    "participantsList.csv",
-                    "-r",
-                    "routeProtocol.csv"
-                ),
-                expectedParticipantsListFileName = "participantsList.csv",
-                expectedStartingProtocolFileNames = listOf(),
-                expectedRouteProtocolType = DEFAULT_ROUTE_PROTOCOL_TYPE,
-                expectedRouteProtocolFileNames = listOf(
-                    "routeProtocol.csv",
                 )
             )
         }

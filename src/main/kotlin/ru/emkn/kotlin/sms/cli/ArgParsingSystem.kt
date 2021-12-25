@@ -1,8 +1,9 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE", "EXPERIMENTAL_OVERRIDE")
+
 package ru.emkn.kotlin.sms.cli
 
 import kotlinx.cli.*
 import org.tinylog.Logger
-import ru.emkn.kotlin.sms.DEFAULT_ROUTE_PROTOCOL_TYPE
 import ru.emkn.kotlin.sms.RouteProtocolType
 import java.io.File
 import kotlin.system.exitProcess
@@ -74,19 +75,12 @@ class ArgParsingSystem {
             description = "Participants list file",
         ).required()
 
-        val startingProtocolFiles by option(
-            CsvFileListArgType,
-            shortName = "s",
-            fullName = "startingProtocols",
-            description = "A list of starting protocol files (in .csv) or directories, separated by commas."
-        ).required()
-
         val routeProtocolType by option(
             ArgType.Choice<RouteProtocolType>(),
             shortName = "tp",
             fullName = "routeProtocolType",
             description = "Route protocol type",
-        ).default(DEFAULT_ROUTE_PROTOCOL_TYPE)
+        ).default(RouteProtocolType.DEFAULT)
 
         val routeProtocolFiles by option(
             CsvFileListArgType,
@@ -98,7 +92,6 @@ class ArgParsingSystem {
         override fun execute() {
             invokedCommand = ResultCommand(
                 participantListFile = participantListFile,
-                startingProtocolFiles = startingProtocolFiles,
                 routeProtocolType = routeProtocolType,
                 routeProtocolFiles = routeProtocolFiles,
             )

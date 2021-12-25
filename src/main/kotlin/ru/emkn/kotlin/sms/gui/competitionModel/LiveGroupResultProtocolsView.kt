@@ -2,42 +2,22 @@ package ru.emkn.kotlin.sms.gui.competitionModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
+import ru.emkn.kotlin.sms.results_processing.GroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.LiveGroupResultProtocol
+import ru.emkn.kotlin.sms.results_processing.LiveGroupResultProtocolGenerator
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 
 class LiveGroupResultProtocolsView(
-    private val state: ProgramState,
+    state: ProgramState,
 ) : CompetitionModelListener {
     var protocols: MutableState<List<LiveGroupResultProtocol>> =
         mutableStateOf(listOf())
 
+    private val generator = LiveGroupResultProtocolGenerator(state.participantsList)
+
     override fun modelChanged(timestamps: List<ParticipantCheckpointTime>) {
-        val participantsByGroups =
-            state.participantsList.list.groupBy { it.group }
-
-        fun checkpointsOfParticipant(participant: Participant): List<CheckpointAndTime> {
-            return timestamps.filter { it.participant === participant }
-                .map { it.toCheckPointAndTime() }
-        }
-
-        val liveResultsWithinGroups =
-            participantsByGroups.mapValues { (_, participants) ->
-                participants.map {
-                    val startingTimeOfParticipantOrNull =
-                        state.startingTimes.getStartingTimeOfOrNull(it)
-                    val liveResult = it.group.route.calculateLiveResult(
-                        checkpointsToTimes = checkpointsOfParticipant(it),
-                        startingTime = startingTimeOfParticipantOrNull
-                            ?: throw InternalError("No starting time for participant $it")
-                    )
-                    ParticipantWithLiveResult(it, liveResult)
-                }.sortedBy { it.liveResult }
-            }
-
-        protocols.value =
-            liveResultsWithinGroups.map { (group, participantsWithLiveResults) ->
-                LiveGroupResultProtocol(group, participantsWithLiveResults)
-            }
+        protocols.value = generator.generate(timestamps)
     }
 
     fun getGroupResultProtocols(): List<GroupResultProtocol> =

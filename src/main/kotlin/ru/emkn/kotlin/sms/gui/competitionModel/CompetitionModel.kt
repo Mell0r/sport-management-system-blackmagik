@@ -1,16 +1,12 @@
 package ru.emkn.kotlin.sms.gui.competitionModel
 
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.mapEither
-import ru.emkn.kotlin.sms.ParticipantCheckpointTime
-import ru.emkn.kotlin.sms.ResultOrMessage
+import com.github.michaelbull.result.*
+import ru.emkn.kotlin.sms.results_processing.ParticipantCheckpointTime
 import ru.emkn.kotlin.sms.UnitOrMessage
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import ru.emkn.kotlin.sms.io.ReadFailException
-import ru.emkn.kotlin.sms.io.WrongFormatException
-import ru.emkn.kotlin.sms.io.readAndParseAllFiles
 import ru.emkn.kotlin.sms.results_processing.CheckpointTimestampsProtocol
 import ru.emkn.kotlin.sms.results_processing.ParticipantTimestampsProtocol
+import ru.emkn.kotlin.sms.results_processing.TimestampsProtocolProcessor
 import java.io.File
 
 /**
@@ -21,12 +17,13 @@ import java.io.File
  * via [CompetitionModelListener] interface.
  */
 class CompetitionModel(
-    private val state: ProgramState,
+    state: ProgramState,
 ) {
     // actual list of ParticipantCheckpointTime triples
     // private because any modification MUST notify all listeners
-    private val timestamps: MutableList<ParticipantCheckpointTime> =
-        mutableListOf()
+    private val timestamps: MutableList<ParticipantCheckpointTime> = mutableListOf()
+
+    private val timestampsProtocolProcessor = TimestampsProtocolProcessor(state.participantsList)
 
     private val listeners: MutableList<CompetitionModelListener> =
         mutableListOf()
@@ -49,90 +46,27 @@ class CompetitionModel(
         }
 
         fun addTimestampsFromProtocolsByParticipant(protocols: List<ParticipantTimestampsProtocol>) {
-            val timestampsToAdd = protocols
-                .flatMap { (participantID, checkpointAndTimePairs) ->
-                    val participant =
-                        state.participantsList.getParticipantById(participantID)
-                            ?: return
-                    checkpointAndTimePairs.map { checkpointAndTime ->
-                        ParticipantCheckpointTime(
-                            participant = participant,
-                            checkpoint = checkpointAndTime.checkpointLabel,
-                            time = checkpointAndTime.time,
-                        )
-                    }
-                }
+            val timestampsToAdd = timestampsProtocolProcessor.processByParticipant(protocols)
             timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }
 
         fun addTimestampsFromProtocolsByCheckpoint(protocols: List<CheckpointTimestampsProtocol>) {
-            val timestampsToAdd = protocols
-                .flatMap { (checkpoint, participantIDAndTimePairs) ->
-                    participantIDAndTimePairs.map { (participantID, time) ->
-                        val participant =
-                            state.participantsList.getParticipantById(
-                                participantID
-                            )
-                                ?: return
-                        ParticipantCheckpointTime(
-                            participant = participant,
-                            checkpoint = checkpoint,
-                            time = time,
-                        )
-                    }
-                }
+            val timestampsToAdd = timestampsProtocolProcessor.processByCheckpoint(protocols)
             timestamps.addAll(timestampsToAdd)
             notifyAllListeners()
         }
 
-        fun addTimestampsFromProtocolFilesByParticipant(filePaths: List<String>): UnitOrMessage {
-            val protocolsByParticipantOrError =
-                com.github.michaelbull.result.runCatching {
-                    readAndParseAllFiles(
-                        files = filePaths.map { File(it) },
-                        competition = state.competition,
-                        parser = ParticipantTimestampsProtocol::readFromFileContentAndCompetition,
-                    )
-                }
-            return protocolsByParticipantOrError
-                .mapEither(
-                    success = { protocols ->
-                        addTimestampsFromProtocolsByParticipant(protocols)
-                    },
-                    failure = { exception ->
-                        when (exception) {
-                            is ReadFailException -> exception.message
-                            is WrongFormatException -> exception.message
-                            else -> throw exception // propagate the exception if we cannot handle it here
-                        }
-                    }
-                )
+        fun addTimestampsFromProtocolFilesByParticipant(files: List<File>): UnitOrMessage {
+            return ParticipantTimestampsProtocol.readAndParseAll(files).map {
+                addTimestampsFromProtocolsByParticipant(it)
+            }
         }
 
-        fun addTimestampsFromProtocolFilesByCheckpoint(filePaths: List<String>): UnitOrMessage {
-            val protocolsByCheckpointOrError =
-                com.github.michaelbull.result.runCatching {
-                    readAndParseAllFiles(
-                        files = filePaths.map { File(it) },
-                        competition = state.competition,
-                        parser = CheckpointTimestampsProtocol::readFromFileContentAndCompetition,
-                    )
-                }
-            return protocolsByCheckpointOrError
-                .mapEither(
-                    success = { protocols ->
-                        addTimestampsFromProtocolsByCheckpoint(protocols)
-                    },
-                    failure = { exception ->
-                        when (exception) {
-                            is ReadFailException -> exception.message
-                            is WrongFormatException -> exception.message
-                            else -> throw exception // propagate the exception if we cannot handle it here
-                        }
-                    }
-                )
+        fun addTimestampsFromProtocolFilesByCheckpoint(files: List<File>): UnitOrMessage {
+            return CheckpointTimestampsProtocol.readAndParseAll(files).map {
+                addTimestampsFromProtocolsByCheckpoint(it)
+            }
         }
-
     }
 }

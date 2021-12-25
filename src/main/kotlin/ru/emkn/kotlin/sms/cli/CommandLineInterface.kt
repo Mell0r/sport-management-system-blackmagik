@@ -1,13 +1,13 @@
-
 package ru.emkn.kotlin.sms.cli
 
-import com.github.michaelbull.result.*
+import com.github.michaelbull.result.mapBoth
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
+import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
 import ru.emkn.kotlin.sms.io.ensureDirectory
 import ru.emkn.kotlin.sms.io.initializeCompetition
-import ru.emkn.kotlin.sms.io.readAndParseFile
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -43,7 +43,7 @@ private fun loadCompetition(competitionConfigDirPath: String): Competition {
         failure = { message ->
             Logger.error {
                 "Competition config files in directory \"$competitionConfigDirPath\" are invalid! See following exception:\n" +
-                        "${message}"
+                        "$message"
             }
             exitWithInfoLog()
         },
@@ -52,10 +52,11 @@ private fun loadCompetition(competitionConfigDirPath: String): Competition {
 
 private fun ensureOutputDirectory(outputDirectoryPath: String): File {
     // Output directory MUST be loaded, otherwise program has to terminate.
-    return try {
-        ensureDirectory(outputDirectoryPath)
-    } catch (e: Exception) {
-        Logger.error { "Couldn't initialize output directory \"${outputDirectoryPath}\". Following exception occurred:" }
+    return ensureDirectory(outputDirectoryPath).successOrNothing { eMessage ->
+        Logger.error {
+            "Couldn't initialize output directory \"${outputDirectoryPath}\". " +
+                    "Following exception occurred: $eMessage."
+        }
         exitWithInfoLog()
     }
 }
@@ -63,24 +64,13 @@ private fun ensureOutputDirectory(outputDirectoryPath: String): File {
 fun loadParticipantsList(
     participantListFile: File,
     competition: Competition
-): ParticipantsList =
-    readAndParseFile(
-        file = participantListFile,
-        competition = competition,
-        parser = ParticipantsList.Companion::readFromFileContentAndCompetition,
-        strategyOnReadFail = { file ->
-            // Participants list MUST be readable
-            // Otherwise, terminate
-            Logger.error { "Couldn't read participants list at \"${file.path}\"." }
-            exitWithInfoLog()
-        },
-        strategyOnWrongFormat = { file, exception ->
-            // Participants list MUST have correct format
-            // Otherwise, terminate
-            Logger.error {
-                "Participants list at \"${file.path}\" has invalid format:\n" +
-                        "${exception.message}"
-            }
-            exitWithInfoLog()
-        },
-    )
+): ParticipantsList {
+    return ParticipantsListCsvParser(competition).readAndParse(
+        participantListFile
+    ).successOrNothing {
+        Logger.error {
+            "Could not load participants list at \"${participantListFile.absolutePath}\":\n$it"
+        }
+        exitWithInfoLog()
+    }
+}

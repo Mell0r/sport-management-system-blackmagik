@@ -44,7 +44,7 @@ internal class TimeTest {
             for (secondSeconds in secondRange) {
                 assertEquals(
                     secondSeconds - firstSeconds,
-                    Time(secondSeconds) - Time(firstSeconds)
+                    (Time(secondSeconds) - Time(firstSeconds)).asSeconds()
                 )
             }
         }

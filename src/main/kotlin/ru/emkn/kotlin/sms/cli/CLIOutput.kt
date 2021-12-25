@@ -1,8 +1,7 @@
-package ru.emkn.kotlin.sms.io
+package ru.emkn.kotlin.sms.cli
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.cli.exitWithInfoLog
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.io.FileContent
 import java.io.File
 
 /**

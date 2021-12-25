@@ -1,8 +1,8 @@
 package ru.emkn.kotlin.sms.gui
 
 import org.tinylog.kotlin.Logger
-import ru.emkn.kotlin.sms.CsvDumpable
-import ru.emkn.kotlin.sms.results_processing.FileContent
+import ru.emkn.kotlin.sms.csv.CsvDumpable
+import ru.emkn.kotlin.sms.io.FileContent
 import java.io.File
 
 /**

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package ru.emkn.kotlin.sms.gui.frontend.modes
 
 import androidx.compose.animation.AnimatedVisibility
@@ -25,13 +27,14 @@ import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
 import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
-import ru.emkn.kotlin.sms.gui.frontend.elements.FoldingList
-import ru.emkn.kotlin.sms.gui.frontend.elements.LabeledDropdownMenu
-import ru.emkn.kotlin.sms.gui.frontend.elements.pickFolderDialog
+import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.io.saveCompetition
 import java.io.File
+
+private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
+private val successDialogMessage: MutableState<String?> = mutableStateOf(null)
 
 val ages = (0..99).map { "$it" }.toMutableStateList()
 
@@ -59,11 +62,10 @@ private fun DisplayCompetitionTextFields(
         BindableTextField("Дисциплина", competitionBuilder.discipline)
         BindableTextField("Название", competitionBuilder.name)
         OutlinedTextField(
-            if (!isYearIncorrect) competitionBuilder.year.value.toString() else "",
+            competitionBuilder.year.value,
             onValueChange = { newValue ->
                 isYearIncorrect = newValue.toIntOrNull() == null
-                competitionBuilder.year.value =
-                    newValue.toIntOrNull() ?: CompetitionBuilder.INCORRECT_YEAR
+                competitionBuilder.year.value = newValue
             },
             modifier = Modifier.width(width),
             label = { Text("Год проведения") }
@@ -116,11 +118,9 @@ fun DisplayGroup(
     group: AgeGroupBuilder,
     availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>
 ) {
-    @Composable
     fun checkAge(a: String, b: String): Boolean =
         (a.toIntOrNull() ?: 0) > (b.toIntOrNull() ?: -1)
 
-    @Composable
     fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
         availableRoutes.map { it.name.value }.toMutableStateList()
 
@@ -165,6 +165,9 @@ fun CompetitionConfiguration(
     val state = programState.value as? ConfiguringCompetitionProgramState ?: return
     val competitionBuilder = state.competitionBuilder
 
+    SuccessDialog(successDialogMessage)
+    ErrorDialog(errorDialogMessage)
+
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState(0))
             .padding(16.dp)
@@ -185,6 +188,7 @@ fun CompetitionConfiguration(
                     onClick = {
                         programState.value = state.nextProgramState()
                     },
+                    enabled = competitionBuilder.year.value.toIntOrNull() != null,
                     content = { Text("Сохранить и далее") },
                     modifier = Modifier.padding(start = dialogSize.width / 8)
                         .size(dialogSize.width / 4, dialogSize.height / 4)
@@ -234,29 +238,56 @@ fun CompetitionConfiguration(
     }
 }
 
+private fun exportCompetition(
+    competitionBuilder: CompetitionBuilder,
+) {
+    val folder: File? = pickFolderDialog()
+    if (folder == null) {
+        // No failure window is required because user probably just selected cancel
+        Logger.warn("No folder was selected; Aborting")
+        return
+    }
+    saveCompetition(competitionBuilder.build(), folder.absolutePath)
+        .onSuccess {
+            successDialogMessage.value = "Соревнование успешно экспортировано в папку \"${folder.path}\"!"
+        }
+        .onFailure { message ->
+            Logger.error("Failed to save competition.\n$message\nAborting.")
+            errorDialogMessage.value = "Соревнование не было экспортировано. Прозошла следующая ошибка.\n" +
+                    message
+        }
+}
+
 @Composable
 private fun ExportCompetitionButton(
     competitionBuilder: CompetitionBuilder,
     dialogSize: DpSize,
 ) {
     Button(
-        onClick = onClick@{
-            val folder: File? = pickFolderDialog()
-            if (folder == null) {
-                // No failure window is required because user probably just selected cancel
-                Logger.warn("No folder was selected; Aborting")
-                return@onClick
-            }
-            saveCompetition(competitionBuilder.build(), folder.absolutePath)
-                .onSuccess { /* TODO success window */ }
-                .onFailure { message ->
-                    Logger.warn("Failed to save competition.\n$message\nAborting.")
-                    /* TODO failure window */
-                }
-        },
+        onClick = { exportCompetition(competitionBuilder) },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
     ) { Text("Сохранить соревнование в папку (CSV)") }
+}
+
+private fun loadCompetition(
+    competitionBuilder: CompetitionBuilder,
+) {
+    val folder: File? = pickFolderDialog()
+    if (folder == null) {
+        // No failure window is required because user probably just selected cancel
+        Logger.warn("No folder was selected; Aborting")
+        return
+    }
+    competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
+        .onSuccess {
+            successDialogMessage.value = "Соревнование из папки \"${folder.path}\" успешно загружено!"
+        }
+        .onFailure { message ->
+            Logger.error("Failed to initialize competition.\n$message\nAborting.")
+            errorDialogMessage.value = "Соревнование из папки \\\"${folder.path}\\\" не было загружено! Произошла следующая ошибка.\n" +
+                message
+        }
 }
 
 @Composable
@@ -265,20 +296,7 @@ private fun LoadCompetitionButton(
     dialogSize: DpSize
 ) {
     Button(
-        onClick = onClick@{
-            val folder: File? = pickFolderDialog()
-            if (folder == null) {
-                // No failure window is required because user probably just selected cancel
-                Logger.warn("No folder was selected; Aborting")
-                return@onClick
-            }
-            competitionBuilder.replaceFromFilesInFolder(folder.absolutePath)
-                .onSuccess { /* TODO success window */ }
-                .onFailure { message ->
-                    Logger.warn("Failed to initialize competition.\n$message\nAborting.")
-                    /* TODO failure window */
-                }
-        },
+        onClick = { loadCompetition(competitionBuilder) },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
     ) { Text("Загрузить соревнование из папки (CSV)") }

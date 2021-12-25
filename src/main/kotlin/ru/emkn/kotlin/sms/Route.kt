@@ -1,5 +1,9 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.csv.CsvStringDumpable
+import ru.emkn.kotlin.sms.results_processing.CheckpointAndTime
+import ru.emkn.kotlin.sms.results_processing.FinalParticipantResult
+import ru.emkn.kotlin.sms.results_processing.LiveParticipantResult
 import ru.emkn.kotlin.sms.time.Time
 import java.lang.Integer.max
 
@@ -22,51 +26,9 @@ sealed class Route(val name: String) : CsvStringDumpable {
     ): LiveParticipantResult
 }
 
-/*
-The line must start with a route type id surrounded with dollar signs.
-The $0$ is optional for backwards compatibility.
-Example (ChP stands for checkpoint here):
-$0$orderedRouteName,firstChP, secondChP,thirdChP
-$1$atLeastKRouteName,k,firstChP,secondChP,thirdChP
- */
-@kotlin.ExperimentalStdlibApi
-fun readRouteFromLine(line: String): Route {
-    if (!line.startsWith("\$"))
-        return readOrderedRouteCheckpoint(line)
-    val match = """\$(\d+)\$""".toRegex().matchAt(line, 0)
-        ?: throw IllegalArgumentException("Bad format: there is no second dollar sign in line.")
-    val prefixLength =
-        match.range.last - match.range.first + 1 // plus one as both ends should be included
-    val clearLine = line.drop(prefixLength)
-    val routeTypeId = match.groups[1]?.value?.toInt()
-        ?: throw InternalError("The regex in readRouteFromLine is broken.")
-    return when (routeTypeId) {
-        0 -> readOrderedRouteCheckpoint(clearLine)
-        1 -> readAtLeastKCheckpointsRoute(clearLine)
-        else -> throw IllegalArgumentException("Unsupported route id: $routeTypeId")
-    }
-}
-
-private fun readAtLeastKCheckpointsRoute(line: String): AtLeastKCheckpointsRoute {
-    val tokens = line.split(',').filter { it.isNotEmpty() }
-    require(tokens.isNotEmpty()) { "Empty line in 'Route_description." }
-    val name = tokens[0]
-    val k = tokens[1].toIntOrNull()
-        ?: throw IllegalArgumentException("Bad k (not a number): ${tokens[1]}")
-    val droppedNameAndK = tokens.drop(2)
-    val checkpoints = droppedNameAndK.toMutableSet()
-    return AtLeastKCheckpointsRoute(name, checkpoints, k)
-}
-
-private fun readOrderedRouteCheckpoint(line: String): OrderedCheckpointsRoute {
-    val tokens = line.split(',').filter { it.isNotEmpty() }
-    require(tokens.isNotEmpty()) { "Empty line in 'Route_description." }
-    return OrderedCheckpointsRoute(tokens[0], tokens.drop(1).toMutableList())
-}
-
 class OrderedCheckpointsRoute(
     name: String,
-    val orderedCheckpoints: MutableList<CheckpointLabelT>,
+    val orderedCheckpoints: List<CheckpointLabelT>,
 ) : Route(name) {
     override val checkpoints: Set<CheckpointLabelT>
         get() = orderedCheckpoints.toSet()
@@ -76,9 +38,9 @@ class OrderedCheckpointsRoute(
         startingTime: Time
     ): LiveParticipantResult {
         val firstTimestamp = checkpointsToTimes.minOfOrNull { it.time }
-        if (firstTimestamp != null && firstTimestamp < startingTime) {
-            // Finished earlier than started
-            // Disqualifying
+        val madeAFalseStart =
+            firstTimestamp != null && firstTimestamp < startingTime
+        if (madeAFalseStart) {
             return LiveParticipantResult.Disqualified()
         }
 
@@ -98,18 +60,12 @@ class OrderedCheckpointsRoute(
                 Time(0)
             )
             chronologicalCheckpoints == orderedCheckpoints -> {
-                // Finished
-                LiveParticipantResult.Finished(Time(lastCheckpointTime - startingTime))
+                LiveParticipantResult.Finished(lastCheckpointTime - startingTime)
             }
-            chronologicalCheckpoints.size < orderedCheckpoints.size &&
-                    chronologicalCheckpoints == orderedCheckpoints.dropLast(
-                orderedCheckpoints.size - chronologicalCheckpoints.size
-            ) -> {
-                // [chronologicalCheckpoints] is a strict prefix of [orderedCheckpoints]
-                // Participant is in process
+            chronologicalCheckpoints.isStrictPrefixOf(orderedCheckpoints) -> {
                 LiveParticipantResult.InProcess(
                     chronologicalCheckpoints.size,
-                    Time(lastCheckpointTime - startingTime)
+                    lastCheckpointTime - startingTime
                 )
             }
             else -> {
@@ -136,12 +92,15 @@ class OrderedCheckpointsRoute(
 
     override fun hashCode(): Int =
         name.hashCode() + 31 * orderedCheckpoints.hashCode()
+
+    private fun <T> List<T>.isStrictPrefixOf(other: List<T>) =
+        this.size < other.size && this == other.dropLast(other.size - this.size)
 }
 
 class AtLeastKCheckpointsRoute(
     name: String,
-    override val checkpoints: MutableSet<CheckpointLabelT>,
-    var threshold: Int,
+    override val checkpoints: Set<CheckpointLabelT>,
+    val threshold: Int,
 ) : Route(name) {
     init {
         require(threshold <= checkpoints.size) { "k must not be greater than the number of checkpoints." }
@@ -151,9 +110,10 @@ class AtLeastKCheckpointsRoute(
         checkpointsToTimes: List<CheckpointAndTime>,
         startingTime: Time
     ): LiveParticipantResult {
-        if (checkpointsToTimes.minOf { it.time } < startingTime) {
-            // Finished earlier than started
-            // Disqualifying
+        val firstTimestamp = checkpointsToTimes.minOfOrNull { it.time }
+        val madeAFalseStart =
+            firstTimestamp != null && firstTimestamp < startingTime
+        if (madeAFalseStart) {
             return LiveParticipantResult.Disqualified()
         }
 
@@ -163,17 +123,16 @@ class AtLeastKCheckpointsRoute(
             .distinctBy { it.checkpointLabel }
 
         if (visitedCheckpointFromRoute.size < threshold) {
-            // In process
             return LiveParticipantResult.InProcess(
                 completedCheckpoints = visitedCheckpointFromRoute.size,
-                lastCheckpointTime = visitedCheckpointFromRoute.last().time,
+                lastCheckpointTime = visitedCheckpointFromRoute.lastOrNull()?.time
+                    ?: Time(0),
             )
         }
 
-        // Finished
         val lastRelevantCheckpoint = visitedCheckpointFromRoute[threshold - 1]
         return LiveParticipantResult.Finished(
-            Time(lastRelevantCheckpoint.time - startingTime)
+            lastRelevantCheckpoint.time - startingTime
         )
     }
 

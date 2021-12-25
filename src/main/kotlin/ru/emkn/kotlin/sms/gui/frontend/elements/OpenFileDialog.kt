@@ -1,8 +1,6 @@
 package ru.emkn.kotlin.sms.gui.frontend.elements
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.awt.ComposeWindow
-import org.tinylog.kotlin.Logger
 import java.awt.FileDialog
 import java.io.File
 import javax.swing.JFileChooser
@@ -30,7 +28,7 @@ fun saveFileDialog(
 fun pickFolderDialog(): File? {
     val jFileChooser = JFileChooser()
     jFileChooser.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
-    val returnVal = jFileChooser.showSaveDialog(ComposeWindow())
+    val returnVal = jFileChooser.showDialog(ComposeWindow(), "Select")
     return if (returnVal == JFileChooser.APPROVE_OPTION) {
         jFileChooser.selectedFile
     } else {
