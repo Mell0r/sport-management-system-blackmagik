@@ -37,7 +37,7 @@ fun initializeCompetition(configFolderPath: String): ResultOrMessage<Competition
 
         val nameAndDate = readNameAndDate(configFolderPath).bind()
         val discipline = nameAndDate[0]
-        val name = readName(nameAndDate).bind()
+        val name = nameAndDate[1]
         val year = readYear(nameAndDate).bind()
         val date = nameAndDate[3]
         Logger.info { "Initialized $NAME_AND_DATE_FILENAME" }
@@ -95,7 +95,7 @@ private fun readRoutes(configFolderPath: String): ResultOrMessage<List<Route>> {
     ).andThen { routeDescription ->
         routeDescription.forEachIndexed { ind, row ->
             if (row.count { c -> c == ',' } == 0)
-                return Err("Line $ind of $ROUTE_DESCRIPTION_FILENAME has no commas!")
+                return Err("Line $ind: no commas!")
         }
         val routes = routeDescription.mapResultIndexed { ind, row ->
             readRouteFromLine(row).mapError { eMessage ->
@@ -103,35 +103,29 @@ private fun readRoutes(configFolderPath: String): ResultOrMessage<List<Route>> {
             }
         }
         routes
-    }
+    }.mapError { eMessage -> "$ROUTE_DESCRIPTION_FILENAME, $eMessage" }
 }
 
 private fun readGroupsLabels(routesOfGroupsFileContent: FileContent): ResultOrMessage<List<String>> {
     val groups = routesOfGroupsFileContent.mapResultIndexed { ind, row ->
-        if (row.count { it == ',' } != 1) {
-            Err(
-                "Wrong number of commas in file $ROUTE_OF_GROUPS_FILENAME "
-                        + "in line $ind! Should be only one."
-            )
+        val lineNum = ind + 1
+        val commasCount = row.count { it == ',' }
+        if (commasCount != 1) {
+            Err("Line $lineNum: expected 1 comma, found $commasCount.")
         } else Ok(row.split(',')[0])
-    }
+    }.mapError { eMessage -> "$ROUTE_OF_GROUPS_FILENAME, $eMessage." }
     return groups
 }
 
 private fun readYear(nameAndDate: FileContent): ResultOrMessage<Int> {
     val year = nameAndDate[2].toIntOrNull()
-        ?: return Err("In third line of $NAME_AND_DATE_FILENAME must be a number.")
+        ?: return Err("$NAME_AND_DATE_FILENAME, Line 3: year is expected to be a number.")
     return Ok(year)
-}
-
-private fun readName(nameAndDate: FileContent): ResultOrMessage<String> {
-    val name = nameAndDate[1]
-    return Ok(name)
 }
 
 private fun readNameAndDate(configFolderPath: String): ResultOrMessage<FileContent> {
     val nameDateFileIncorrect =
-        "$NAME_AND_DATE_FILENAME is not correct! Please, check Readme and fix."
+        "$NAME_AND_DATE_FILENAME contains 3 or less rows, >= 4 expected."
     return checkAndReadFileInFolder(
         configFolderPath, NAME_AND_DATE_FILENAME
     ).andThen { nameAndDate ->
@@ -146,33 +140,35 @@ private fun readRequirementsByGroups(
     year: Int,
     groups: List<String>
 ): ResultOrMessage<Map<String, AgeGroup>> {
-    val requirementByGroupOrError = groupRequirement.mapResult { row ->
-        val tokens = row.split(',')
-        if (tokens.size != 3) return@mapResult errAndLog(
-            "Number of commas in $row line in $GROUPS_REQUIREMENT_FILENAME " +
-                    "incorrect! Should be exactly three."
-        )
-
-        val label = tokens[0]
-        val ageFrom = tokens[1].toIntOrNull() ?: return errAndLog(
-            "First parameter in $row line should be integer! " + "Was '${tokens[1]}'."
-        )
-        val ageTo = tokens[2].toIntOrNull() ?: return Err(
-            "Second parameter in $row line should be integer! " + "Was '${tokens[2]}'."
-        )
-        val route = groupToRouteMapping[label] ?: return Err(
-            "No route specified for group $label."
-        )
-        Ok(
-            label to AgeGroup(
-                label = label,
-                route = route,
-                ageFrom = ageFrom,
-                ageTo = ageTo,
-                competitionYear = year,
+    GROUPS_REQUIREMENT_FILENAME
+    val requirementByGroupOrError =
+        groupRequirement.mapResultIndexed { ind, row ->
+            val lineNum = ind + 1
+            val tokens = row.split(',')
+            if (tokens.size != 3) return@mapResultIndexed errAndLog(
+                "Line $lineNum: 3 values (2 commas) were expected, found: ${tokens.size}"
             )
-        )
-    }.map(List<Pair<String, AgeGroup>>::toMap)
+            val label = tokens[0]
+            val ageFrom = tokens[1].toIntOrNull() ?: return errAndLog(
+                "Line $lineNum: the 2nd value ageFrom='${tokens[1]}' is not an integer."
+            )
+            val ageTo = tokens[2].toIntOrNull() ?: return Err(
+                "Line $lineNum: the 3rd value ageTo='${tokens[2]}' is not an integer."
+            )
+            val route = groupToRouteMapping[label] ?: return Err(
+                "No route specified for group $label."
+            )
+            Ok(
+                label to AgeGroup(
+                    label = label,
+                    route = route,
+                    ageFrom = ageFrom,
+                    ageTo = ageTo,
+                    competitionYear = year,
+                )
+            )
+        }.map(List<Pair<String, AgeGroup>>::toMap)
+            .mapError { eMessage -> "$GROUPS_REQUIREMENT_FILENAME, $eMessage." }
     return requirementByGroupOrError.andThen { requirementByGroup ->
         for (g in groups) {
             if (!requirementByGroup.containsKey(g))
