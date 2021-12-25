@@ -1,8 +1,12 @@
 package ru.emkn.kotlin.sms.io
 
-import com.github.michaelbull.result.*
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.binding
+import com.github.michaelbull.result.mapError
+import com.github.michaelbull.result.runCatching
 import ru.emkn.kotlin.sms.ResultOrMessage
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 
 typealias FileContent = List<String>
@@ -12,13 +16,20 @@ typealias FileContent = List<String>
  * Returns a created directory as a [java.io.File].
  * If the specified file already exists and is not a directory, throws IllegalArgumentException
  */
-fun ensureDirectory(directoryPath: String): File {
+fun ensureDirectory(directoryPath: String): ResultOrMessage<File> {
     val file = File(directoryPath)
     if (file.exists() && !file.isDirectory) {
-        throw IllegalArgumentException("$directoryPath already exists and is not a directory!")
+        return Err("$directoryPath already exists and is not a directory!")
     }
-    Files.createDirectories(file.toPath())
-    return file
+    return runCatching {
+        Files.createDirectories(file.toPath())
+        file
+    }.mapError {
+        when (it) {
+            is IOException -> it.message
+            else -> throw it
+        }
+    }
 }
 
 /**

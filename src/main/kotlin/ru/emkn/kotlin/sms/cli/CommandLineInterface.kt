@@ -1,7 +1,6 @@
-
 package ru.emkn.kotlin.sms.cli
 
-import com.github.michaelbull.result.*
+import com.github.michaelbull.result.mapBoth
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.ParticipantsList
@@ -53,10 +52,11 @@ private fun loadCompetition(competitionConfigDirPath: String): Competition {
 
 private fun ensureOutputDirectory(outputDirectoryPath: String): File {
     // Output directory MUST be loaded, otherwise program has to terminate.
-    return try {
-        ensureDirectory(outputDirectoryPath)
-    } catch (e: Exception) {
-        Logger.error { "Couldn't initialize output directory \"${outputDirectoryPath}\". Following exception occurred:" }
+    return ensureDirectory(outputDirectoryPath).successOrNothing { eMessage ->
+        Logger.error {
+            "Couldn't initialize output directory \"${outputDirectoryPath}\". " +
+                    "Following exception occurred: $eMessage."
+        }
         exitWithInfoLog()
     }
 }
@@ -65,7 +65,9 @@ fun loadParticipantsList(
     participantListFile: File,
     competition: Competition
 ): ParticipantsList {
-    return ParticipantsListCsvParser(competition).readAndParse(participantListFile).successOrNothing {
+    return ParticipantsListCsvParser(competition).readAndParse(
+        participantListFile
+    ).successOrNothing {
         Logger.error {
             "Could not load participants list at \"${participantListFile.absolutePath}\":\n$it"
         }
