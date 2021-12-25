@@ -45,6 +45,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    // SLF4J (logging)
+    runtimeOnly("org.slf4j:slf4j-simple:1.7.32")
     // kotlin-test
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
