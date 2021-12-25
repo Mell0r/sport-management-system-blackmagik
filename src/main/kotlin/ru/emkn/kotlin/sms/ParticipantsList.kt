@@ -15,7 +15,7 @@ class ParticipantsList(val list: List<Participant>) : CsvDumpable {
 
         other as ParticipantsList
 
-        return list.containsAll(other.list) && other.list.containsAll(list)
+        return list.toSet() == other.list.toSet()
     }
 
     override fun hashCode(): Int = list.hashCode()

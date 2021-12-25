@@ -1,7 +1,8 @@
 package ru.emkn.kotlin.sms.db
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.unwrap
 import org.jetbrains.exposed.sql.*
-import ru.emkn.kotlin.sms.successOrNothing
 import kotlin.test.*
 
 internal class ParticipantsListTableTest {
@@ -10,41 +11,39 @@ internal class ParticipantsListTableTest {
     private val testDBName = "sms-test"
     private val testDBPath = "$testDBDir/$testDBName"
 
-    private fun ParticipantEntity.toDetailedString() = "$id. $name $lastName (group \"$group\", team \"$team\", sports category \"$sportsCategory\") starts at $startingTime"
+    private val testDataSet = TableTestDataSet1
+    private val testCompetition = testDataSet.competition
+    private val testParticipantsList = testDataSet.participantsLists
 
-    @BeforeTest
-    fun initDB() {
-        val db = Database.safeConnectToPath("./$testDBPath").successOrNothing {
-            throw InternalError("Bad path for test database.")
-        }
-        loggingTransaction(db) {
-            SchemaUtils.create(ParticipantsListTable)
-            ParticipantEntity.new {
-                age = 25
-                name = "Alexey"
-                lastName = "Kolotilov"
-                group = "group1"
-                team = "team1"
-                sportsCategory = ""
-                startingTime = "00:00:00"
-            }
+    private fun connectDB() = Database.safeConnectToPath("./$testDBPath").unwrap()
+
+    @Test
+    fun `ParticipantsListDb Reader and Writer correctness test`() {
+        val db = connectDB()
+        val reader = ParticipantsListDbReader(db, testCompetition)
+        val writer = ParticipantsListDbWriter(db)
+        testParticipantsList.forEach { participantsList ->
+            writer.write(participantsList)
+            val result = reader.read().unwrap()
+            assertEquals(participantsList, result)
         }
     }
 
     @Test
-    fun `sample participants list table test`() {
-        loggingTransaction {
-            ParticipantEntity.all().forEach {
-                println(it.toDetailedString())
-            }
-        }
+    fun `ParticipantsListDbReader table not exists`() {
+        val db = connectDB()
+        val reader = ParticipantsListDbReader(db, testCompetition)
+        val result = reader.read()
+        assertIs<Err<String?>>(result)
     }
 
     @AfterTest
     fun clearDB() {
         loggingTransaction {
-            ParticipantsListTable.deleteAll()
-            exec(ParticipantsListTable.dropStatement().joinToString(" "))
+            if (ParticipantsListTable.exists()) {
+                ParticipantsListTable.deleteAll()
+                exec(ParticipantsListTable.dropStatement().joinToString(" "))
+            }
         }
     }
 }
