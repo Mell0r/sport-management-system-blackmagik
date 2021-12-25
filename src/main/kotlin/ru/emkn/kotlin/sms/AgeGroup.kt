@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.db.GroupEntity
 import ru.emkn.kotlin.sms.startcfg.Applicant
 
 class AgeGroup(
@@ -14,4 +15,12 @@ class AgeGroup(
         applicant.getAge(competitionYear) in ageFrom..ageTo
 
     override fun dumpToCsvString(): String = "$label,$ageFrom,$ageTo"
+
+    override fun GroupEntity.initializeEntity() {
+        label = super.label
+        route = super.route.name
+        type = GroupType.AGE
+        ageFrom = ageFrom
+        ageTo = ageTo
+    }
 }

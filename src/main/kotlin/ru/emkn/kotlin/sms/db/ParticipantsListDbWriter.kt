@@ -13,6 +13,9 @@ import ru.emkn.kotlin.sms.*
 class ParticipantsListDbWriter(
     private val database: Database,
 ) {
+    /**
+     * OVERWRITES the whole [ParticipantsListTable].
+     */
     // unsafe?
     // should never throw anything afaik
     fun write(participantsList: ParticipantsList) {
@@ -20,14 +23,10 @@ class ParticipantsListDbWriter(
             SchemaUtils.create(ParticipantsListTable) // create if not exists
             ParticipantsListTable.deleteAll()
             participantsList.list.forEach { participant ->
-                ParticipantEntity.new(participant.id) {
-                    age = participant.age
-                    name = participant.name
-                    lastName = participant.lastName
-                    group = participant.group.label
-                    team = participant.team
-                    sportsCategory = participant.sportsCategory
-                    startingTime = participant.startingTime
+                with (participant) {
+                    ParticipantEntity.new(participant.id) {
+                        initializeEntity()
+                    }
                 }
             }
         }

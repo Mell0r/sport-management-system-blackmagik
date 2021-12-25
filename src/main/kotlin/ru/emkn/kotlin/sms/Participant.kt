@@ -1,6 +1,8 @@
 package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
+import ru.emkn.kotlin.sms.db.ConvertibleToDBEntity
+import ru.emkn.kotlin.sms.db.ParticipantEntity
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
 
@@ -17,7 +19,7 @@ data class Participant(
     val team: String,
     val sportsCategory: String,
     val startingTime: Time,
-) : CsvStringDumpable {
+) : CsvStringDumpable, ConvertibleToDBEntity<ParticipantEntity> {
     constructor(
         age: Int,
         name: String,
@@ -57,4 +59,14 @@ data class Participant(
 
     override fun dumpToCsvString() =
         "$id,$age,$name,$lastName,$group,$team,$sportsCategory,$startingTime"
+
+    override fun ParticipantEntity.initializeEntity() {
+        this@initializeEntity.age =            this@Participant.age
+        this@initializeEntity.name =           this@Participant.name
+        this@initializeEntity.lastName =       this@Participant.lastName
+        this@initializeEntity.group =          this@Participant.group.label
+        this@initializeEntity.team =           this@Participant.team
+        this@initializeEntity.sportsCategory = this@Participant.sportsCategory
+        this@initializeEntity.startingTime =   this@Participant.startingTime
+    }
 }

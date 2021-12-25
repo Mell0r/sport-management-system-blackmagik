@@ -4,7 +4,6 @@ import com.github.michaelbull.result.*
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.Participant
-import ru.emkn.kotlin.sms.time.Time
 
 /**
  * Reads [ParticipantsList] from [database],
