@@ -24,12 +24,8 @@ fun checkAndReadFileInFolder(
     }
 }
 
-fun initializeCompetition(configFolderPath: String): ResultOrMessage<Competition> {
-    return throwingInitializeCompetition(configFolderPath)
-}
-
 @OptIn(ExperimentalStdlibApi::class)
-private fun throwingInitializeCompetition(configFolderPath: String): ResultOrMessage<Competition> {
+fun initializeCompetition(configFolderPath: String): ResultOrMessage<Competition> {
     return binding {
         Logger.debug { "Start initializing competition" }
         if (!(File(configFolderPath).exists() && File(configFolderPath).isDirectory)) Err(
@@ -91,6 +87,7 @@ private fun readGroupToRouteMapping(
     Ok(tokens[0] to route)
 }.map(List<Pair<String, Route>>::toMap)
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun readRoutes(configFolderPath: String): ResultOrMessage<List<Route>> {
     return checkAndReadFileInFolder(
         configFolderPath, ROUTE_DESCRIPTION_FILENAME

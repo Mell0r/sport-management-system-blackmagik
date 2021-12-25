@@ -7,6 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
+@OptIn(ExperimentalStdlibApi::class)
 internal class RouteReadingTests {
 
     @Test
