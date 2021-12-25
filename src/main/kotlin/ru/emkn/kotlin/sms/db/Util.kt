@@ -43,7 +43,7 @@ fun Database.Companion.safeConnectToPath(path: String): ResultOrMessage<Database
 /**
  * Initializes a [transaction] and adds [TinyLogDebugSqlLogger].
  */
-fun <T> loggingTransaction(db: Database? = null, statement: Transaction.() -> T) {
+fun <T> loggingTransaction(db: Database? = null, statement: Transaction.() -> T): T {
     return transaction(db) {
         addLogger(TinyLogDebugSqlLogger)
         this.statement()

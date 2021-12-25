@@ -19,4 +19,6 @@ class ParticipantEntity(id: EntityID<Int>) : IntEntity(id) {
     var team by ParticipantsListTable.team
     var sportsCategory by ParticipantsListTable.sportsCategory
     var startingTime by ParticipantsListTable.startingTime
+
+    fun toShortString() = "Participant #$id $name $lastName"
 }
