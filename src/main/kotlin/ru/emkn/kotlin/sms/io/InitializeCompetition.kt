@@ -11,7 +11,7 @@ const val ROUTE_OF_GROUPS_FILENAME = "Route_of_groups.csv"
 const val ROUTE_DESCRIPTION_FILENAME = "Route_description.csv"
 const val GROUPS_REQUIREMENT_FILENAME = "Groups_requirement.csv"
 
-fun checkAndReadFileInFolder(
+private fun checkAndReadFileInFolder(
     folderPath: String, fileName: String
 ): ResultOrMessage<FileContent> {
     val file = File("$folderPath/$fileName")
@@ -93,7 +93,8 @@ private fun readRoutes(configFolderPath: String): ResultOrMessage<List<Route>> {
         configFolderPath, ROUTE_DESCRIPTION_FILENAME
     ).andThen { routeDescription ->
         routeDescription.forEachIndexed { ind, row ->
-            if (row.count { c -> c == ',' } == 0) return Err("Line $ind of $ROUTE_DESCRIPTION_FILENAME has no commas!")
+            if (row.count { c -> c == ',' } == 0)
+                return Err("Line $ind of $ROUTE_DESCRIPTION_FILENAME has no commas!")
         }
         val routes = routeDescription.mapResultIndexed { ind, row ->
             readRouteFromLine(row).mapError { eMessage ->
