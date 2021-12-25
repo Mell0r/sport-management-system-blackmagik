@@ -2,7 +2,6 @@ package ru.emkn.kotlin.sms.startcfg
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.onFailure
 import org.tinylog.Logger
 import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.csv.CreatableFromCsv
@@ -44,11 +43,10 @@ class Application(
 
         override fun readFromCsvContent(fileContent: FileContent): ResultOrMessage<Application> {
             val application = fileContent.map { row -> row.split(",") }
-            com.github.michaelbull.result.runCatching {
-                require(application.size >= 2) { "Application can not be empty!" }
-                require(application.all { it.size == SIZE_OF_APPLICATION_ROW }) { "Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}." }
-                require(application[0][0] != "") { "Application can not have empty team name!" }
-            }.onFailure { return Err(it.message) }
+            if (application.size < 2) return Err("Application can not be empty!")
+            if (!application.all { it.size == SIZE_OF_APPLICATION_ROW })
+                return Err("Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}.")
+            if (application[0][0] == "") return Err("Application can not have empty team name!")
             val teamName = application[0][0]
             val applicantsList = application
                 .drop(1)

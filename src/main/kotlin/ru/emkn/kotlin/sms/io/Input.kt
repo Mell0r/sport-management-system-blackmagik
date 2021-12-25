@@ -2,11 +2,9 @@ package ru.emkn.kotlin.sms.io
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.binding
-import com.github.michaelbull.result.mapError
-import com.github.michaelbull.result.runCatching
 import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.runIoOperation
 import java.io.File
-import java.io.IOException
 import java.nio.file.Files
 
 typealias FileContent = List<String>
@@ -21,14 +19,9 @@ fun ensureDirectory(directoryPath: String): ResultOrMessage<File> {
     if (file.exists() && !file.isDirectory) {
         return Err("$directoryPath already exists and is not a directory!")
     }
-    return runCatching {
+    return runIoOperation {
         Files.createDirectories(file.toPath())
         file
-    }.mapError {
-        when (it) {
-            is IOException -> it.message
-            else -> throw it
-        }
     }
 }
 
@@ -42,7 +35,7 @@ fun readFile(file: File): ResultOrMessage<FileContent> {
     if (!file.canRead()) {
         return Err("File \"$file\" cannot be read.")
     }
-    return runCatching { file.readLines() }.mapError { it.message }
+    return runIoOperation { file.readLines() }
 }
 
 
