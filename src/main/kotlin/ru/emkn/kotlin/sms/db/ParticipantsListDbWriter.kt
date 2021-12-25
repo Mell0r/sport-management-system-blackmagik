@@ -13,7 +13,7 @@ class ParticipantsListDbWriter(
     private val database: Database,
 ) {
     // unsafe?
-    // should never throw anything
+    // should never throw anything afaik
     fun write(participantsList: ParticipantsList) {
         return loggingTransaction(database) {
             ParticipantsListTable.deleteAll()
