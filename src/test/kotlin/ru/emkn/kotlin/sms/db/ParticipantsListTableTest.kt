@@ -14,8 +14,8 @@ internal class ParticipantsListTableTest {
 
     @BeforeTest
     fun initDB() {
-        Database.connect("jdbc:h2:./$testDBPath", driver = "org.h2.Driver")
-        transaction {
+        val database = Database.connect("jdbc:h2:./$testDBPath", driver = "org.h2.Driver")
+        transaction(database) {
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(ParticipantsListTable)
             ParticipantEntity.new {
