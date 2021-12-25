@@ -19,15 +19,11 @@ class ParticipantsListDbWriter(
     // unsafe?
     // should never throw anything afaik
     fun write(participantsList: ParticipantsList) {
-        return loggingTransaction(database) {
+        loggingTransaction(database) {
             SchemaUtils.create(ParticipantsListTable) // create if not exists
             ParticipantsListTable.deleteAll()
             participantsList.list.forEach { participant ->
-                with (participant) {
-                    ParticipantEntity.new(participant.id) {
-                        initializeEntity()
-                    }
-                }
+                participant.toEntity()
             }
         }
     }

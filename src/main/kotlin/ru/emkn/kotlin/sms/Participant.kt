@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
-import ru.emkn.kotlin.sms.db.ConvertibleToDBEntity
+import ru.emkn.kotlin.sms.db.ConvertibleToIntEntity
 import ru.emkn.kotlin.sms.db.ParticipantEntity
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
@@ -19,7 +19,7 @@ data class Participant(
     val team: String,
     val sportsCategory: String,
     val startingTime: Time,
-) : CsvStringDumpable, ConvertibleToDBEntity<ParticipantEntity> {
+) : CsvStringDumpable, ConvertibleToIntEntity<ParticipantEntity> {
     constructor(
         age: Int,
         name: String,
@@ -60,13 +60,15 @@ data class Participant(
     override fun dumpToCsvString() =
         "$id,$age,$name,$lastName,$group,$team,$sportsCategory,$startingTime"
 
-    override fun ParticipantEntity.initializeEntity() {
-        this@initializeEntity.age =            this@Participant.age
-        this@initializeEntity.name =           this@Participant.name
-        this@initializeEntity.lastName =       this@Participant.lastName
-        this@initializeEntity.group =          this@Participant.group.label
-        this@initializeEntity.team =           this@Participant.team
-        this@initializeEntity.sportsCategory = this@Participant.sportsCategory
-        this@initializeEntity.startingTime =   this@Participant.startingTime
+    override fun toEntity(): ParticipantEntity {
+        return ParticipantEntity.new(id) {
+            age =            this@Participant.age
+            name =           this@Participant.name
+            lastName =       this@Participant.lastName
+            group =          this@Participant.group.label
+            team =           this@Participant.team
+            sportsCategory = this@Participant.sportsCategory
+            startingTime =   this@Participant.startingTime
+        }
     }
 }

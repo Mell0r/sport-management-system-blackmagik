@@ -16,11 +16,13 @@ class AgeGroup(
 
     override fun dumpToCsvString(): String = "$label,$ageFrom,$ageTo"
 
-    override fun GroupEntity.initializeEntity() {
-        label = super.label
-        route = super.route.name
-        type = GroupType.AGE
-        ageFrom = ageFrom
-        ageTo = ageTo
+    override fun toEntity(): GroupEntity {
+        return GroupEntity.new {
+            label = this@AgeGroup.label
+            route = this@AgeGroup.route.name
+            type = GroupType.AGE
+            ageFrom = this@AgeGroup.ageFrom
+            ageTo = this@AgeGroup.ageTo
+        }
     }
 }
