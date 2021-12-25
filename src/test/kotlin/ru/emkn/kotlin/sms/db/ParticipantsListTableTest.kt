@@ -6,20 +6,15 @@ import org.jetbrains.exposed.sql.*
 import kotlin.test.*
 
 internal class ParticipantsListTableTest {
-
-    private val testDBDir = "test-data/db/db-test-1"
-    private val testDBName = "sms-test"
-    private val testDBPath = "$testDBDir/$testDBName"
-
+    private val testDbApi = TestDbApi1
     private val testDataSet = TableTestDataSet1
+
     private val testCompetition = testDataSet.competition
     private val testParticipantsLists = testDataSet.participantsLists
 
-    private fun connectDB() = Database.safeConnectToPath("./$testDBPath").unwrap()
-
     @Test
     fun `ParticipantsListDb Reader and Writer correctness test`() {
-        val db = connectDB()
+        val db = testDbApi.connectDB()
         val reader = ParticipantsListDbReader(db, testCompetition)
         val writer = ParticipantsListDbWriter(db)
         testParticipantsLists.forEach { participantsList ->
@@ -31,7 +26,7 @@ internal class ParticipantsListTableTest {
 
     @Test
     fun `ParticipantsListDbReader table not exists`() {
-        val db = connectDB()
+        val db = testDbApi.connectDB()
         val reader = ParticipantsListDbReader(db, testCompetition)
         val result = reader.read()
         assertIs<Err<String?>>(result)
@@ -39,11 +34,6 @@ internal class ParticipantsListTableTest {
 
     @AfterTest
     fun clearDB() {
-        loggingTransaction {
-            if (ParticipantsListTable.exists()) {
-                ParticipantsListTable.deleteAll()
-                exec(ParticipantsListTable.dropStatement().joinToString(" "))
-            }
-        }
+        testDbApi.clearDB(ParticipantsListTable)
     }
 }
