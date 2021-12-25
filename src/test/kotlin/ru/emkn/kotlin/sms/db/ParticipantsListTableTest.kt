@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms.db
 
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
+import ru.emkn.kotlin.sms.successOrNothing
 import kotlin.test.*
 
 internal class ParticipantsListTableTest {
@@ -14,9 +14,10 @@ internal class ParticipantsListTableTest {
 
     @BeforeTest
     fun initDB() {
-        val database = Database.connect("jdbc:h2:./$testDBPath", driver = "org.h2.Driver")
-        transaction(database) {
-            addLogger(StdOutSqlLogger)
+        val db = Database.safeConnectToPath("./$testDBPath").successOrNothing {
+            throw InternalError("Bad path for test database.")
+        }
+        loggingTransaction(db) {
             SchemaUtils.create(ParticipantsListTable)
             ParticipantEntity.new {
                 age = 25
@@ -32,7 +33,7 @@ internal class ParticipantsListTableTest {
 
     @Test
     fun `sample participants list table test`() {
-        transaction {
+        loggingTransaction {
             ParticipantEntity.all().forEach {
                 println(it.toDetailedString())
             }
@@ -41,7 +42,7 @@ internal class ParticipantsListTableTest {
 
     @AfterTest
     fun clearDB() {
-        transaction {
+        loggingTransaction {
             ParticipantsListTable.deleteAll()
             exec(ParticipantsListTable.dropStatement().joinToString(" "))
         }
