@@ -1,6 +1,9 @@
 package ru.emkn.kotlin.sms.startcfg
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import org.tinylog.Logger
+import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.csv.CreatableFromCsv
 import ru.emkn.kotlin.sms.io.FileContent
 
@@ -24,7 +27,7 @@ class Application(
             if (birthYear == null) {
                 Logger.warn {
                     "Line $lineNo: The applicant has incorrect birth " +
-                            "year, so he/she is not allowed to competition."
+                            "year, so he/she is not admitted to competition."
                 }
                 return null
             }
@@ -38,12 +41,12 @@ class Application(
             )
         }
 
-        override fun readFromCsvContent(fileContent: FileContent): Application {
+        override fun readFromCsvContent(fileContent: FileContent): ResultOrMessage<Application> {
             val application = fileContent.map { row -> row.split(",") }
-            require(application.size >= 2) { "Application can not be empty!" }
-            require(application.all { it.size == SIZE_OF_APPLICATION_ROW }) { "Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}." }
-            require(application[0][0] != "") { "Application can not have empty team name!" }
-
+            if (application.size < 2) return Err("Application can not be empty!")
+            if (!application.all { it.size == SIZE_OF_APPLICATION_ROW })
+                return Err("Some line contains the wrong number of commas! Must be exactly ${SIZE_OF_APPLICATION_ROW - 1}.")
+            if (application[0][0] == "") return Err("Application can not have empty team name!")
             val teamName = application[0][0]
             val applicantsList = application
                 .drop(1)
@@ -56,7 +59,7 @@ class Application(
                         teamName
                     )
                 }
-            return Application(teamName, applicantsList)
+            return Ok(Application(teamName, applicantsList))
         }
     }
 }
