@@ -5,6 +5,7 @@ import ru.emkn.kotlin.sms.*
 import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.db.schema.GroupEntity
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
+import ru.emkn.kotlin.sms.db.util.loggingTransaction
 
 
 /**

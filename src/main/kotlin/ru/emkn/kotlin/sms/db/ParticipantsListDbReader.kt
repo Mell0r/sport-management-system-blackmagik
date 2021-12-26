@@ -6,6 +6,7 @@ import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
+import ru.emkn.kotlin.sms.db.util.loggingTransaction
 
 /**
  * Reads [ParticipantsList] from [database],

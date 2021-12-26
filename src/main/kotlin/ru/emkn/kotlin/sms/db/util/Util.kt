@@ -1,8 +1,9 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.util
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.ResultOrMessage
 import com.github.michaelbull.result.*
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -49,3 +50,19 @@ fun <T> loggingTransaction(db: Database? = null, statement: Transaction.() -> T)
         this.statement()
     }
 }
+
+inline fun <reified E : Enum<E>> enumTypeToSqlType(): String {
+    val stringValues = enumValues<E>().joinToString(", ") {
+        "'${it.name}'"
+    }
+    return "ENUM($stringValues)"
+}
+
+inline fun <reified E : Enum<E>> Table.standardCustomEnumeration(name: String) = customEnumeration(
+    name = name,
+    sql = enumTypeToSqlType<E>(),
+    fromDb = { value ->
+        enumValueOf<E>(value.toString())
+    },
+    toDb = { it.name },
+)

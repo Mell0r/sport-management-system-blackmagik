@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.exists
+import ru.emkn.kotlin.sms.db.util.*
 
 object TestDbApi1 : TestDbApi {
     private const val testDBDir = "test-data/db/db-test-1"
