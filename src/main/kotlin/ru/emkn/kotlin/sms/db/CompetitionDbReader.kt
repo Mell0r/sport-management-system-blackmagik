@@ -4,6 +4,7 @@ import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.GroupEntity
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
+import ru.emkn.kotlin.sms.db.schema.RouteEntity
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
 import ru.emkn.kotlin.sms.db.util.DbReader
 
@@ -33,6 +34,12 @@ class CompetitionDbReader(
      * Reads routes from [RoutesTable] in [database].
      */
     fun readRoutes(): ResultOrMessage<List<Route>> {
-        TODO()
+        val reader = DbReader(
+            database = database,
+            table = RoutesTable,
+            entityClass = RouteEntity,
+            entityParser = RouteEntityParser,
+        )
+        return reader.read()
     }
 }

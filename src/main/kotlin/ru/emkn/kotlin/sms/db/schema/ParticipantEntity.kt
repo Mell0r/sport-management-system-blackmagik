@@ -13,13 +13,13 @@ import ru.emkn.kotlin.sms.time.Time
 class ParticipantEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<ParticipantEntity>(ParticipantsListTable)
     // id is assumed
-    var age: Int by ParticipantsListTable.age
-    var name: String by ParticipantsListTable.name
-    var lastName: String by ParticipantsListTable.lastName
-    var group: GroupEntity by GroupEntity referencedOn ParticipantsListTable.group
-    var team: String by ParticipantsListTable.team
-    var sportsCategory: String by ParticipantsListTable.sportsCategory
-    var startingTime: Time by ParticipantsListTable.startingTime
+    val age: Int by ParticipantsListTable.age
+    val name: String by ParticipantsListTable.name
+    val lastName: String by ParticipantsListTable.lastName
+    val group: GroupEntity by GroupEntity referencedOn ParticipantsListTable.group
+    val team: String by ParticipantsListTable.team
+    val sportsCategory: String by ParticipantsListTable.sportsCategory
+    val startingTime: Time by ParticipantsListTable.startingTime
 
     fun toShortString() = "Participant #$id $name $lastName"
 }

@@ -6,6 +6,10 @@ import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.GroupEntity
 import ru.emkn.kotlin.sms.db.util.EntityParser
 
+/**
+ * Parses a [Group] from [GroupEntity]
+ * via [competitionYear] and [routes].
+ */
 class GroupEntityParser(
     private val competitionYear: Int,
     private val routes: List<Route>,

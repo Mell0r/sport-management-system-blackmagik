@@ -8,6 +8,10 @@ import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
 import ru.emkn.kotlin.sms.db.util.EntityParser
 
+/**
+ * Parses a [Participant] from [ParticipantEntity]
+ * via [competition].
+ */
 class ParticipantEntityParser(
     private val competition: Competition,
 ) : EntityParser<Int, ParticipantEntity, Participant> {
