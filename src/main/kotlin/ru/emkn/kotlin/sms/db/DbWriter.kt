@@ -1,27 +1,26 @@
 package ru.emkn.kotlin.sms.db
 
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.*
 
 /**
- * An object, which
- * converts objects implementing [ConvertibleToEntity]
- * to DB entities of type [T],
- * and then writes them into [database].
+ * An object which writes
+ * objects implementing [RecordableToTableRow]
+ * to SQL [table] of type [T].
  */
-class DbWriter<ID : Comparable<ID>, T : Entity<ID>>(
+class DbWriter<T : Table>(
     private val database: Database,
-    private val table: Table,
+    private val table: T,
 ) {
-    fun overwrite(list: List<ConvertibleToEntity<ID, T>>) {
+    fun overwrite(list: List<RecordableToTableRow<T>>) {
         return loggingTransaction(database) {
             SchemaUtils.create(table) // create if not exists
             table.deleteAll()
-            list.forEach { convertible ->
-                convertible.toEntity()
+            list.forEach { recordable ->
+                with(recordable) {
+                    table.insert { statement ->
+                        initializeTableRow(statement)
+                    }
+                }
             }
         }
     }

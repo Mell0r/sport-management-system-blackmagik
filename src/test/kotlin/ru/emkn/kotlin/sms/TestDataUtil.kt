@@ -8,6 +8,9 @@ fun competitionToString(competition: Competition): String =
             "groups=${competition.groups}, " +
             "routes=${competition.routes})"
 
+fun participantsListToString(participantsList: ParticipantsList): String =
+    "PList(${participantsList.list})"
+
 fun groupEquals(group1: Group, group2: Group): Boolean {
     // i couldn't make a consistent equals of Group (AgeGroup) due to inheritance
     if (group1.label != group2.label) return false

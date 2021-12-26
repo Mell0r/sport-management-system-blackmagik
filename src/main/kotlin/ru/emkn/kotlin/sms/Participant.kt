@@ -1,8 +1,9 @@
 package ru.emkn.kotlin.sms
 
+import org.jetbrains.exposed.sql.statements.InsertStatement
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
-import ru.emkn.kotlin.sms.db.ConvertibleToIntEntity
-import ru.emkn.kotlin.sms.db.ParticipantEntity
+import ru.emkn.kotlin.sms.db.ParticipantsListTable
+import ru.emkn.kotlin.sms.db.RecordableToTableRow
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
 
@@ -19,7 +20,7 @@ data class Participant(
     val team: String,
     val sportsCategory: String,
     val startingTime: Time,
-) : CsvStringDumpable, ConvertibleToIntEntity<ParticipantEntity> {
+) : CsvStringDumpable, RecordableToTableRow<ParticipantsListTable> {
     constructor(
         age: Int,
         name: String,
@@ -60,15 +61,14 @@ data class Participant(
     override fun dumpToCsvString() =
         "$id,$age,$name,$lastName,$group,$team,$sportsCategory,$startingTime"
 
-    override fun toEntity(): ParticipantEntity {
-        return ParticipantEntity.new(id) {
-            age =            this@Participant.age
-            name =           this@Participant.name
-            lastName =       this@Participant.lastName
-            group =          this@Participant.group.label
-            team =           this@Participant.team
-            sportsCategory = this@Participant.sportsCategory
-            startingTime =   this@Participant.startingTime
-        }
+    override fun ParticipantsListTable.initializeTableRow(statement: InsertStatement<Number>) {
+        statement[id] =             this@Participant.id
+        statement[age] =            this@Participant.age
+        statement[name] =           this@Participant.name
+        statement[lastName] =       this@Participant.lastName
+        statement[group] =          this@Participant.group.label
+        statement[team] =           this@Participant.team
+        statement[sportsCategory] = this@Participant.sportsCategory
+        statement[startingTime] =   this@Participant.startingTime
     }
 }

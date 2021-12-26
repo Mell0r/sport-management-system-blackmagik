@@ -15,8 +15,7 @@ internal class ReadWriteGroupsTest {
     @Test
     fun `CompetitionDbReader read & write groups correctness`() {
         val db = testDbApi.connectDB()
-        val writer = CompetitionDbWriter(db, testCompetition)
-        writer.writeGroups()
+        testDataSet.writeAllGroups(db)
         val reader = CompetitionDbReader(db)
         val readGroups = reader.readGroups(testRoutes, testCompetition.year).unwrap()
         assertTrue {
@@ -25,7 +24,8 @@ internal class ReadWriteGroupsTest {
     }
 
     @AfterTest
-    fun clearDB() {
-        testDbApi.clearDB(GroupsTable)
+    @BeforeTest
+    fun clearAll() {
+        testDataSet.clearAll(testDbApi)
     }
 }

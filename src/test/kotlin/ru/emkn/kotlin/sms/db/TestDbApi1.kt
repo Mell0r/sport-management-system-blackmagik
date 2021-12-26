@@ -13,7 +13,7 @@ object TestDbApi1 : TestDbApi {
 
     override fun connectDB() = Database.safeConnectToPath("./$testDBPath").unwrap()
 
-    override fun clearDB(table: Table) {
+    override fun deleteTable(table: Table) {
         loggingTransaction {
             if (table.exists()) {
                 table.deleteAll()

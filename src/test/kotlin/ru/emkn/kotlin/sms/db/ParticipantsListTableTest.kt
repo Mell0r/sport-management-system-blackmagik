@@ -3,10 +3,12 @@ package ru.emkn.kotlin.sms.db
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.unwrap
 import org.jetbrains.exposed.sql.*
+import org.tinylog.Logger
+import ru.emkn.kotlin.sms.participantsListToString
 import kotlin.test.*
 
 internal class ParticipantsListTableTest {
-    private val testDbApi = TestDbApi1
+    private val testDbApi : TestDbApi = TestDbApi1
     private val testDataSet = TableTestDataSet1
 
     private val testCompetition = testDataSet.competition
@@ -15,6 +17,7 @@ internal class ParticipantsListTableTest {
     @Test
     fun `ParticipantsListDb Reader and Writer correctness test`() {
         val db = testDbApi.connectDB()
+        testDataSet.writeAllGroups(db)
         val reader = ParticipantsListDbReader(db, testCompetition)
         val writer = ParticipantsListDbWriter(db)
         testParticipantsLists.forEach { participantsList ->
@@ -33,7 +36,8 @@ internal class ParticipantsListTableTest {
     }
 
     @AfterTest
-    fun clearDB() {
-        testDbApi.clearDB(ParticipantsListTable)
+    @BeforeTest
+    fun clearAll() {
+        testDataSet.clearAll(testDbApi)
     }
 }

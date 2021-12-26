@@ -5,5 +5,5 @@ import org.jetbrains.exposed.sql.Table
 
 interface TestDbApi {
     fun connectDB(): Database
-    fun clearDB(table: Table)
+    fun deleteTable(table: Table)
 }

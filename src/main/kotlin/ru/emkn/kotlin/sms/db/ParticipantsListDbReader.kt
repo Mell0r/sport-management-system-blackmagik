@@ -18,7 +18,7 @@ class ParticipantsListDbReader(
         return loggingTransaction(database) {
             runCatching {
                 val participants = ParticipantEntity.all().map { entity ->
-                    val group = competition.getGroupByLabelOrNull(entity.group) ?: return@loggingTransaction Err(
+                    val group = competition.getGroupByLabelOrNull(entity.group.label) ?: return@loggingTransaction Err(
                         "${entity.toShortString()} has invalid group label \"${entity.group}\""
                     )
                     Participant(

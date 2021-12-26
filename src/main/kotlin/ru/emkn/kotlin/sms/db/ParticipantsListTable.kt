@@ -14,7 +14,7 @@ object ParticipantsListTable : IntIdTable("participants_list") {
     val age: Column<Int> = integer("age")
     val name: Column<String> = text("name")
     val lastName: Column<String> = text("last_name")
-    val group: Column<String> = varchar("group", MAX_DB_ROW_LABEL_SIZE) // TODO: reference to groups table
+    val group = reference("group", GroupsTable)
     val team: Column<String> = varchar("team", MAX_DB_ROW_LABEL_SIZE) // TODO: Team class and reference to teams table
     val sportsCategory: Column<String> = text("sports_category")
     val startingTime: Column<Time> = registerColumn("starting_time", TimeColumnType())

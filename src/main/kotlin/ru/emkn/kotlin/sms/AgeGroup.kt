@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms
 
-import ru.emkn.kotlin.sms.db.GroupEntity
+import org.jetbrains.exposed.sql.statements.InsertStatement
+import ru.emkn.kotlin.sms.db.GroupsTable
 import ru.emkn.kotlin.sms.startcfg.Applicant
 
 class AgeGroup(
@@ -16,12 +17,11 @@ class AgeGroup(
 
     override fun dumpToCsvString(): String = "$label,$ageFrom,$ageTo"
 
-    override fun toEntity(): GroupEntity {
-        return GroupEntity.new(label) {
-            route = this@AgeGroup.route.name
-            type = GroupType.AGE
-            ageFrom = this@AgeGroup.ageFrom
-            ageTo = this@AgeGroup.ageTo
-        }
+    override fun GroupsTable.initializeTableRow(statement: InsertStatement<Number>) {
+        statement[id] = this@AgeGroup.label
+        statement[route] = this@AgeGroup.route.name
+        statement[type] = GroupType.AGE
+        statement[ageFrom] = this@AgeGroup.ageFrom
+        statement[ageTo] = this@AgeGroup.ageTo
     }
 }

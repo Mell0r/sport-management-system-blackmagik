@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms.db
 
+import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.time.s
 
@@ -48,4 +49,15 @@ object TableTestDataSet1 {
         ParticipantsList(listOf(p5, p4, p7, p8, p1, p3)),
         ParticipantsList(listOf(p3, p8, p5, p6, p2)),
     )
+
+    fun writeAllGroups(db: Database) {
+        val writer = CompetitionDbWriter(db, competition)
+        writer.writeGroups()
+    }
+
+    fun clearAll(api: TestDbApi) {
+        api.connectDB()
+        api.deleteTable(ParticipantsListTable)
+        api.deleteTable(GroupsTable)
+    }
 }

@@ -16,7 +16,7 @@ class ParticipantEntity(id: EntityID<Int>) : IntEntity(id) {
     var age: Int by ParticipantsListTable.age
     var name: String by ParticipantsListTable.name
     var lastName: String by ParticipantsListTable.lastName
-    var group: String by ParticipantsListTable.group
+    var group: GroupEntity by GroupEntity referencedOn ParticipantsListTable.group
     var team: String by ParticipantsListTable.team
     var sportsCategory: String by ParticipantsListTable.sportsCategory
     var startingTime: Time by ParticipantsListTable.startingTime
