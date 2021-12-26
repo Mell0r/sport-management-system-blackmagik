@@ -25,8 +25,8 @@ fun FoldingObject(
     headerFontSize: TextUnit = TextUnit.Unspecified
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Column(Modifier.clickable { expanded = !expanded }) {
-        Row {
+    Column {
+        Row(Modifier.clickable { expanded = !expanded }) {
             AnimatedContent(targetState = expanded) { targetState ->
                 if (targetState)
                     Text(downArrow, fontSize = headerFontSize)
