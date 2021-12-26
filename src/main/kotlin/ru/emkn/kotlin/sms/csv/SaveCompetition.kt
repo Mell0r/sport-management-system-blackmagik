@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.io
+package ru.emkn.kotlin.sms.csv
 
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
@@ -9,7 +9,7 @@ import java.io.File
 /**
  * Saves [competition] into files in [configFolderPath] folder
  * in format consistent with [initializeCompetition] in InitializeCompetition.kt.
- * Overwrites files if they already exist.
+ * It overwrites files if they already exist.
  *
  * @throws [IllegalArgumentException] if an IO exception happened.
  */

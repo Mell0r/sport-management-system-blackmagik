@@ -50,6 +50,14 @@ class Time(seconds: Int) : Comparable<Time> {
                 throw IllegalArgumentException("One of the fields is not a number.")
             }
         }
+
+        fun fromStringOrNull(timeRepresentation: String): Time? {
+            return try {
+                fromString(timeRepresentation)
+            } catch (e: Throwable) {
+                return null
+            }
+        }
     }
 
     private fun modulo(x: Int): Int {

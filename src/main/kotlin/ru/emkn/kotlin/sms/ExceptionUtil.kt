@@ -40,3 +40,9 @@ inline fun <V, E> Result<V, E>.successOrNothing(
         failure = { nothingReturner(it) },
     )
 }
+
+fun <V> Result<V, Throwable>.mapDBReadErrorMessage(): ResultOrMessage<V> {
+    return this.mapError { exception ->
+        "Some error happened while reading database:\n${exception.message}"
+    }
+}

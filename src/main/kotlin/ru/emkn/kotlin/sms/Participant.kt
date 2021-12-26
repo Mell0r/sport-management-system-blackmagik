@@ -1,6 +1,9 @@
 package ru.emkn.kotlin.sms
 
+import org.jetbrains.exposed.sql.statements.InsertStatement
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
+import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
+import ru.emkn.kotlin.sms.db.util.RecordableToTableRow
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
 
@@ -17,7 +20,7 @@ data class Participant(
     val team: String,
     val sportsCategory: String,
     val startingTime: Time,
-) : CsvStringDumpable {
+) : CsvStringDumpable, RecordableToTableRow<ParticipantsListTable> {
     constructor(
         age: Int,
         name: String,
@@ -57,4 +60,15 @@ data class Participant(
 
     override fun dumpToCsvString() =
         "$id,$age,$name,$lastName,$group,$team,$sportsCategory,$startingTime"
+
+    override fun ParticipantsListTable.initializeTableRow(statement: InsertStatement<Number>) {
+        statement[id] =             this@Participant.id
+        statement[age] =            this@Participant.age
+        statement[name] =           this@Participant.name
+        statement[lastName] =       this@Participant.lastName
+        statement[group] =          this@Participant.group.label
+        statement[team] =           this@Participant.team
+        statement[sportsCategory] = this@Participant.sportsCategory
+        statement[startingTime] =   this@Participant.startingTime
+    }
 }
