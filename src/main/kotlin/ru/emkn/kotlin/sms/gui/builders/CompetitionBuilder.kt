@@ -20,7 +20,7 @@ class CompetitionBuilder(
     val year: MutableState<String> = mutableStateOf(""),
     val date: MutableState<String> = mutableStateOf(""),
     val groups: SnapshotStateList<AgeGroupBuilder> = mutableStateListOf(),
-    val routes: SnapshotStateList<OrderedCheckpointsRouteBuilder> = mutableStateListOf(),
+    val routes: SnapshotStateList<RouteBuilder> = mutableStateListOf(),
 ) {
 
     /**
@@ -46,14 +46,23 @@ class CompetitionBuilder(
         )
         routes.clear()
         routes.addAll(
-            competition.routes.filterIsInstance<OrderedCheckpointsRoute>()
+            competition.routes
                 .map { route ->
-                    OrderedCheckpointsRouteBuilder(
-                        mutableStateOf(route.name),
-                        route.orderedCheckpoints.map { mutableStateOf(it) }
-                            .toMutableStateList()
-                    )
-                }.toMutableStateList(),
+                    when(route) {
+                        is OrderedCheckpointsRoute -> RouteBuilder(
+                                mutableStateOf(RouteType.ORDERED),
+                                mutableStateOf(route.name),
+                                mutableStateOf(""),
+                                route.orderedCheckpoints.map { mutableStateOf(it) }.toMutableStateList()
+                            )
+                        is AtLeastKCheckpointsRoute -> RouteBuilder(
+                            mutableStateOf(RouteType.AT_LEAST_K),
+                            mutableStateOf(route.name),
+                            mutableStateOf("${route.threshold}"),
+                            route.checkpoints.map { mutableStateOf(it) }.toMutableStateList()
+                        )
+                    }
+                }.toMutableStateList()
         )
     }
 
@@ -74,7 +83,7 @@ class CompetitionBuilder(
      * Returns built instance of [Competition] class.
      */
     fun build(): Competition {
-        val routes = routes.map { it.toOrderedCheckpointsRoute() }.toList()
+        val routes = routes.map { it.toRoute() }.toList()
         val groups = groups.map { ageGroupBuilder ->
             val route = routes.single { it.name == ageGroupBuilder.routeName.value }
             AgeGroup(

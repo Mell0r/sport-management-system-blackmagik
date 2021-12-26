@@ -26,7 +26,8 @@ import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
 import ru.emkn.kotlin.sms.gui.builders.CompetitionBuilder
-import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
+import ru.emkn.kotlin.sms.gui.builders.RouteBuilder
+import ru.emkn.kotlin.sms.gui.builders.RouteType
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
@@ -82,20 +83,34 @@ private fun DisplayCompetitionTextFields(
 }
 
 @Composable
-fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
+fun DisplayRoute(route: RouteBuilder, selectedType : MutableState<String>) {
+
     fun ShowCheckpoint(): @Composable (MutableState<CheckpointLabelT>) -> Unit =
         { checkpoint ->
             TextField(checkpoint.value, { checkpoint.value = it; })
         }
 
-    Column(modifier = Modifier.padding(10.dp)) {
-        Row(modifier = Modifier.padding(10.dp)) {
-            OutlinedTextField(
-                route.name.value,
-                onValueChange = { route.name.value = it },
-                label = { Text("Название маршрута") }
-            )
+    Row(modifier = Modifier.padding(10.dp)) {
+        OutlinedTextField(
+            route.name.value,
+            onValueChange = { route.name.value = it },
+            label = { Text("Название маршрута") }
+        )
+
+        val types = mutableStateListOf("С фиксированным порядком", "Хотя бы 'К' точек")
+        LabeledDropdownMenu("Тип маршрута", types, selectedType, 200.dp)
+
+        if (selectedType.value == "С фиксированным порядком")
+            route.type.value = RouteType.ORDERED
+        else
+            route.type.value = RouteType.AT_LEAST_K
+
+        AnimatedVisibility(selectedType.value == "Хотя бы 'К' точек") {
+            LabeledDropdownMenu("К", ages, route.k, 100.dp)
         }
+
+        Spacer(Modifier.width(16.dp))
+
         FoldingList(
             {
                 Text(
@@ -105,7 +120,7 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
                     fontSize = 20.sp
                 )
             },
-            route.orderedCheckpoints,
+            route.checkpoints,
             ShowCheckpoint(),
             { mutableStateOf(String()) }
         )
@@ -116,12 +131,12 @@ fun DisplayRoute(route: OrderedCheckpointsRouteBuilder) {
 @Composable
 fun DisplayGroup(
     group: AgeGroupBuilder,
-    availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>
+    availableRoutes: SnapshotStateList<RouteBuilder>
 ) {
     fun checkAge(a: String, b: String): Boolean =
         (a.toIntOrNull() ?: 0) > (b.toIntOrNull() ?: -1)
 
-    fun routesToStrings(availableRoutes: SnapshotStateList<OrderedCheckpointsRouteBuilder>) =
+    fun routesToStrings(availableRoutes: SnapshotStateList<RouteBuilder>) =
         availableRoutes.map { it.name.value }.toMutableStateList()
 
     Column {
@@ -201,6 +216,7 @@ fun CompetitionConfiguration(
         }
 
         val majorListsFontSize = 25.sp
+        val selectedRouteType = remember { mutableStateOf("") }
         FoldingList(
             {
                 Text(
@@ -211,9 +227,11 @@ fun CompetitionConfiguration(
                 )
             },
             competitionBuilder.routes,
-            { DisplayRoute(it) },
+            { DisplayRoute(it, selectedRouteType) },
             {
-                OrderedCheckpointsRouteBuilder(
+                RouteBuilder(
+                    mutableStateOf(RouteType.ORDERED),
+                    mutableStateOf(""),
                     mutableStateOf(""),
                     mutableStateListOf()
                 )
