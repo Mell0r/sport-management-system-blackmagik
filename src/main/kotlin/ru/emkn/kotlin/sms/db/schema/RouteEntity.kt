@@ -12,7 +12,7 @@ import ru.emkn.kotlin.sms.db.util.StringEntityClass
  * of [RoutesTable] table.
  */
 class RouteEntity(id: EntityID<String>) : Entity<String>(id) {
-    companion object : StringEntityClass<RouteEntity>(GroupsTable)
+    companion object : StringEntityClass<RouteEntity>(RoutesTable)
 
     val name: String
         get() = id.value
