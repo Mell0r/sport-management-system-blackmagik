@@ -70,6 +70,11 @@ object TableTestDataSet1 {
         writer.writeGroups()
     }
 
+    fun writeCompetition(db: Database) {
+        val writer = CompetitionDbWriter(db, competition)
+        writer.writeCompetition()
+    }
+
     fun clearAll(api: TestDbApi) {
         api.connectDB()
         api.deleteTable(ParticipantsListTable)

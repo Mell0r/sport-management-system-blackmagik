@@ -65,4 +65,25 @@ class CompetitionDbReader(
         )
         return reader.read()
     }
+
+    /**
+     * Reads [Competition]
+     * from tables [CompetitionHeaderTable], [RoutesTable] and [GroupsTable]
+     * in [database].
+     */
+    fun readCompetition(): ResultOrMessage<Competition> {
+         return binding {
+             val header = readHeader().bind()
+             val routes = readRoutes().bind()
+             val groups = readGroups(routes, header.year).bind()
+             Competition(
+                 discipline = header.discipline,
+                 name = header.name,
+                 year = header.year,
+                 date = header.date,
+                 groups = groups,
+                 routes = routes,
+             )
+        }
+    }
 }

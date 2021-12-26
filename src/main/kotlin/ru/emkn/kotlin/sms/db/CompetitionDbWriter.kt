@@ -39,4 +39,13 @@ class CompetitionDbWriter(
     fun writeGroups() {
         groupsWriter.overwrite(competition.groups)
     }
+
+    /**
+     * OVERWRITES tables [CompetitionHeaderTable], [RoutesTable], [GroupsTable].
+     */
+    fun writeCompetition() {
+        writeHeader()
+        writeRoutes()
+        writeGroups()
+    }
 }
