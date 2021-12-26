@@ -52,6 +52,11 @@ object TableTestDataSet1 {
         ParticipantsList(listOf(p3, p8, p5, p6, p2)),
     )
 
+    fun writeAllRoutes(db: Database) {
+        val writer = CompetitionDbWriter(db, competition)
+        writer.writeRoutes()
+    }
+
     fun writeAllGroups(db: Database) {
         val writer = CompetitionDbWriter(db, competition)
         writer.writeGroups()

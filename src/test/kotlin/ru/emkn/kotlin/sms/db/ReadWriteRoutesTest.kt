@@ -1,26 +1,25 @@
 package ru.emkn.kotlin.sms.db
 
 import com.github.michaelbull.result.unwrap
-import ru.emkn.kotlin.sms.groupListsEquals
 import kotlin.test.*
 
-internal class ReadWriteGroupsTest {
+internal class ReadWriteRoutesTest {
     private val testDbApi = TestDbApi1
     private val testDataSet = TableTestDataSet1
 
     private val testCompetition = testDataSet.competition
-    private val testGroups = testCompetition.groups
     private val testRoutes = testCompetition.routes
 
     @Test
-    fun `CompetitionDbReader(Writer) read & write groups correctness`() {
+    fun `CompetitionDbReader(Writer) read & write routes correctness`() {
         val db = testDbApi.connectDB()
-        testDataSet.writeAllGroups(db)
+        testDataSet.writeAllRoutes(db)
         val reader = CompetitionDbReader(db)
-        val readGroups = reader.readGroups(testRoutes, testCompetition.year).unwrap()
-        assertTrue {
-            groupListsEquals(testGroups, readGroups)
-        }
+        val readRoutes = reader.readRoutes().unwrap()
+        assertEquals(
+            testRoutes.toSet(),
+            readRoutes.toSet(),
+        )
     }
 
     @AfterTest
