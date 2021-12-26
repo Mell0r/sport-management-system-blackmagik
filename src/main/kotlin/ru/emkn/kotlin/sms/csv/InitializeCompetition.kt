@@ -1,9 +1,10 @@
-package ru.emkn.kotlin.sms.io
+package ru.emkn.kotlin.sms.csv
 
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.csv.readRouteFromLine
+import ru.emkn.kotlin.sms.io.FileContent
 import java.io.File
 import java.io.IOException
 

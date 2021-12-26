@@ -1,5 +1,7 @@
 package ru.emkn.kotlin.sms
 
+import com.github.michaelbull.result.unwrap
+import com.github.michaelbull.result.unwrapError
 import ru.emkn.kotlin.sms.csv.readRouteFromLine
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,7 +14,7 @@ internal class RouteReadingTests {
     @Test
     fun `properly reads ordered checkpoints routes`() {
         fun checkRouteLine(routeLine: String) {
-            val route = readRouteFromLine(routeLine)
+            val route = readRouteFromLine(routeLine).unwrap()
             assertIs<OrderedCheckpointsRoute>(route)
             assertEquals(
                 listOf("chp1", "chp2", "chp3"),
@@ -27,7 +29,7 @@ internal class RouteReadingTests {
     @Test
     fun `Properly writes and reads back ordered checkpoints routes`() {
         fun checkRoute(route: OrderedCheckpointsRoute) {
-            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()).unwrap())
         }
         checkRoute(OrderedCheckpointsRoute("orderedRoute1", mutableListOf("c1", "c2", "c3")))
         checkRoute(OrderedCheckpointsRoute("orderedRoute2", mutableListOf("c2", "c1", "c3")))
@@ -38,7 +40,7 @@ internal class RouteReadingTests {
     @Test
     fun `properly reads at least k checkpoints routes`() {
         val routeLine = ("\$1\$name1,2,chp1,chp2,chp3")
-        val route = readRouteFromLine(routeLine)
+        val route = readRouteFromLine(routeLine).unwrap()
         assertIs<AtLeastKCheckpointsRoute>(route)
         assertEquals(setOf("chp1", "chp2", "chp3"), route.checkpoints)
         assertEquals("name1", route.name)
@@ -48,7 +50,7 @@ internal class RouteReadingTests {
     @Test
     fun `Properly writes and reads back at least k checkpoints routes`() {
         fun checkRoute(route: AtLeastKCheckpointsRoute) {
-            assertEquals(route, readRouteFromLine(route.dumpToCsvString()))
+            assertEquals(route, readRouteFromLine(route.dumpToCsvString()).unwrap())
         }
         checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute1", mutableSetOf("c1", "c2", "c3"), 1))
         checkRoute(AtLeastKCheckpointsRoute("atLeastKRoute2", mutableSetOf("c2", "c1", "c3"), 2))
