@@ -2,21 +2,23 @@ package ru.emkn.kotlin.sms
 
 import com.github.michaelbull.result.*
 import org.tinylog.kotlin.Logger
+import java.io.IOException
 
 typealias ResultOrMessage<T> = Result<T, String?>
 typealias UnitOrMessage = ResultOrMessage<Unit>
 
-fun logErrorAndThrow(message: String): Nothing {
+fun errAndLog(message: String) : Err<String> {
     Logger.error(message)
-    throw IllegalArgumentException(message)
+    return Err(message)
 }
 
-fun catchIllegalArgumentExceptionToString(throwable: Throwable): String? {
-    return when (throwable) {
-        is IllegalArgumentException -> throwable.message
-        else -> throw throwable // propagate the exception if we cannot handle it here
+inline fun <T> runIoOperation(f: () -> T): ResultOrMessage<T> =
+    runCatching(f).mapError {
+        when (it) {
+            is IOException -> it.message
+            else -> throw it
+        }
     }
-}
 
 inline fun <V, E> Result<V, E>.successOrNull(
     action: (E) -> Unit,
