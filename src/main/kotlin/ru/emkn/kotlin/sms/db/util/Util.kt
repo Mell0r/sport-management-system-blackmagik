@@ -3,10 +3,10 @@ package ru.emkn.kotlin.sms.db
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.ResultOrMessage
 import com.github.michaelbull.result.*
-import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.emkn.kotlin.sms.db.util.TinyLogDebugSqlLogger
 
 /**
  * Maximum allowed label sizes

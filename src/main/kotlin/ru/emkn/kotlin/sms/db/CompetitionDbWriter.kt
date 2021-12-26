@@ -1,9 +1,9 @@
 package ru.emkn.kotlin.sms.db
 
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.deleteAll
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.db.schema.GroupsTable
+import ru.emkn.kotlin.sms.db.util.DbWriter
 
 /**
  * Writes [Competition] to multiple tables in [database].

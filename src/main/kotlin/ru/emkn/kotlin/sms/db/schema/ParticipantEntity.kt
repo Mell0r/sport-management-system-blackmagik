@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.schema
 
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID

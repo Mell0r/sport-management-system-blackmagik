@@ -3,6 +3,8 @@ package ru.emkn.kotlin.sms.db
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import com.github.michaelbull.result.*
+import ru.emkn.kotlin.sms.db.schema.GroupEntity
+import ru.emkn.kotlin.sms.db.schema.GroupsTable
 
 
 /**

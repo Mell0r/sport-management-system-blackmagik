@@ -1,7 +1,9 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.schema
 
 import org.jetbrains.exposed.sql.*
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.db.MAX_DB_ROW_LABEL_SIZE
+import ru.emkn.kotlin.sms.db.util.StringIdTable
 
 /**
  * A [org.jetbrains.exposed] table representative,

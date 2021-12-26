@@ -2,8 +2,8 @@ package ru.emkn.kotlin.sms
 
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
-import ru.emkn.kotlin.sms.db.ParticipantsListTable
-import ru.emkn.kotlin.sms.db.RecordableToTableRow
+import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
+import ru.emkn.kotlin.sms.db.util.RecordableToTableRow
 import ru.emkn.kotlin.sms.startcfg.ProcessedApplicant
 import ru.emkn.kotlin.sms.time.Time
 

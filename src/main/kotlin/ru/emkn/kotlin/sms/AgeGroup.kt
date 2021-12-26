@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms
 
 import org.jetbrains.exposed.sql.statements.InsertStatement
-import ru.emkn.kotlin.sms.db.GroupsTable
+import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.startcfg.Applicant
 
 class AgeGroup(

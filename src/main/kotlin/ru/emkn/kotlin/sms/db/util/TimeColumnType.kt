@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.util
 
 import org.jetbrains.exposed.sql.*
 import ru.emkn.kotlin.sms.time.*
@@ -13,7 +13,7 @@ class TimeColumnType : ColumnType() {
         const val MAX_TIME_STRING_LEN = 32
     }
 
-    override fun sqlType() = "VARCHAR(${MAX_TIME_STRING_LEN})"
+    override fun sqlType() = "VARCHAR($MAX_TIME_STRING_LEN)"
 
     override var nullable: Boolean
         get() = false

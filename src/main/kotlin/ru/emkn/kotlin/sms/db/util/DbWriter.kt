@@ -1,6 +1,7 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.util
 
 import org.jetbrains.exposed.sql.*
+import ru.emkn.kotlin.sms.db.loggingTransaction
 
 /**
  * An object which writes

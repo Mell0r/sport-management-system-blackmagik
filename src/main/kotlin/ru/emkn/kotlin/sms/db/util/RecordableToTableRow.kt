@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.util
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.InsertStatement
