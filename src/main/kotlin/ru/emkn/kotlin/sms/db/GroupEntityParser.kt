@@ -15,7 +15,7 @@ class GroupEntityParser(
     private val routes: List<Route>,
 ) : EntityParser<String, GroupEntity, Group> {
     override fun parse(entity: GroupEntity): ResultOrMessage<Group> {
-        val route = routes.find { it.name == entity.route } ?: return Err(
+        val route = routes.find { it.name == entity.route.name } ?: return Err(
             "Group \"${entity.label}\" has invalid route name \"${entity.route}\"."
         )
 

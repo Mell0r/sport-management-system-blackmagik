@@ -4,6 +4,7 @@ import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
+import ru.emkn.kotlin.sms.db.schema.RoutesTable
 import ru.emkn.kotlin.sms.time.s
 
 object TableTestDataSet1 {
@@ -59,6 +60,7 @@ object TableTestDataSet1 {
 
     fun writeAllGroups(db: Database) {
         val writer = CompetitionDbWriter(db, competition)
+        writer.writeRoutes()
         writer.writeGroups()
     }
 
@@ -66,5 +68,6 @@ object TableTestDataSet1 {
         api.connectDB()
         api.deleteTable(ParticipantsListTable)
         api.deleteTable(GroupsTable)
+        api.deleteTable(RoutesTable)
     }
 }

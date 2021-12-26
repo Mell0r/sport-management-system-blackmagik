@@ -16,7 +16,7 @@ class GroupEntity(id: EntityID<String>) : Entity<String>(id) {
 
     val label: String
         get() = id.value
-    val route: String by GroupsTable.route // TODO reference to route table
+    val route: RouteEntity by RouteEntity referencedOn GroupsTable.route
     val type: GroupType by GroupsTable.type
     val ageFrom: Int? by GroupsTable.ageFrom
     val ageTo: Int? by GroupsTable.ageTo

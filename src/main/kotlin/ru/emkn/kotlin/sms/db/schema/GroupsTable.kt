@@ -11,7 +11,7 @@ import ru.emkn.kotlin.sms.db.util.standardCustomEnumeration
  * storing [Group]s.
  */
 object GroupsTable : StringIdTable("groups", "label", MAX_DB_ROW_LABEL_SIZE) {
-    val route: Column<String> = varchar("route", MAX_DB_ROW_LABEL_SIZE) // TODO reference to route table
+    val route = reference("route", RoutesTable)
     val type: Column<GroupType> = standardCustomEnumeration("type")
     val ageFrom: Column<Int?> = integer("age_from").nullable()
     val ageTo: Column<Int?> = integer("age_to").nullable()
