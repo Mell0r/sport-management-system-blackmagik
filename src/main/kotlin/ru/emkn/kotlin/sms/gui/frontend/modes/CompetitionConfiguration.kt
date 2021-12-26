@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.michaelbull.result.*
+import org.jetbrains.exposed.sql.Database
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.CheckpointLabelT
 import ru.emkn.kotlin.sms.gui.builders.AgeGroupBuilder
@@ -31,6 +32,10 @@ import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
 import ru.emkn.kotlin.sms.csv.saveCompetition
+import ru.emkn.kotlin.sms.db.readers.CompetitionDbReader
+import ru.emkn.kotlin.sms.db.util.safeConnectToPath
+import ru.emkn.kotlin.sms.db.writers.CompetitionDbWriter
+import ru.emkn.kotlin.sms.successOrNothing
 import java.io.File
 
 private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
@@ -194,9 +199,13 @@ fun CompetitionConfiguration(
                         .size(dialogSize.width / 4, dialogSize.height / 4)
                 )
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                LoadCompetitionButton(competitionBuilder, dialogSize)
+                LoadCompetitionFromCSVButton(competitionBuilder, dialogSize)
+                Spacer(modifier = Modifier.height(dialogSize.height / 60))
+                LoadCompetitionFromSQLButton(competitionBuilder, dialogSize)
                 Spacer(modifier = Modifier.height(dialogSize.height / 20))
-                ExportCompetitionButton(competitionBuilder, dialogSize)
+                ExportCompetitionToCSVButton(competitionBuilder, dialogSize)
+                Spacer(modifier = Modifier.height(dialogSize.height / 60))
+                ExportCompetitionToSQLButton(competitionBuilder, dialogSize)
             }
         }
 
@@ -238,7 +247,7 @@ fun CompetitionConfiguration(
     }
 }
 
-private fun exportCompetition(
+private fun exportCompetitionToCSV(
     competitionBuilder: CompetitionBuilder,
 ) {
     val folder: File? = pickFolderDialog()
@@ -259,18 +268,50 @@ private fun exportCompetition(
 }
 
 @Composable
-private fun ExportCompetitionButton(
+private fun ExportCompetitionToCSVButton(
     competitionBuilder: CompetitionBuilder,
     dialogSize: DpSize,
 ) {
     Button(
-        onClick = { exportCompetition(competitionBuilder) },
+        onClick = { exportCompetitionToCSV(competitionBuilder) },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
     ) { Text("Сохранить соревнование в папку (CSV)") }
 }
 
-private fun loadCompetition(
+private fun exportCompetitionToSQL(
+    competitionBuilder: CompetitionBuilder
+) {
+    val files = openFileDialog("Выберите местоположение базы данных", false)
+    if (files.size != 1) return
+    val file = files.single()
+    val pathToDb = try {
+        getDbPathFromFile(file)
+    } catch (e: NoSuchElementException) {
+        errorDialogMessage.value = "Некорректный путь к базе данных!"
+        return
+    }
+    val database = Database.safeConnectToPath(pathToDb).successOrNothing {
+        errorDialogMessage.value = "Не удалось подключиться к базе данных. Возникла следующая ошибка:\n$it"
+        return
+    }
+    val competitionDbWriter = CompetitionDbWriter(database, competitionBuilder.build())
+    competitionDbWriter.writeCompetition()
+}
+
+@Composable
+private fun ExportCompetitionToSQLButton(
+    competitionBuilder: CompetitionBuilder,
+    dialogSize: DpSize,
+) {
+    Button(
+        onClick = { exportCompetitionToSQL(competitionBuilder) },
+        modifier = Modifier.padding(start = dialogSize.width / 8)
+            .size(dialogSize.width / 4, dialogSize.height / 10)
+    ) { Text("Сохранить соревнование в базу данных (SQL)") }
+}
+
+private fun loadCompetitionFromCSV(
     competitionBuilder: CompetitionBuilder,
 ) {
     val folder: File? = pickFolderDialog()
@@ -291,13 +332,53 @@ private fun loadCompetition(
 }
 
 @Composable
-private fun LoadCompetitionButton(
+private fun LoadCompetitionFromCSVButton(
     competitionBuilder: CompetitionBuilder,
     dialogSize: DpSize
 ) {
     Button(
-        onClick = { loadCompetition(competitionBuilder) },
+        onClick = { loadCompetitionFromCSV(competitionBuilder) },
         modifier = Modifier.padding(start = dialogSize.width / 8)
             .size(dialogSize.width / 4, dialogSize.height / 10)
     ) { Text("Загрузить соревнование из папки (CSV)") }
+}
+
+private fun getDbPathFromFile(file: File): String {
+    return "${file.parent}/${file.name.split(".").first()}"
+}
+
+private fun loadCompetitionFromSQL(
+    competitionBuilder: CompetitionBuilder,
+) {
+    val files = openFileDialog("Выберите местоположение базы данных", false)
+    if (files.size != 1) return
+    val file = files.single()
+    val pathToDb = try {
+        getDbPathFromFile(file)
+    } catch (e: NoSuchElementException) {
+        errorDialogMessage.value = "Некорректный путь к базе данных!"
+        return
+    }
+    val database = Database.safeConnectToPath(pathToDb).successOrNothing {
+        errorDialogMessage.value = "Не удалось подключиться к базе данных. Возникла следующая ошибка:\n$it"
+        return
+    }
+    val competitionDbReader = CompetitionDbReader(database)
+    val competition = competitionDbReader.readCompetition().successOrNothing {
+        errorDialogMessage.value = "Не удалось считать соревнование из базы данных. Возникла следующая ошибка:\n$it"
+        return
+    }
+    competitionBuilder.replaceFromCompetition(competition)
+}
+
+@Composable
+private fun LoadCompetitionFromSQLButton(
+    competitionBuilder: CompetitionBuilder,
+    dialogSize: DpSize
+) {
+    Button(
+        onClick = { loadCompetitionFromSQL(competitionBuilder) },
+        modifier = Modifier.padding(start = dialogSize.width / 8)
+            .size(dialogSize.width / 4, dialogSize.height / 10)
+    ) { Text("Загрузить соревнование из базы данных (SQL)") }
 }
