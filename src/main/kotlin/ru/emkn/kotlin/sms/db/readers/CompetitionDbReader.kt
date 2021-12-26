@@ -1,11 +1,13 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.readers
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.db.util.DbEntityReader
 import ru.emkn.kotlin.sms.db.util.loggingTransaction
 import com.github.michaelbull.result.*
 import org.jetbrains.exposed.sql.selectAll
+import ru.emkn.kotlin.sms.db.CompetitionHeader
+import ru.emkn.kotlin.sms.db.parsers.GroupEntityParser
+import ru.emkn.kotlin.sms.db.parsers.RouteEntityParser
 import ru.emkn.kotlin.sms.db.schema.*
 
 

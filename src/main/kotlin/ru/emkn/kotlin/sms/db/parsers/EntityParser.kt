@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db.util
+package ru.emkn.kotlin.sms.db.parsers
 
 import org.jetbrains.exposed.dao.Entity
 import ru.emkn.kotlin.sms.ResultOrMessage

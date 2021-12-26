@@ -2,7 +2,7 @@ package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
-import ru.emkn.kotlin.sms.db.util.RecordableToTableRow
+import ru.emkn.kotlin.sms.db.writers.RecordableToTableRow
 import ru.emkn.kotlin.sms.results_processing.CheckpointAndTime
 import ru.emkn.kotlin.sms.results_processing.FinalParticipantResult
 import ru.emkn.kotlin.sms.results_processing.LiveParticipantResult

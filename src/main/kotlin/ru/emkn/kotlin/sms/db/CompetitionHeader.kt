@@ -3,7 +3,7 @@ package ru.emkn.kotlin.sms.db
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
-import ru.emkn.kotlin.sms.db.util.RecordableToTableRow
+import ru.emkn.kotlin.sms.db.writers.RecordableToTableRow
 
 /**
  * A class which stores header data of [Competition].

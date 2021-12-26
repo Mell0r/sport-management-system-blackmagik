@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db.util
+package ru.emkn.kotlin.sms.db.readers
 
 import com.github.michaelbull.result.*
 import org.jetbrains.exposed.dao.Entity
@@ -6,6 +6,8 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Table
 import ru.emkn.kotlin.sms.ResultOrMessage
+import ru.emkn.kotlin.sms.db.parsers.EntityParser
+import ru.emkn.kotlin.sms.db.util.loggingTransaction
 import ru.emkn.kotlin.sms.mapDBReadErrorMessage
 import ru.emkn.kotlin.sms.successOrNothing
 

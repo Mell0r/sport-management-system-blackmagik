@@ -1,9 +1,8 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.writers
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
-import ru.emkn.kotlin.sms.db.util.DbWriter
 
 /**
  * Writes [ParticipantsList] to [database],

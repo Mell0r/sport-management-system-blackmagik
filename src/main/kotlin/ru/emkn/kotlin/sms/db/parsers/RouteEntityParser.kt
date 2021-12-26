@@ -1,10 +1,9 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.parsers
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.RouteEntity
-import ru.emkn.kotlin.sms.db.util.EntityParser
 
 /**
  * Parses a [Route] from [RouteEntity].

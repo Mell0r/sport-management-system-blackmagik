@@ -1,4 +1,4 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.parsers
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
@@ -6,7 +6,6 @@ import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.ResultOrMessage
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
-import ru.emkn.kotlin.sms.db.util.EntityParser
 
 /**
  * Parses a [Participant] from [ParticipantEntity]
