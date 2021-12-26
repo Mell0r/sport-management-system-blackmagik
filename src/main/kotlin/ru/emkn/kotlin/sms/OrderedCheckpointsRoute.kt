@@ -1,5 +1,7 @@
 package ru.emkn.kotlin.sms
 
+import org.jetbrains.exposed.sql.statements.InsertStatement
+import ru.emkn.kotlin.sms.db.schema.RoutesTable
 import ru.emkn.kotlin.sms.results_processing.CheckpointAndTime
 import ru.emkn.kotlin.sms.results_processing.LiveParticipantResult
 import ru.emkn.kotlin.sms.time.Time
@@ -55,6 +57,13 @@ class OrderedCheckpointsRoute(
 
     override fun dumpToCsvString(): String =
         "$0$${name}," + orderedCheckpoints.joinToString(",")
+
+    override fun RoutesTable.initializeTableRow(statement: InsertStatement<Number>) {
+        statement[id] = this@OrderedCheckpointsRoute.name
+        statement[type] = RouteType.ORDERED_CHECKPOINTS
+        statement[commaSeparatedCheckpoints] = this@OrderedCheckpointsRoute.orderedCheckpoints.joinToString(",")
+        statement[threshold] = null
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

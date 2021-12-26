@@ -3,10 +3,9 @@ package ru.emkn.kotlin.sms.db
 import com.github.michaelbull.result.*
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.Participant
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
-import ru.emkn.kotlin.sms.db.util.loggingTransaction
+import ru.emkn.kotlin.sms.db.util.DbReader
 
 /**
  * Reads [ParticipantsList] from [database],
@@ -14,29 +13,18 @@ import ru.emkn.kotlin.sms.db.util.loggingTransaction
  */
 class ParticipantsListDbReader(
     private val database: Database,
-    private val competition: Competition,
+    competition: Competition,
 ) {
+    private val participantEntityParser = ParticipantEntityParser(competition)
+
+    private val reader = DbReader(
+        database = database,
+        table = ParticipantsListTable,
+        entityClass = ParticipantEntity,
+        entityParser = participantEntityParser,
+    )
 
     fun read(): ResultOrMessage<ParticipantsList> {
-        return loggingTransaction(database) {
-            runCatching {
-                val participants = ParticipantEntity.all().map { entity ->
-                    val group = competition.getGroupByLabelOrNull(entity.group.label) ?: return@loggingTransaction Err(
-                        "${entity.toShortString()} has invalid group label \"${entity.group}\""
-                    )
-                    Participant(
-                        id = entity.id.value,
-                        age = entity.age,
-                        name = entity.name,
-                        lastName = entity.lastName,
-                        group = group,
-                        team = entity.team,
-                        sportsCategory = entity.sportsCategory,
-                        startingTime = entity.startingTime,
-                    )
-                }
-                ParticipantsList(participants)
-            }.mapDBReadErrorMessage()
-        }
+        return reader.read().map { ParticipantsList(it) }
     }
 }

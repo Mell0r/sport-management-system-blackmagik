@@ -3,6 +3,7 @@ package ru.emkn.kotlin.sms.db
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.Competition
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
+import ru.emkn.kotlin.sms.db.schema.RoutesTable
 import ru.emkn.kotlin.sms.db.util.DbWriter
 
 /**
@@ -12,7 +13,15 @@ class CompetitionDbWriter(
     private val database: Database,
     private val competition: Competition,
 ) {
+    private val routesWriter = DbWriter(database, RoutesTable)
     private val groupsWriter = DbWriter(database, GroupsTable)
+
+    /**
+     * OVERWRITES the whole [RoutesTable].
+     */
+    fun writeRoutes() {
+        routesWriter.overwrite(competition.routes)
+    }
 
     /**
      * OVERWRITES the whole [GroupsTable].
