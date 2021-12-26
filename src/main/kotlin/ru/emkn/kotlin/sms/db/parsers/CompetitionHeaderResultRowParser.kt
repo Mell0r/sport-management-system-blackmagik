@@ -7,6 +7,10 @@ import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
 import ru.emkn.kotlin.sms.mapDBReadErrorMessage
 import com.github.michaelbull.result.*
 
+/**
+ * Parses [CompetitionHeader]
+ * from [ResultRow] of [CompetitionHeaderTable].
+ */
 object CompetitionHeaderResultRowParser : ResultRowParser<CompetitionHeader> {
     override fun parse(resultRow: ResultRow): ResultOrMessage<CompetitionHeader> {
         return runCatching {
