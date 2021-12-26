@@ -2,11 +2,11 @@ package ru.emkn.kotlin.sms.db
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.db.schema.GroupEntity
-import ru.emkn.kotlin.sms.db.schema.GroupsTable
-import ru.emkn.kotlin.sms.db.schema.RouteEntity
-import ru.emkn.kotlin.sms.db.schema.RoutesTable
-import ru.emkn.kotlin.sms.db.util.DbReader
+import ru.emkn.kotlin.sms.db.util.DbEntityReader
+import ru.emkn.kotlin.sms.db.util.loggingTransaction
+import com.github.michaelbull.result.*
+import org.jetbrains.exposed.sql.selectAll
+import ru.emkn.kotlin.sms.db.schema.*
 
 
 /**
@@ -16,29 +16,52 @@ class CompetitionDbReader(
     private val database: Database
 ) {
     /**
-     * Reads groups from [GroupsTable] in [database]
-     * based on knowledge of [routes] and [competitionYear].
+     * Reads [CompetitionHeader] from [CompetitionHeaderTable] in [database].
      */
-    fun readGroups(routes: List<Route>, competitionYear: Int): ResultOrMessage<List<Group>> {
-        val parser = GroupEntityParser(competitionYear, routes)
-        val reader = DbReader(
-            database = database,
-            table = GroupsTable,
-            entityClass = GroupEntity,
-            entityParser = parser,
-        )
-        return reader.read()
+    fun readHeader(): ResultOrMessage<CompetitionHeader> {
+        return loggingTransaction(database) {
+            runCatching {
+                val resultRow = try {
+                    CompetitionHeaderTable.selectAll().first()
+                } catch (e: NoSuchElementException) {
+                    return@loggingTransaction Err(
+                        "Competition header table is empty!"
+                    )
+                }
+                CompetitionHeader(
+                    discipline = resultRow[CompetitionHeaderTable.discipline],
+                    name = resultRow[CompetitionHeaderTable.name],
+                    year = resultRow[CompetitionHeaderTable.year],
+                    date = resultRow[CompetitionHeaderTable.date],
+                )
+            }.mapDBReadErrorMessage()
+        }
     }
 
     /**
      * Reads routes from [RoutesTable] in [database].
      */
     fun readRoutes(): ResultOrMessage<List<Route>> {
-        val reader = DbReader(
+        val reader = DbEntityReader(
             database = database,
             table = RoutesTable,
             entityClass = RouteEntity,
             entityParser = RouteEntityParser,
+        )
+        return reader.read()
+    }
+
+    /**
+     * Reads groups from [GroupsTable] in [database]
+     * based on knowledge of [routes] and [competitionYear].
+     */
+    fun readGroups(routes: List<Route>, competitionYear: Int): ResultOrMessage<List<Group>> {
+        val parser = GroupEntityParser(competitionYear, routes)
+        val reader = DbEntityReader(
+            database = database,
+            table = GroupsTable,
+            entityClass = GroupEntity,
+            entityParser = parser,
         )
         return reader.read()
     }

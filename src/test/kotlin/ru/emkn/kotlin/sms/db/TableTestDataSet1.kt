@@ -2,6 +2,7 @@ package ru.emkn.kotlin.sms.db
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
@@ -53,6 +54,11 @@ object TableTestDataSet1 {
         ParticipantsList(listOf(p3, p8, p5, p6, p2)),
     )
 
+    fun writeCompetitionHeader(db: Database) {
+        val writer = CompetitionDbWriter(db, competition)
+        writer.writeHeader()
+    }
+
     fun writeAllRoutes(db: Database) {
         val writer = CompetitionDbWriter(db, competition)
         writer.writeRoutes()
@@ -69,5 +75,6 @@ object TableTestDataSet1 {
         api.deleteTable(ParticipantsListTable)
         api.deleteTable(GroupsTable)
         api.deleteTable(RoutesTable)
+        api.deleteTable(CompetitionHeaderTable)
     }
 }

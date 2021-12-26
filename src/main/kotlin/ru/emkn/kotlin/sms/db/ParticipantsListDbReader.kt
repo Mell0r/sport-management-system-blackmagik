@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
-import ru.emkn.kotlin.sms.db.util.DbReader
+import ru.emkn.kotlin.sms.db.util.DbEntityReader
 
 /**
  * Reads [ParticipantsList] from [database],
@@ -17,7 +17,7 @@ class ParticipantsListDbReader(
 ) {
     private val participantEntityParser = ParticipantEntityParser(competition)
 
-    private val reader = DbReader(
+    private val reader = DbEntityReader(
         database = database,
         table = ParticipantsListTable,
         entityClass = ParticipantEntity,

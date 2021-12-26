@@ -2,6 +2,7 @@ package ru.emkn.kotlin.sms.db
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
 import ru.emkn.kotlin.sms.db.util.DbWriter
@@ -15,6 +16,15 @@ class CompetitionDbWriter(
 ) {
     private val routesWriter = DbWriter(database, RoutesTable)
     private val groupsWriter = DbWriter(database, GroupsTable)
+    private val headerWriter = DbWriter(database, CompetitionHeaderTable)
+
+    /**
+     * OVERWRITES the whole [CompetitionHeaderTable].
+     */
+    fun writeHeader() {
+        val header = CompetitionHeader.fromCompetition(competition)
+        headerWriter.overwrite(listOf(header))
+    }
 
     /**
      * OVERWRITES the whole [RoutesTable].

@@ -7,7 +7,7 @@ import org.tinylog.Logger
 import ru.emkn.kotlin.sms.participantsListToString
 import kotlin.test.*
 
-internal class ParticipantsListTableTest {
+internal class ReadWriteParticipantsList {
     private val testDbApi : TestDbApi = TestDbApi1
     private val testDataSet = TableTestDataSet1
 

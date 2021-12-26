@@ -15,7 +15,7 @@ import ru.emkn.kotlin.sms.successOrNothing
  * containing entities of type [E],
  * via [entityParser].
  */
-class DbReader<T : Table, ID : Comparable<ID>, E : Entity<ID>, V>(
+class DbEntityReader<T : Table, ID : Comparable<ID>, E : Entity<ID>, V>(
     private val database: Database,
     private val table: T,
     private val entityClass: EntityClass<ID, E>,
