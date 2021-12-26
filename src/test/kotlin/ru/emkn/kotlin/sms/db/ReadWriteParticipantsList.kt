@@ -2,9 +2,8 @@ package ru.emkn.kotlin.sms.db
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.unwrap
-import org.jetbrains.exposed.sql.*
-import org.tinylog.Logger
-import ru.emkn.kotlin.sms.participantsListToString
+import ru.emkn.kotlin.sms.db.readers.ParticipantsListDbReader
+import ru.emkn.kotlin.sms.db.writers.ParticipantsListDbWriter
 import kotlin.test.*
 
 internal class ReadWriteParticipantsList {

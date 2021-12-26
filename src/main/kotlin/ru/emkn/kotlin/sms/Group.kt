@@ -1,7 +1,7 @@
 package ru.emkn.kotlin.sms
 
 import ru.emkn.kotlin.sms.csv.CsvStringDumpable
-import ru.emkn.kotlin.sms.db.util.RecordableToTableRow
+import ru.emkn.kotlin.sms.db.writers.RecordableToTableRow
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.startcfg.Applicant
 

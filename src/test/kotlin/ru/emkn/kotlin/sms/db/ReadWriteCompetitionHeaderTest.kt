@@ -1,6 +1,7 @@
 package ru.emkn.kotlin.sms.db
 
 import com.github.michaelbull.result.unwrap
+import ru.emkn.kotlin.sms.db.readers.CompetitionDbReader
 import kotlin.test.*
 
 internal class ReadWriteCompetitionHeaderTest {

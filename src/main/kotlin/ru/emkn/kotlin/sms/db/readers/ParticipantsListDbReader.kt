@@ -1,11 +1,11 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.readers
 
 import com.github.michaelbull.result.*
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.db.parsers.ParticipantEntityParser
 import ru.emkn.kotlin.sms.db.schema.ParticipantEntity
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
-import ru.emkn.kotlin.sms.db.util.DbEntityReader
 
 /**
  * Reads [ParticipantsList] from [database],

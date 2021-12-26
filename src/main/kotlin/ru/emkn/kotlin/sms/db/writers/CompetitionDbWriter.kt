@@ -1,11 +1,11 @@
-package ru.emkn.kotlin.sms.db
+package ru.emkn.kotlin.sms.db.writers
 
 import org.jetbrains.exposed.sql.Database
 import ru.emkn.kotlin.sms.Competition
+import ru.emkn.kotlin.sms.db.CompetitionHeader
 import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
-import ru.emkn.kotlin.sms.db.util.DbWriter
 
 /**
  * Writes [Competition] to multiple tables in [database].

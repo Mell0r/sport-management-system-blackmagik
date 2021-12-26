@@ -17,8 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.exposed.sql.Database
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.csv.ParticipantsListCsvParser
+import ru.emkn.kotlin.sms.db.readers.ParticipantsListDbReader
+import ru.emkn.kotlin.sms.db.util.safeConnectToPath
+import ru.emkn.kotlin.sms.db.writers.ParticipantsListDbWriter
 import ru.emkn.kotlin.sms.gui.builders.ApplicantBuilder
 import ru.emkn.kotlin.sms.gui.builders.ApplicationBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
@@ -62,9 +66,11 @@ fun FormingParticipantsList(programState: MutableState<ProgramState>) {
         )
 
         LoadApplicationsFromCSVButton(applicationBuilders)
-        LoadReadyStartingConfigurationButton(programState, state)
+        LoadReadyStartingConfigurationFromCSVButton(programState, state)
+        LoadReadyStartingConfigurationFromSQLButton(programState, state)
         SaveAndNextButton(programState, state, applicationBuilders)
         SaveAndExportToCSVAndNextButton(programState, state, applicationBuilders)
+        SaveAndExportToSQLAndNextButton(programState, state, applicationBuilders)
     }
     SuccessDialog(successDialogMessage)
     ErrorDialog(errorDialogMessage)
@@ -84,33 +90,67 @@ fun safeOpenSingleFileOrNull(title: String): File? {
 }
 
 
-private fun loadReadyStartingConfiguration(
+private fun loadReadyStartingConfigurationFromCSV(
     programState: MutableState<ProgramState>,
     state: FormingParticipantsListProgramState,
 ) {
     Logger.debug { "User pressed load ready start configuration." }
-
     val participantsListFile = safeOpenSingleFileOrNull("Выберите список участников (participants-list.csv)")
         ?: return
-
     val participantsList = ParticipantsListCsvParser(state.competition).readAndParse(participantsListFile).successOrNothing {
         errorDialogMessage.value = it
         return
     }
-
     state.participantsList = participantsList
-
     programState.value = state.nextProgramState()
 }
 
 @Composable
-private fun LoadReadyStartingConfigurationButton(
+private fun LoadReadyStartingConfigurationFromCSVButton(
     programState: MutableState<ProgramState>,
     state: FormingParticipantsListProgramState,
 ) {
     Button(
-        onClick = { loadReadyStartingConfiguration(programState, state) },
+        onClick = { loadReadyStartingConfigurationFromCSV(programState, state) },
         content = { Text(text = "Загрузить готовый список учасников из CSV и перейти далее.") },
+    )
+}
+
+private fun loadReadyStartingConfigurationFromSQL(
+    programState: MutableState<ProgramState>,
+    state: FormingParticipantsListProgramState,
+) {
+    val files = openFileDialog("Выберите местоположение базы данных", false)
+    if (files.size != 1) return
+    val file = files.single()
+    val pathToDb = try {
+        getDbPathFromFile(file)
+    } catch (e: NoSuchElementException) {
+        errorDialogMessage.value = "Некорректный путь к базе данных!"
+        return
+    }
+    val database = Database.safeConnectToPath(pathToDb).successOrNothing {
+        errorDialogMessage.value = "Не удалось подключиться к базе данных. Возникла следующая ошибка:\n$it"
+        return
+    }
+    val reader = ParticipantsListDbReader(database, state.competition)
+    val participantsList = reader.read().successOrNothing {
+        errorDialogMessage.value = "Не удалось загрузить список участников из базы данных. Возникла следующая ошибка:\n$it"
+        return
+    }
+
+    state.participantsList = participantsList
+    programState.value = state.nextProgramState()
+}
+
+@Composable
+private fun LoadReadyStartingConfigurationFromSQLButton(
+    programState: MutableState<ProgramState>,
+    state: FormingParticipantsListProgramState,
+) {
+    Button(
+        onClick = { loadReadyStartingConfigurationFromSQL(programState, state) },
+        content = { Text(text = "Загрузить готовый список учасников из базы данных (SQL) и перейти далее.") },
     )
 }
 
@@ -146,11 +186,17 @@ private fun LoadApplicationsFromCSVButton(
     )
 }
 
+private enum class SaveAndNextExportMode {
+    NO_EXPORT,
+    EXPORT_TO_CSV,
+    EXPORT_TO_SQL,
+}
+
 private fun saveAndNext(
     programState: MutableState<ProgramState>,
     state: FormingParticipantsListProgramState,
     applications: SnapshotStateList<ApplicationBuilder>,
-    exportToCSV: Boolean = false,
+    exportMode: SaveAndNextExportMode = SaveAndNextExportMode.NO_EXPORT,
 ) {
     // form applications
     // if something went wrong, do not succeed to the next mode
@@ -177,7 +223,7 @@ private fun saveAndNext(
 
     state.participantsList = participantsList
 
-    if (exportToCSV) {
+    if (exportMode == SaveAndNextExportMode.EXPORT_TO_CSV) {
         Logger.debug {"Saving participants list and starting protocols to CSV."}
 
         val participantsListFile = safeOpenSingleFileOrNull("Выберите файл для сохранения списка участников (participants-list.csv)")
@@ -194,6 +240,22 @@ private fun saveAndNext(
 
         safeCSVDumpableToFile(participantsList, participantsListFile.absolutePath)
         writeCSVDumpablesToDirectory(participantsList.toStartingProtocols(), folder)
+    } else if (exportMode == SaveAndNextExportMode.EXPORT_TO_SQL) {
+        val files = openFileDialog("Выберите местоположение базы данных", false)
+        if (files.size != 1) return
+        val file = files.single()
+        val pathToDb = try {
+            getDbPathFromFile(file)
+        } catch (e: NoSuchElementException) {
+            errorDialogMessage.value = "Некорректный путь к базе данных!"
+            return
+        }
+        val database = Database.safeConnectToPath(pathToDb).successOrNothing {
+            errorDialogMessage.value = "Не удалось подключиться к базе данных. Возникла следующая ошибка:\n$it"
+            return
+        }
+        val writer = ParticipantsListDbWriter(database)
+        writer.overwrite(participantsList)
     }
 
     programState.value = state.nextProgramState()
@@ -206,7 +268,7 @@ private fun SaveAndNextButton(
     applications: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
-        onClick = { saveAndNext(programState, state, applications, false) },
+        onClick = { saveAndNext(programState, state, applications, SaveAndNextExportMode.NO_EXPORT) },
         content = { Text(text = "Сохранить и далее") },
     )
 }
@@ -218,8 +280,20 @@ private fun SaveAndExportToCSVAndNextButton(
     applications: SnapshotStateList<ApplicationBuilder>,
 ) {
     Button(
-        onClick = { saveAndNext(programState, state, applications, true) },
+        onClick = { saveAndNext(programState, state, applications, SaveAndNextExportMode.EXPORT_TO_CSV) },
         content = { Text(text = "Сохранить, экспортировать в CSV и далее") },
+    )
+}
+
+@Composable
+private fun SaveAndExportToSQLAndNextButton(
+    programState: MutableState<ProgramState>,
+    state: FormingParticipantsListProgramState,
+    applications: SnapshotStateList<ApplicationBuilder>,
+) {
+    Button(
+        onClick = { saveAndNext(programState, state, applications, SaveAndNextExportMode.EXPORT_TO_SQL) },
+        content = { Text(text = "Сохранить, экспортировать в базу данных (SQL) и далее") },
     )
 }
 

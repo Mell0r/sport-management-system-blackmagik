@@ -6,6 +6,7 @@ import ru.emkn.kotlin.sms.db.schema.CompetitionHeaderTable
 import ru.emkn.kotlin.sms.db.schema.GroupsTable
 import ru.emkn.kotlin.sms.db.schema.ParticipantsListTable
 import ru.emkn.kotlin.sms.db.schema.RoutesTable
+import ru.emkn.kotlin.sms.db.writers.CompetitionDbWriter
 import ru.emkn.kotlin.sms.time.s
 
 object TableTestDataSet1 {

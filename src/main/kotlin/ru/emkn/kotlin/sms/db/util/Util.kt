@@ -7,14 +7,14 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.emkn.kotlin.sms.db.CompetitionHeader
 import ru.emkn.kotlin.sms.db.util.TinyLogDebugSqlLogger
 
 /**
  * Maximum allowed label sizes
- * for groups, routes and teams.
+ * for groups, routes, teams and checkpoints.
  */
 const val MAX_DB_ROW_LABEL_SIZE = 64
-
 
 /**
  * Tries to connect to a database at [url].
