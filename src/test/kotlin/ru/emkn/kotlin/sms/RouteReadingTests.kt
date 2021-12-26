@@ -1,5 +1,6 @@
 package ru.emkn.kotlin.sms
 
+import ru.emkn.kotlin.sms.csv.readRouteFromLine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

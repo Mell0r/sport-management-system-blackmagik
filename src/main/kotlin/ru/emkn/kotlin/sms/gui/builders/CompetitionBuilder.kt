@@ -7,7 +7,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.github.michaelbull.result.*
 import ru.emkn.kotlin.sms.*
-import ru.emkn.kotlin.sms.io.initializeCompetition
+import ru.emkn.kotlin.sms.csv.initializeCompetition
 
 /**
  * aka "Mutable competition": a class which allows to

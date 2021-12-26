@@ -1,9 +1,10 @@
-package ru.emkn.kotlin.sms.io
+package ru.emkn.kotlin.sms.csv
 
 import com.github.michaelbull.result.mapError
 import com.github.michaelbull.result.runCatching
 import org.tinylog.kotlin.Logger
 import ru.emkn.kotlin.sms.*
+import ru.emkn.kotlin.sms.io.FileContent
 import java.io.File
 
 const val NAME_AND_DATE_FILENAME = "Name_and_date.csv"

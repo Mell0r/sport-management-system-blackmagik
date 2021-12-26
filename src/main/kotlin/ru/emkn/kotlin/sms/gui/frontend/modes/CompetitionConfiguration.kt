@@ -30,7 +30,7 @@ import ru.emkn.kotlin.sms.gui.builders.OrderedCheckpointsRouteBuilder
 import ru.emkn.kotlin.sms.gui.frontend.elements.*
 import ru.emkn.kotlin.sms.gui.programState.ConfiguringCompetitionProgramState
 import ru.emkn.kotlin.sms.gui.programState.ProgramState
-import ru.emkn.kotlin.sms.io.saveCompetition
+import ru.emkn.kotlin.sms.csv.saveCompetition
 import java.io.File
 
 private val errorDialogMessage: MutableState<String?> = mutableStateOf(null)
