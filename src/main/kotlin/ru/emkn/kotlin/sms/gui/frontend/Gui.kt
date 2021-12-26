@@ -25,7 +25,7 @@ fun launchGUI(
             remember { mutableStateOf(initialProgramState) }
         when (programState.value) {
             is ConfiguringCompetitionProgramState -> {
-                val windowSize = DpSize(1000.dp, 600.dp)
+                val windowSize = DpSize(1200.dp, 600.dp)
                 Dialog(
                     title = "Настройка соревнования",
                     state = DialogState(size = windowSize),
