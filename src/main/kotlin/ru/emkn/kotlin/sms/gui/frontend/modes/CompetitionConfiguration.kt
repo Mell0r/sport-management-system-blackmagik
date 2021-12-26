@@ -343,7 +343,7 @@ private fun LoadCompetitionFromCSVButton(
     ) { Text("Загрузить соревнование из папки (CSV)") }
 }
 
-private fun getDbPathFromFile(file: File): String {
+fun getDbPathFromFile(file: File): String {
     return "${file.parent}/${file.name.split(".").first()}"
 }
 
