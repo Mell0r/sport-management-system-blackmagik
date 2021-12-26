@@ -6,6 +6,7 @@ import ru.emkn.kotlin.sms.db.util.loggingTransaction
 import com.github.michaelbull.result.*
 import org.jetbrains.exposed.sql.selectAll
 import ru.emkn.kotlin.sms.db.CompetitionHeader
+import ru.emkn.kotlin.sms.db.parsers.CompetitionHeaderResultRowParser
 import ru.emkn.kotlin.sms.db.parsers.GroupEntityParser
 import ru.emkn.kotlin.sms.db.parsers.RouteEntityParser
 import ru.emkn.kotlin.sms.db.schema.*
@@ -21,23 +22,12 @@ class CompetitionDbReader(
      * Reads [CompetitionHeader] from [CompetitionHeaderTable] in [database].
      */
     fun readHeader(): ResultOrMessage<CompetitionHeader> {
-        return loggingTransaction(database) {
-            runCatching {
-                val resultRow = try {
-                    CompetitionHeaderTable.selectAll().first()
-                } catch (e: NoSuchElementException) {
-                    return@loggingTransaction Err(
-                        "Competition header table is empty!"
-                    )
-                }
-                CompetitionHeader(
-                    discipline = resultRow[CompetitionHeaderTable.discipline],
-                    name = resultRow[CompetitionHeaderTable.name],
-                    year = resultRow[CompetitionHeaderTable.year],
-                    date = resultRow[CompetitionHeaderTable.date],
-                )
-            }.mapDBReadErrorMessage()
-        }
+        val reader = DbResultRowReader(
+            database = database,
+            table = CompetitionHeaderTable,
+            resultRowParser = CompetitionHeaderResultRowParser,
+        )
+        return reader.readFirst()
     }
 
     /**
