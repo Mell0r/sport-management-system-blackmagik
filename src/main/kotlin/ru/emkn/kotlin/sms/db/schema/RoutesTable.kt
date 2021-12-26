@@ -13,4 +13,6 @@ import ru.emkn.kotlin.sms.db.util.standardCustomEnumeration
  */
 object RoutesTable : StringIdTable("routes", "name", MAX_DB_ROW_LABEL_SIZE) {
     val type: Column<RouteType> = standardCustomEnumeration("type")
+    val commaSeparatedCheckpoints: Column<String> = text("checkpoints")
+    val threshold: Column<Int?> = integer("threshold").nullable() // for AtLeastKCheckpointsRoute
 }
