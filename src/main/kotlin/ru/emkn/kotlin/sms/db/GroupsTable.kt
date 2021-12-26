@@ -1,6 +1,5 @@
 package ru.emkn.kotlin.sms.db
 
-import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
 import ru.emkn.kotlin.sms.*
 
@@ -8,8 +7,7 @@ import ru.emkn.kotlin.sms.*
  * A [org.jetbrains.exposed] table representative,
  * storing [Group]s.
  */
-object GroupsTable : IntIdTable("groups") {
-    val label: Column<String> = varchar("label", MAX_DB_ROW_LABEL_SIZE)
+object GroupsTable : StringIdTable("groups", "label", MAX_DB_ROW_LABEL_SIZE) {
     val route: Column<String> = varchar("route", MAX_DB_ROW_LABEL_SIZE) // TODO reference to route table
     val type: Column<GroupType> = customEnumeration(
         name = "type",

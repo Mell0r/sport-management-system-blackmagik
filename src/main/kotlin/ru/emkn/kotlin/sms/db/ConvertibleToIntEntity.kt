@@ -1,14 +1,5 @@
 package ru.emkn.kotlin.sms.db
 
-import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.Entity
 
-/**
- * Any object which can be converted
- * to [org.jetbrains.exposed] database entity of type [T] (a subclass of [IntEntity]).
- */
-interface ConvertibleToIntEntity<T : IntEntity> {
-    /**
-     * Can be called ONLY within a transaction!
-     */
-    fun toEntity(): T
-}
+interface ConvertibleToIntEntity<T : Entity<Int>> : ConvertibleToEntity<Int, T>

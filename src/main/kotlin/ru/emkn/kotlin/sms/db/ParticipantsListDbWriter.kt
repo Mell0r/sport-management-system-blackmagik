@@ -13,7 +13,7 @@ import ru.emkn.kotlin.sms.*
 class ParticipantsListDbWriter(
     private val database: Database,
 ) {
-    private val writer = DbWriter<ParticipantEntity>(database, ParticipantsListTable)
+    private val writer = DbWriter<Int, ParticipantEntity>(database, ParticipantsListTable)
 
     fun overwrite(participantsList: ParticipantsList) {
         writer.overwrite(participantsList.list)

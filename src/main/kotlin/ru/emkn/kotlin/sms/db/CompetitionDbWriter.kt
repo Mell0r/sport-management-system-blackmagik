@@ -12,7 +12,7 @@ class CompetitionDbWriter(
     private val database: Database,
     private val competition: Competition,
 ) {
-    private val groupsWriter = DbWriter<GroupEntity>(database, GroupsTable)
+    private val groupsWriter = DbWriter<String, GroupEntity>(database, GroupsTable)
 
     /**
      * OVERWRITES the whole [GroupsTable].
