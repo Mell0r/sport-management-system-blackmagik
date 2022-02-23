@@ -13,6 +13,7 @@ repositories {
     mavenCentral()
     maven( "https://maven.pkg.jetbrains.space/public/p/compose/dev" )
     google()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 val exposedVersion: String by project
@@ -26,6 +27,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>()
     }
 
 dependencies {
+
     // kotlin-stdlib
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
@@ -51,6 +53,30 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
     testImplementation("junit:junit:4.13.2")
+
+    // workaround for skiko crash
+    val osName = System.getProperty("os.name")
+    val targetOs = when {
+        osName == "Mac OS X" -> "macos"
+        osName.startsWith("Win") -> "windows"
+        osName.startsWith("Linux") -> "linux"
+        else -> error("Unsupported OS: $osName")
+    }
+
+    val osArch = System.getProperty("os.arch")
+    val targetArch = when (osArch) {
+        "x86_64", "amd64" -> "x64"
+        "aarch64" -> "arm64"
+        else -> error("Unsupported arch: $osArch")
+    }
+
+    val target = "${targetOs}-${targetArch}"
+
+    implementation("org.jetbrains.skiko:skiko-jvm-runtime-$target:0.5.3")
+
+
+    // MockK
+    testImplementation("io.mockk:mockk:1.12.2")
 }
 
 tasks.test {
@@ -58,6 +84,14 @@ tasks.test {
     testLogging {
         outputs.upToDateWhen {false}
         showStandardStreams = true
+    }
+}
+
+val nonDbTests = tasks.register<Test>("non-db tests") {
+    group = "verification"
+    useJUnit()
+    filter {
+        excludeTestsMatching("ru.emkn.kotlin.sms.db.*")
     }
 }
 
